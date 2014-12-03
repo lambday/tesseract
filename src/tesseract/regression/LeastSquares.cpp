@@ -25,17 +25,31 @@
 #include <tesseract/regression/LeastSquares.hpp>
 #include <tesseract/base/types.h>
 
+using namespace Eigen;
+
 namespace tesseract
 {
-template class LeastSquares<double, LS_SVD>;
-template class LeastSquares<float, LS_SVD>;
-template class LeastSquares<int, LS_SVD>;
+template class LeastSquares<MatrixXd, VectorXd, LS_SVD>;
+template class LeastSquares<MatrixXf, VectorXf, LS_SVD>;
+template class LeastSquares<MatrixXi, VectorXi, LS_SVD>;
 
-template class LeastSquares<double, LS_QR>;
-template class LeastSquares<float, LS_QR>;
-template class LeastSquares<int, LS_QR>;
+template class LeastSquares<MatrixXd, VectorXd, LS_QR>;
+template class LeastSquares<MatrixXf, VectorXf, LS_QR>;
+template class LeastSquares<MatrixXi, VectorXi, LS_QR>;
 
-template class LeastSquares<double, LS_NORMAL>;
-template class LeastSquares<float, LS_NORMAL>;
-template class LeastSquares<int, LS_NORMAL>;
+template class LeastSquares<MatrixXd, VectorXd, LS_NORMAL>;
+template class LeastSquares<MatrixXf, VectorXf, LS_NORMAL>;
+template class LeastSquares<MatrixXi, VectorXi, LS_NORMAL>;
+
+template class LeastSquares<Map<MatrixXd>, Map<VectorXd>, LS_SVD>;
+template class LeastSquares<Map<MatrixXf>, Map<VectorXf>, LS_SVD>;
+template class LeastSquares<Map<MatrixXi>, Map<VectorXi>, LS_SVD>;
+
+template class LeastSquares<Map<MatrixXd>, Map<VectorXd>, LS_QR>;
+template class LeastSquares<Map<MatrixXf>, Map<VectorXf>, LS_QR>;
+template class LeastSquares<Map<MatrixXi>, Map<VectorXi>, LS_QR>;
+
+template class LeastSquares<Map<MatrixXd>, Map<VectorXd>, LS_NORMAL>;
+template class LeastSquares<Map<MatrixXf>, Map<VectorXf>, LS_NORMAL>;
+template class LeastSquares<Map<MatrixXi>, Map<VectorXi>, LS_NORMAL>;
 }

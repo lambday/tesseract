@@ -37,39 +37,35 @@ enum LeastSquareMethod
 	LS_NORMAL
 };
 
-template <typename T, enum LeastSquareMethod>
+template <class Matrix, class Vector, enum LeastSquareMethod>
 struct LeastSquares;
 
-template <typename T>
-struct LeastSquares<T, LS_SVD>
+template <class Matrix, class Vector>
+struct LeastSquares<Matrix, Vector, LS_SVD>
 {
-	Vector<T> solve(const Matrix<T>& A, const Vector<T>& b) const
+	void solve(const Matrix& A, const Vector& b, Vector& result) const
 	{
-		return A.jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(b);
+		result = A.jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(b);
 	}
 };
 
-template <typename T>
-struct LeastSquares<T, LS_QR>
+template <class Matrix, class Vector>
+struct LeastSquares<Matrix, Vector, LS_QR>
 {
-	Vector<T> solve(const Matrix<T>& A, const Vector<T>& b) const
+	void solve(const Matrix& A, const Vector& b, Vector& result) const
 	{
-		return A.colPivHouseholderQr().solve(b);
+		result = A.colPivHouseholderQr().solve(b);
 	}
 };
 
-template <typename T>
-struct LeastSquares<T, LS_NORMAL>
+template <class Matrix, class Vector>
+struct LeastSquares<Matrix, Vector, LS_NORMAL>
 {
-	Vector<T> solve(const Matrix<T>& A, const Vector<T>& b) const
+	void solve(const Matrix& A, const Vector& b, Vector& result) const
 	{
-		return (A.transpose() * A).ldlt().solve(A.transpose() * b);
+		result = (A.transpose() * A).ldlt().solve(A.transpose() * b);
 	}
 };
-
-template <typename T> using SVDLeastSquares = LeastSquares<T, LS_SVD>;
-template <typename T> using QRLeastSquares = LeastSquares<T, LS_QR>;
-template <typename T> using NormalLeastSquares = LeastSquares<T, LS_NORMAL>;
 
 }
 

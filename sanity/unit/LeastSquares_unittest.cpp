@@ -30,26 +30,29 @@ using namespace tesseract;
 using namespace Eigen;
 using namespace std;
 
-void test_svd(MatrixXd& A, VectorXd& b)
+template <class Matrix, class Vector>
+void test_svd(const Matrix& A, const Vector& b, Vector& x)
 {
-	SVDLeastSquares<double> ls;
-	VectorXd x = ls.solve(A, b);
+	LeastSquares<Matrix, Vector, LS_SVD> ls;
+	ls.solve(A, b, x);
 	cout << "beta = " << endl << x << endl;
 	cout << "residual = " << b-A*x << endl;
 }
 
-void test_qr(MatrixXd& A, VectorXd& b)
+template <class Matrix, class Vector>
+void test_qr(const Matrix& A, const Vector& b, Vector& x)
 {
-	QRLeastSquares<double> ls;
-	VectorXd x = ls.solve(A, b);
+	LeastSquares<Matrix, Vector, LS_QR> ls;
+	ls.solve(A, b, x);
 	cout << "beta = " << endl << x << endl;
 	cout << "residual = " << b-A*x << endl;
 }
 
-void test_normal(MatrixXd& A, VectorXd& b)
+template <class Matrix, class Vector>
+void test_normal(Matrix& A, Vector& b, Vector& x)
 {
-	NormalLeastSquares<double> ls;
-	VectorXd x = ls.solve(A, b);
+	LeastSquares<Matrix, Vector, LS_NORMAL> ls;
+	ls.solve(A, b, x);
 	cout << "beta = " << endl << x << endl;
 	cout << "residual = " << b-A*x << endl;
 }
@@ -58,10 +61,22 @@ int main(int argc, char** argv)
 {
 	MatrixXd A = MatrixXd::Random(3, 2);
 	VectorXd b = VectorXd::Random(3);
+	VectorXd res = VectorXd::Zero(2);
+
 	cout << "A = " << endl << A << endl;
 	cout << "b = " << endl << b << endl;
-	test_svd(A, b);
-	test_qr(A, b);
-	test_normal(A, b);
+
+	test_svd(A, b, res);
+	test_qr(A, b, res);
+	test_normal(A, b, res);
+
+	Map<MatrixXd> map_A(A.data(), A.rows(), A.cols());
+	Map<VectorXd> map_b(b.data(), b.rows());
+	Map<VectorXd> map_res(res.data(), res.rows());
+
+	test_svd(map_A, map_b, map_res);
+	test_qr(map_A, map_b, map_res);
+	test_normal(map_A, map_b, map_res);
+
 	return 0;
 }
