@@ -30,13 +30,38 @@ using namespace tesseract;
 using namespace Eigen;
 using namespace std;
 
+void test_svd(MatrixXd& A, VectorXd& b)
+{
+	SVDLeastSquares<double> ls;
+	VectorXd x = ls.solve(A, b);
+	cout << "beta = " << endl << x << endl;
+	cout << "residual = " << b-A*x << endl;
+}
+
+void test_qr(MatrixXd& A, VectorXd& b)
+{
+	QRLeastSquares<double> ls;
+	VectorXd x = ls.solve(A, b);
+	cout << "beta = " << endl << x << endl;
+	cout << "residual = " << b-A*x << endl;
+}
+
+void test_normal(MatrixXd& A, VectorXd& b)
+{
+	NormalLeastSquares<double> ls;
+	VectorXd x = ls.solve(A, b);
+	cout << "beta = " << endl << x << endl;
+	cout << "residual = " << b-A*x << endl;
+}
+
 int main(int argc, char** argv)
 {
 	MatrixXd A = MatrixXd::Random(3, 2);
 	VectorXd b = VectorXd::Random(3);
-	SVDLeastSquares<double> ls;
-	cout << "A=" << endl << A << endl;
-	cout << "b=" << endl << b << endl;
-	cout << "svd=" << endl << ls.solve(A, b) << endl;
+	cout << "A = " << endl << A << endl;
+	cout << "b = " << endl << b << endl;
+	test_svd(A, b);
+	test_qr(A, b);
+	test_normal(A, b);
 	return 0;
 }
