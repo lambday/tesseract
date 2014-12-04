@@ -18,5 +18,9 @@ test: libtsr.so $(UNITSRC)/LeastSquares_unittest.cpp
 	$(TESTS)/LeastSquares_unittest
 	# delete all the tests
 	rm $(TESTS)/*
+doc: libtsr.so doc/Doxyfile
+	doxygen doc/Doxyfile
 clean:
 	rm $(REGRESSION)/*.o libtsr.so
+	rm -rf doc/html
+	rm -rf doc/latex

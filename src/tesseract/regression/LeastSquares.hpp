@@ -30,6 +30,10 @@
 namespace tesseract
 {
 
+/**
+ * Enum for defining which of the methods are to be used for solving
+ * the least square problem instance
+ */
 enum LeastSquareMethod
 {
 	LS_SVD,
@@ -37,30 +41,67 @@ enum LeastSquareMethod
 	LS_NORMAL
 };
 
+/**
+ * @brief template class LeastSquares is the generic class for solving
+ * least square problem for solving over-dertermined systems \f$Ax=b\f$.
+ */
 template <class Matrix, class Vector, enum LeastSquareMethod>
 struct LeastSquares;
 
+/**
+ * @brief template class LeastSquares is the generic class for solving
+ * least square problem for solving over-dertermined system \f$Ax=b\f$
+ * using Jacobi SVD.
+ */
 template <class Matrix, class Vector>
 struct LeastSquares<Matrix, Vector, LS_SVD>
 {
+	/**
+	 * Solves the over-determined system \f$Ax=b\f$.
+	 * @param A matrix \f$A\f$
+	 * @param b vector \f$b\f$
+	 * @param result result vector \f$x\f$
+	 */
 	void solve(const Matrix& A, const Vector& b, Vector& result) const
 	{
 		result = A.jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(b);
 	}
 };
 
+/**
+ * @brief template class LeastSquares is the generic class for solving
+ * least square problem for solving over-dertermined system \f$Ax=b\f$
+ * using Householder QR decomposition.
+ */
 template <class Matrix, class Vector>
 struct LeastSquares<Matrix, Vector, LS_QR>
 {
+	/**
+	 * Solves the over-determined system \f$Ax=b\f$.
+	 * @param A matrix \f$A\f$
+	 * @param b vector \f$b\f$
+	 * @param result result vector \f$x\f$
+	 */
 	void solve(const Matrix& A, const Vector& b, Vector& result) const
 	{
 		result = A.colPivHouseholderQr().solve(b);
 	}
 };
 
+/**
+ * @brief template class LeastSquares is the generic class for solving
+ * least square problem for solving over-dertermined system \f$Ax=b\f$
+ * using \f$x=(A^T.A)^{-1}(A^T.b)\f$.
+ */
 template <class Matrix, class Vector>
 struct LeastSquares<Matrix, Vector, LS_NORMAL>
 {
+	/**
+	 * Solves the over-determined system \f$Ax=b\f$.
+	 * @param A matrix \f$A\f$
+	 * @param b vector \f$b\f$
+	 * @param result result vector \f$x\f$
+	 */
 	void solve(const Matrix& A, const Vector& b, Vector& result) const
 	{
 		result = (A.transpose() * A).ldlt().solve(A.transpose() * b);
