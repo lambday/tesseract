@@ -35,8 +35,8 @@ void test_svd(const Matrix& A, const Vector& b, Vector& x)
 {
 	LeastSquares<Matrix, Vector, LS_SVD> ls;
 	ls.solve(A, b, x);
-	cout << "beta = " << endl << x << endl;
-	cout << "residual = " << b-A*x << endl;
+//	cout << "beta = " << endl << x << endl;
+//	cout << "residual = " << b-A*x << endl;
 }
 
 template <class Matrix, class Vector>
@@ -44,8 +44,8 @@ void test_qr(const Matrix& A, const Vector& b, Vector& x)
 {
 	LeastSquares<Matrix, Vector, LS_QR> ls;
 	ls.solve(A, b, x);
-	cout << "beta = " << endl << x << endl;
-	cout << "residual = " << b-A*x << endl;
+//	cout << "beta = " << endl << x << endl;
+//	cout << "residual = " << b-A*x << endl;
 }
 
 template <class Matrix, class Vector>
@@ -53,8 +53,8 @@ void test_normal(Matrix& A, Vector& b, Vector& x)
 {
 	LeastSquares<Matrix, Vector, LS_NORMAL> ls;
 	ls.solve(A, b, x);
-	cout << "beta = " << endl << x << endl;
-	cout << "residual = " << b-A*x << endl;
+//	cout << "beta = " << endl << x << endl;
+//	cout << "residual = " << b-A*x << endl;
 }
 
 int main(int argc, char** argv)
@@ -63,8 +63,8 @@ int main(int argc, char** argv)
 	VectorXd b = VectorXd::Random(3);
 	VectorXd res = VectorXd::Zero(2);
 
-	cout << "A = " << endl << A << endl;
-	cout << "b = " << endl << b << endl;
+//	cout << "A = " << endl << A << endl;
+//	cout << "b = " << endl << b << endl;
 
 	test_svd(A, b, res);
 	test_qr(A, b, res);

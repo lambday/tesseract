@@ -26,10 +26,19 @@
 #define DATA_GENERATOR_H__
 
 #include <tesseract/base/types.h>
+#include <shogun/features/DenseFeatures.h>
 
 namespace tesseract
 {
 
+template <class DataSet>
+class DataGenerator
+{
+	void generate();
+private:
+	CDenseFeatures<float64_t> regressors;
+	Vector<float64_t> regressand;
+};
 
 }
 

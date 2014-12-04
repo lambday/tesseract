@@ -40,6 +40,9 @@ typedef int int32_t;
 typedef float float32_t;
 typedef double float64_t;
 
+typedef char byte_t;
+typedef unsigned char ubyte_t;
+
 }
 
 #endif // TYPES_H__
