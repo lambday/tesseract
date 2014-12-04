@@ -10,7 +10,7 @@ OBJECTS		= $(REGRESSION)/LeastSquares.o \
 UNITSRC		= sanity/unit
 UNITTESTS	= $(UNITSRC)/LeastSquares_unittest.cpp $(UNITSRC)/IDX3Reader_unittest.cpp \
 			  $(UNITSRC)/IDX1Reader_unittest.cpp $(UNITSRC)/FileReader_unittest.cpp \
-			  $(UNITSRC)/DataGenerator_unittest.cpp
+			  $(UNITSRC)/DataGenerator_unittest.cpp $(UNITSRC)/UnitL2Normalizer_unittest.cpp
 LIBS		= -L. -ltsr -lshogun
 TESTS		= tests
 
@@ -32,11 +32,13 @@ test: libtsr.so $(UNITTESTS)
 	g++ $(OPTS) $(INCLUDES) $(LIBS) $(UNITSRC)/IDX1Reader_unittest.cpp -o $(TESTS)/IDX1Reader_unittest
 	g++ $(OPTS) $(INCLUDES) $(LIBS) $(UNITSRC)/FileReader_unittest.cpp -o $(TESTS)/FileReader_unittest
 	g++ $(OPTS) $(INCLUDES) $(LIBS) $(UNITSRC)/DataGenerator_unittest.cpp -o $(TESTS)/DataGenerator_unittest
+	g++ $(OPTS) $(INCLUDES) $(LIBS) $(UNITSRC)/UnitL2Normalizer_unittest.cpp -o $(TESTS)/UnitL2Normalizer_unittest
 	$(TESTS)/LeastSquares_unittest
 	$(TESTS)/IDX3Reader_unittest
 	$(TESTS)/IDX1Reader_unittest
 	$(TESTS)/FileReader_unittest
 	$(TESTS)/DataGenerator_unittest
+	$(TESTS)/UnitL2Normalizer_unittest
 	rm $(TESTS)/*
 doc: libtsr.so doc/Doxyfile
 	doxygen doc/Doxyfile

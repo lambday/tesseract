@@ -22,39 +22,35 @@
  * SOFTWARE.
  */
 
-#include <tesseract/io/IDX1Reader.hpp>
-#include <tesseract/io/IDX3Reader.hpp>
-#include <tesseract/io/FileReader.hpp>
-#include <tesseract/preprocessor/DataGenerator.hpp>
 #include <tesseract/normalizer/UnitL2Normalizer.hpp>
-#include <string>
-#include <cstdlib>
-#include <ctime>
-#include <map>
 #include <iostream>
-#include <cstdio>
 
 using namespace tesseract;
+using namespace Eigen;
 
-void test1(std::string feats_filename, std::string labels_filename)
+void test1()
 {
-	DataGenerator<IDX3Reader,IDX1Reader,UnitL2Normalizer> gen(feats_filename, labels_filename);
-	int32_t num_examples = 2;
-	gen.set_num_examples(num_examples);
-	gen.set_seed(std::time(0));
+	MatrixXd m = MatrixXd::Random(4,3);
+//	std::cout << m.norm() << std::endl;
 
-	gen.generate();
-	const Matrix<float64_t>& regressors = gen.get_regressors();
-	const Vector<float64_t>& regressand = gen.get_regressand();
+	UnitL2Normalizer<MatrixXd> normalizer;
+	normalizer.normalize(m);
+//	std::cout << m.norm() << std::endl;
+}
 
-//	std::cout << regressors << std::endl;
-//	std::cout << regressand << std::endl;
+void test2()
+{
+	VectorXd m = VectorXd::Random(4);
+//	std::cout << m.norm() << std::endl;
 
+	UnitL2Normalizer<VectorXd> normalizer;
+	normalizer.normalize(m);
+//	std::cout << m.norm() << std::endl;
 }
 
 int main(int argc, char** argv)
 {
-	test1("data/train-images-idx3-ubyte", "data/train-labels-idx1-ubyte");
-	test1("data/t10k-images-idx3-ubyte", "data/t10k-labels-idx1-ubyte");
+	test1();
+	test2();
 	return 0;
 }

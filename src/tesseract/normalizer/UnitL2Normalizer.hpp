@@ -22,39 +22,27 @@
  * SOFTWARE.
  */
 
-#include <tesseract/io/IDX1Reader.hpp>
-#include <tesseract/io/IDX3Reader.hpp>
-#include <tesseract/io/FileReader.hpp>
-#include <tesseract/preprocessor/DataGenerator.hpp>
-#include <tesseract/normalizer/UnitL2Normalizer.hpp>
-#include <string>
-#include <cstdlib>
-#include <ctime>
-#include <map>
-#include <iostream>
-#include <cstdio>
+#ifndef UNIT_L2_NORMALIZER_H__
+#define UNIT_L2_NORMALIZER_H__
 
-using namespace tesseract;
+#include <tesseract/base/types.h>
 
-void test1(std::string feats_filename, std::string labels_filename)
+namespace tesseract
 {
-	DataGenerator<IDX3Reader,IDX1Reader,UnitL2Normalizer> gen(feats_filename, labels_filename);
-	int32_t num_examples = 2;
-	gen.set_num_examples(num_examples);
-	gen.set_seed(std::time(0));
 
-	gen.generate();
-	const Matrix<float64_t>& regressors = gen.get_regressors();
-	const Vector<float64_t>& regressand = gen.get_regressand();
-
-//	std::cout << regressors << std::endl;
-//	std::cout << regressand << std::endl;
+/** @brief template class UnitL2Normalizer which normalizes the container
+ * (matrix or vector) so that the result container have 1 \f$l^2\f$ norm.
+ */
+template <class Container>
+struct UnitL2Normalizer
+{
+	/** @param samples the samples which are to be normalized */
+	void normalize(Container& samples)
+	{
+		samples.normalize();
+	}
+};
 
 }
 
-int main(int argc, char** argv)
-{
-	test1("data/train-images-idx3-ubyte", "data/train-labels-idx1-ubyte");
-	test1("data/t10k-images-idx3-ubyte", "data/t10k-labels-idx1-ubyte");
-	return 0;
-}
+#endif // UNIT_L2_NORMALIZER_H__

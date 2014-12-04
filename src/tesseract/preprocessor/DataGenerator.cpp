@@ -26,28 +26,29 @@
 #include <tesseract/io/FileReader.hpp>
 #include <tesseract/io/IDX1Reader.hpp>
 #include <tesseract/io/IDX3Reader.hpp>
+#include <tesseract/normalizer/UnitL2Normalizer.hpp>
 #include <cstdlib>
 
 using namespace tesseract;
 
-template <class FeatureReader, class LabelReader, class Normalizer>
+template <class FeatureReader, class LabelReader, template <class> class Normalizer>
 DataGenerator<FeatureReader,LabelReader,Normalizer>::DataGenerator()
 {
 }
 
-template <class FeatureReader, class LabelReader, class Normalizer>
+template <class FeatureReader, class LabelReader, template <class> class Normalizer>
 DataGenerator<FeatureReader,LabelReader,Normalizer>::DataGenerator(std::string feats_file,
 		std::string labels_file)
 	: feats_filename(feats_file), labels_filename(labels_file)
 {
 }
 
-template <class FeatureReader, class LabelReader, class Normalizer>
+template <class FeatureReader, class LabelReader, template <class> class Normalizer>
 DataGenerator<FeatureReader,LabelReader,Normalizer>::~DataGenerator()
 {
 }
 
-template <class FeatureReader, class LabelReader, class Normalizer>
+template <class FeatureReader, class LabelReader, template <class> class Normalizer>
 void DataGenerator<FeatureReader,LabelReader,Normalizer>::generate()
 {
 	typedef FileReader<FeatureReader,LabelReader> Reader;
@@ -97,37 +98,41 @@ void DataGenerator<FeatureReader,LabelReader,Normalizer>::generate()
 	}
 
 	// normalize the regressors and regressands
-	// TODO
+	Normalizer<Matrix<float64_t>> regressors_normalizer;
+	regressors_normalizer.normalize(regressors);
+
+	Normalizer<Vector<float64_t>> regressand_normalizer;
+	regressand_normalizer.normalize(regressand);
 }
 
-template <class FeatureReader, class LabelReader, class Normalizer>
+template <class FeatureReader, class LabelReader, template <class> class Normalizer>
 void DataGenerator<FeatureReader,LabelReader,Normalizer>::set_num_examples(int32_t _num_examples)
 {
 	num_examples = _num_examples;
 }
 
-template <class FeatureReader, class LabelReader, class Normalizer>
+template <class FeatureReader, class LabelReader, template <class> class Normalizer>
 int32_t DataGenerator<FeatureReader,LabelReader,Normalizer>::get_num_examples() const
 {
 	return num_examples;
 }
 
-template <class FeatureReader, class LabelReader, class Normalizer>
+template <class FeatureReader, class LabelReader, template <class> class Normalizer>
 void DataGenerator<FeatureReader,LabelReader,Normalizer>::set_seed(int32_t _seed)
 {
 	seed = _seed;
 }
 
-template <class FeatureReader, class LabelReader, class Normalizer>
+template <class FeatureReader, class LabelReader, template <class> class Normalizer>
 const Matrix<float64_t>& DataGenerator<FeatureReader,LabelReader,Normalizer>::get_regressors() const
 {
 	return regressors;
 }
 
-template <class FeatureReader, class LabelReader, class Normalizer>
+template <class FeatureReader, class LabelReader, template <class> class Normalizer>
 const Vector<float64_t>& DataGenerator<FeatureReader,LabelReader,Normalizer>::get_regressand() const
 {
 	return regressand;
 }
 
-template class DataGenerator<IDX3Reader, IDX1Reader, int>; // TODO used int for dummy
+template class DataGenerator<IDX3Reader,IDX1Reader,UnitL2Normalizer>;

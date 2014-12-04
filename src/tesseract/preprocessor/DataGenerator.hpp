@@ -37,7 +37,7 @@ namespace tesseract
  * labels) using the Normalizer. The generated data is stored inside
  * as real valued Eigen3 matrix and vector format.
  */
-template <class FeatureReader, class LabelReader, class Normalizer>
+template <class FeatureReader, class LabelReader, template <class> class Normalizer>
 class DataGenerator
 {
 public:
