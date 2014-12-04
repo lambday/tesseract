@@ -5,10 +5,16 @@ REGRESSION	= $(SRC)/regression
 IO			= $(SRC)/io
 PREPROCESSOR= $(SRC)/preprocessor
 ERRORS		= $(SRC)/errors
+ALGORITHM	= $(SRC)/algorithm
+EVALUATION	= $(SRC)/evaluation
+FEATURES	= $(SRC)/features
 OBJECTS		= $(REGRESSION)/LeastSquares.o \
 			  $(IO)/IDX3Reader.o $(IO)/IDX1Reader.o $(IO)/FileReader.o \
 			  $(PREPROCESSOR)/DataGenerator.o \
-			  $(ERRORS)/SumSquaredError.o $(ERRORS)/PearsonsCorrelation.o
+			  $(ERRORS)/SumSquaredError.o $(ERRORS)/PearsonsCorrelation.o \
+			  $(EVALUATION)/DataSet.o $(EVALUATION)/Evaluation.o \
+			  $(ALGORITHM)/Dummy.o \
+			  $(FEATURES)/Features.o
 UNITSRC		= sanity/unit
 UNITTESTS	= $(UNITSRC)/LeastSquares_unittest.cpp $(UNITSRC)/IDX3Reader_unittest.cpp \
 			  $(UNITSRC)/IDX1Reader_unittest.cpp $(UNITSRC)/FileReader_unittest.cpp \
@@ -33,6 +39,14 @@ $(ERRORS)/SumSquaredError.o: $(ERRORS)/SumSquaredError.hpp $(ERRORS)/SumSquaredE
 	g++ $(OPTS) -c $(ERRORS)/SumSquaredError.cpp $(INCLUDES) -o $(ERRORS)/SumSquaredError.o
 $(ERRORS)/PearsonsCorrelation.o: $(ERRORS)/PearsonsCorrelation.hpp $(ERRORS)/PearsonsCorrelation.cpp
 	g++ $(OPTS) -c $(ERRORS)/PearsonsCorrelation.cpp $(INCLUDES) -o $(ERRORS)/PearsonsCorrelation.o
+$(ALGORITHM)/Dummy.o: $(ALGORITHM)/Dummy.hpp $(ALGORITHM)/Dummy.cpp
+	g++ $(OPTS) -c $(ALGORITHM)/Dummy.cpp $(INCLUDES) -o $(ALGORITHM)/Dummy.o
+$(FEATURES)/Features.o: $(FEATURES)/Features.hpp $(FEATURES)/Features.cpp
+	g++ $(OPTS) -c $(FEATURES)/Features.cpp $(INCLUDES) -o $(FEATURES)/Features.o
+$(EVALUATION)/DataSet.o: $(EVALUATION)/DataSet.hpp $(EVALUATION)/DataSet.cpp
+	g++ $(OPTS) -c $(EVALUATION)/DataSet.cpp $(INCLUDES) -o $(EVALUATION)/DataSet.o
+$(EVALUATION)/Evaluation.o: $(EVALUATION)/Evaluation.hpp $(EVALUATION)/Evaluation.cpp
+	g++ $(OPTS) -c $(EVALUATION)/Evaluation.cpp $(INCLUDES) -o $(EVALUATION)/Evaluation.o
 test: libtsr.so $(UNITTESTS)
 	g++ $(OPTS) $(INCLUDES) $(LIBS) $(UNITSRC)/LeastSquares_unittest.cpp -o $(TESTS)/LeastSquares_unittest
 	g++ $(OPTS) $(INCLUDES) $(LIBS) $(UNITSRC)/IDX3Reader_unittest.cpp -o $(TESTS)/IDX3Reader_unittest
