@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-#ifndef IDX3_READER_H__
-#define IDX3_READER_H__
+#ifndef FILE_READER_H__
+#define FILE_READER_H__
 
 #include <tesseract/base/types.h>
 
@@ -31,75 +31,48 @@ namespace tesseract
 {
 
 /**
- * @brief struct IDX3Header for the header of the image file
+ * @brief class FileReader for reading and storing features and labels
  */
-struct IDX3Header
-{
-	/** magic number (should be 2051 or 0x803) */
-	int32_t magic_number;
-
-	/** number of images in current file */
-	int32_t num_images;
-
-	/** number of rows of the images */
-	int32_t num_rows;
-
-	/** number of cols of the images */
-	int32_t num_cols;
-};
-
-/**
- * @brief class IDX3Reader for reading and storing IDX3 images
- */
-class IDX3Reader
+template <class FeatureReader, class LabelReader>
+class FileReader
 {
 public:
-	/** type of IDX3 images */
-	typedef std::vector<ubyte_t> Image;
+	/** the feature type */
+	typedef typename FeatureReader::feat_type feat_type;
 
-	/** type of IDX3 images array */
-	typedef std::vector<Image> IDX3Images;
+	/** the label type */
+	typedef typename LabelReader::label_type label_type;
 
-	/** the feat type  */
-	typedef IDX3Images feat_type;
+	/** the data type to be returned by the load method */
+	typedef typename std::pair<feat_type, label_type> data_type;
 
 	/** default constructor */
-	IDX3Reader();
+	FileReader();
 
 	/** constructor
-	 * @param _filename the filename
+	 * @param feats_file the feats filename
+	 * @param labels_file the labels filename
 	 */
-	explicit IDX3Reader(std::string _filename);
+	explicit FileReader(std::string feats_file, std::string labels_file);
 
 	/** destructor */
-	~IDX3Reader();
+	~FileReader();
 
-	/** loads the images from the specified file */
-	void load();
-
-	/** @return a reference of the image at specified index */
-	Image& get_image(index_t i);
-
-	/** @return the number of images */
-	int32_t get_num_images();
-
-	/** @return the number of rows for each image */
-	int32_t get_num_rows();
-
-	/** @return the number of columns for each image */
-	int32_t get_num_cols();
+	/** loads the images and labels from the specified files
+	 * @param num_examples specifies the number of the images and labels
+	 * that are used on the learning problem
+	 * @return a pair of feats and labels
+	 */
+	data_type load(int32_t num_examples);
 
 private:
-	/** the filename */
-	std::string filename;
+	/** the feats filename */
+	std::string feats_filename;
 
-	/** the image header */
-	IDX3Header header;
-
-	/** the images array */
-	IDX3Images images;
+	/** the labels filename */
+	std::string labels_filename;
 };
 
 }
 
-#endif // IDX3_READER_H__
+#endif // FILE_READER_H__

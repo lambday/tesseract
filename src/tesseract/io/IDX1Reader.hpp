@@ -51,6 +51,9 @@ public:
 	/** type of IDX1 images array */
 	typedef std::vector<ubyte_t> IDX1Labels;
 
+	/** the label type */
+	typedef IDX1Labels label_type;
+
 	/** default constructor */
 	IDX1Reader();
 

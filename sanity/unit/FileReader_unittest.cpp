@@ -23,24 +23,51 @@
  */
 
 #include <tesseract/io/IDX1Reader.hpp>
+#include <tesseract/io/IDX3Reader.hpp>
+#include <tesseract/io/FileReader.hpp>
+#include <string>
+#include <cstdlib>
+#include <ctime>
+#include <map>
+#include <iostream>
 #include <cstdio>
 
 using namespace tesseract;
 
-void test1(std::string filename)
+void test1(std::string feats_filename, std::string labels_filename)
 {
-	IDX1Reader reader(filename);
-	reader.load();
+	FileReader<IDX3Reader, IDX1Reader> reader(feats_filename, labels_filename);
+	int32_t num_examples = 10;
 
-//	for (index_t i = 0; i < reader.get_num_labels(); ++i) {
-//		printf("%u ", reader.get_label(i));
-//	}
-//	printf("\n");
+	std::srand(std::time(0));
+
+	typedef IDX3Reader::feat_type feat_type;
+	typedef IDX1Reader::label_type label_type;
+	typedef std::pair<feat_type, label_type> ret_type;
+
+	auto examples = reader.load(num_examples);
+	auto feats = examples.first;
+	auto labels = examples.second;
+
+	assert(feats.size() == labels.size());
+//	std::cout << feats.size() << " examples in the current problem" << std::endl;
+/*
+	for(auto samples : feats) {
+		for (ubyte_t c : samples)
+			printf("%u ", c);
+		std::cout << std::endl;
+	}
+
+	for (auto c : labels) {
+		printf("%u ", c);
+	}
+	std::cout << std::endl;
+*/
 }
 
 int main(int argc, char** argv)
 {
-	test1("data/train-labels-idx1-ubyte");
-	test1("data/t10k-labels-idx1-ubyte");
+	test1("data/train-images-idx3-ubyte", "data/train-labels-idx1-ubyte");
+	test1("data/t10k-images-idx3-ubyte", "data/t10k-labels-idx1-ubyte");
 	return 0;
 }
