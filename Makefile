@@ -16,10 +16,12 @@ OBJECTS		= $(REGRESSION)/LeastSquares.o \
 			  $(ALGORITHM)/Dummy.o \
 			  $(FEATURES)/Features.o
 UNITSRC		= sanity/unit
+INTSRC		= sanity/integration
 UNITTESTS	= $(UNITSRC)/LeastSquares_unittest.cpp $(UNITSRC)/IDX3Reader_unittest.cpp \
 			  $(UNITSRC)/IDX1Reader_unittest.cpp $(UNITSRC)/FileReader_unittest.cpp \
 			  $(UNITSRC)/DataGenerator_unittest.cpp $(UNITSRC)/UnitL2Normalizer_unittest.cpp \
-			  $(UNITSRC)/Error_unittest.cpp
+			  $(UNITSRC)/Error_unittest.cpp \
+			  $(INTSRC)/Evaluation_integration.cpp
 LIBS		= -L. -ltsr -lshogun
 TESTS		= tests
 
@@ -55,6 +57,7 @@ test: libtsr.so $(UNITTESTS)
 	g++ $(OPTS) $(INCLUDES) $(LIBS) $(UNITSRC)/DataGenerator_unittest.cpp -o $(TESTS)/DataGenerator_unittest
 	g++ $(OPTS) $(INCLUDES) $(LIBS) $(UNITSRC)/UnitL2Normalizer_unittest.cpp -o $(TESTS)/UnitL2Normalizer_unittest
 	g++ $(OPTS) $(INCLUDES) $(LIBS) $(UNITSRC)/Error_unittest.cpp -o $(TESTS)/Error_unittest
+	g++ $(OPTS) $(INCLUDES) $(LIBS) $(INTSRC)/Evaluation_integration.cpp -o $(TESTS)/Evaluation_integration
 	$(TESTS)/LeastSquares_unittest
 	$(TESTS)/IDX3Reader_unittest
 	$(TESTS)/IDX1Reader_unittest
@@ -62,6 +65,7 @@ test: libtsr.so $(UNITTESTS)
 	$(TESTS)/DataGenerator_unittest
 	$(TESTS)/UnitL2Normalizer_unittest
 	$(TESTS)/Error_unittest
+	$(TESTS)/Evaluation_integration
 	rm $(TESTS)/*
 doc: libtsr.so doc/Doxyfile
 	doxygen doc/Doxyfile

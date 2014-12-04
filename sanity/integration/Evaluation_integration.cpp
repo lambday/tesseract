@@ -22,44 +22,39 @@
  * SOFTWARE.
  */
 
-#ifndef DUMMY_H__
-#define DUMMY_H__
+#include <tesseract/io/IDX1Reader.hpp>
+#include <tesseract/io/IDX3Reader.hpp>
+#include <tesseract/preprocessor/DataGenerator.hpp>
+#include <tesseract/normalizer/UnitL2Normalizer.hpp>
+#include <tesseract/algorithm/Dummy.hpp>
+#include <tesseract/errors/SumSquaredError.hpp>
+#include <tesseract/errors/PearsonsCorrelation.hpp>
+#include <tesseract/evaluation/Evaluation.hpp>
+#include <tesseract/evaluation/DataSet.hpp>
+#include <ctime>
+#include <map>
+#include <iostream>
 
-#include <tesseract/base/types.h>
+using namespace tesseract;
 
-namespace tesseract
+template <class Algorithm, class ErrorMeasures>
+void test()
 {
+	Evaluation<MNISTDataSet,DataGenerator<IDX3Reader,IDX1Reader,UnitL2Normalizer>,
+		Algorithm,ErrorMeasures> evaluator;
+	evaluator.set_seed(std::time(0));
+	evaluator.set_num_examples(1000);
+	evaluator.set_target_feats(0);
 
-/** @brief class Dummy for a dummy algorithm which does nothing and returns
- * all the features that are there in the input problem
- */
-class Dummy
-{
-public:
-	/** constructor
-	 * @param _regressors the regressors (real valued dense feature matrix)
-	 * @param _regressand the regressand (real valued dense labels vector)
-	 * @param _target_feats number of target features (default value is 0)
-	 */
-	Dummy(const Matrix<float64_t>& _regressors, const Vector<float64_t>& _regressand,
-			index_t _target_feats = 0);
+	std::pair<index_t,float64_t> result = evaluator.evaluate();
 
-	/** destructor */
-	~Dummy();
-
-	/** @return the vector of selected feature indices */
-	std::vector<index_t> run();
-private:
-	/** real valued dense feature matrix */
-	const Matrix<float64_t>& regressors;
-
-	/** real valued dense labels vector */
-	const Vector<float64_t>& regressand;
-
-	/** number of target features */
-	index_t target_feats;
-};
-
+	std::cout << result.first << std::endl;
+	std::cout << result.second << std::endl;
 }
 
-#endif // DUMMY_H__
+int main(int argc, char** argv)
+{
+	test<Dummy,SumSquaredError<float64_t>>();
+	test<Dummy,PearsonsCorrelation<float64_t>>();
+	return 0;
+}

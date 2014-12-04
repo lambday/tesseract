@@ -72,7 +72,7 @@ std::pair<index_t,float64_t> Evaluation<DataSet,DataGenerator,Algorithm,ErrorMea
 
 	// compute error measure
 	ErrorMeasure measure;
-	return std::make_pair(indices.size(),measure.compute(gen.get_regressand(), result));
+	return std::make_pair(indices.size(),measure.compute(gen.get_regressand(), feats_in_use * result));
 }
 
 template <class DataSet, class DataGenerator, class Algorithm, class ErrorMeasure>

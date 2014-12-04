@@ -31,10 +31,10 @@ namespace tesseract
 {
 
 /** @brief computes the Pearson's correlation as \f$\sigma=\sqrt{\frac{(1-r^2)SSY}
- * {N-2}}\f$ where \f$\text{SSY}=\sum{(Z-\mu_Z)^2}\f$, \f$Z\f$ is the original labels,
+ * {N-2}}\f$ where \f$\text{SSY}=\sum{(Z-\bar{Z})^2}\f$, \f$Z\f$ is the original labels,
  * \f$\bar{Z}=\frac{\sum{Z_i}}{N}\f$, \f$r=\frac{1}{N}\sum_{i=1}^N\left(\frac{Z_i-\bar{Z}}
  * {s_Z} \right )\left(\frac{Z'_i-\bar{Z'}}{s_{Z'}} \right )\f$ and \f$s_Z=\sqrt{\frac{1}
- * {N-1}\sum_{i=1}^N\left(Z_i-\bar{Z}\right )^2}
+ * {N-1}\sum_{i=1}^N\left(Z_i-\bar{Z}\right )^2}\f$
  */
 template <typename T>
 struct PearsonsCorrelation
