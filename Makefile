@@ -8,12 +8,12 @@ ERRORS		= $(SRC)/errors
 OBJECTS		= $(REGRESSION)/LeastSquares.o \
 			  $(IO)/IDX3Reader.o $(IO)/IDX1Reader.o $(IO)/FileReader.o \
 			  $(PREPROCESSOR)/DataGenerator.o \
-			  $(ERRORS)/SumSquaredError.o
+			  $(ERRORS)/SumSquaredError.o $(ERRORS)/PearsonsCorrelation.o
 UNITSRC		= sanity/unit
 UNITTESTS	= $(UNITSRC)/LeastSquares_unittest.cpp $(UNITSRC)/IDX3Reader_unittest.cpp \
 			  $(UNITSRC)/IDX1Reader_unittest.cpp $(UNITSRC)/FileReader_unittest.cpp \
 			  $(UNITSRC)/DataGenerator_unittest.cpp $(UNITSRC)/UnitL2Normalizer_unittest.cpp \
-			  $(UNITSRC)/SumSquaredError_unittest.cpp
+			  $(UNITSRC)/Error_unittest.cpp
 LIBS		= -L. -ltsr -lshogun
 TESTS		= tests
 
@@ -31,6 +31,8 @@ $(PREPROCESSOR)/DataGenerator.o: $(PREPROCESSOR)/DataGenerator.hpp $(PREPROCESSO
 	g++ $(OPTS) -c $(PREPROCESSOR)/DataGenerator.cpp $(INCLUDES) -o $(PREPROCESSOR)/DataGenerator.o
 $(ERRORS)/SumSquaredError.o: $(ERRORS)/SumSquaredError.hpp $(ERRORS)/SumSquaredError.cpp
 	g++ $(OPTS) -c $(ERRORS)/SumSquaredError.cpp $(INCLUDES) -o $(ERRORS)/SumSquaredError.o
+$(ERRORS)/PearsonsCorrelation.o: $(ERRORS)/PearsonsCorrelation.hpp $(ERRORS)/PearsonsCorrelation.cpp
+	g++ $(OPTS) -c $(ERRORS)/PearsonsCorrelation.cpp $(INCLUDES) -o $(ERRORS)/PearsonsCorrelation.o
 test: libtsr.so $(UNITTESTS)
 	g++ $(OPTS) $(INCLUDES) $(LIBS) $(UNITSRC)/LeastSquares_unittest.cpp -o $(TESTS)/LeastSquares_unittest
 	g++ $(OPTS) $(INCLUDES) $(LIBS) $(UNITSRC)/IDX3Reader_unittest.cpp -o $(TESTS)/IDX3Reader_unittest
@@ -38,14 +40,14 @@ test: libtsr.so $(UNITTESTS)
 	g++ $(OPTS) $(INCLUDES) $(LIBS) $(UNITSRC)/FileReader_unittest.cpp -o $(TESTS)/FileReader_unittest
 	g++ $(OPTS) $(INCLUDES) $(LIBS) $(UNITSRC)/DataGenerator_unittest.cpp -o $(TESTS)/DataGenerator_unittest
 	g++ $(OPTS) $(INCLUDES) $(LIBS) $(UNITSRC)/UnitL2Normalizer_unittest.cpp -o $(TESTS)/UnitL2Normalizer_unittest
-	g++ $(OPTS) $(INCLUDES) $(LIBS) $(UNITSRC)/SumSquaredError_unittest.cpp -o $(TESTS)/SumSquaredError_unittest
+	g++ $(OPTS) $(INCLUDES) $(LIBS) $(UNITSRC)/Error_unittest.cpp -o $(TESTS)/Error_unittest
 	$(TESTS)/LeastSquares_unittest
 	$(TESTS)/IDX3Reader_unittest
 	$(TESTS)/IDX1Reader_unittest
 	$(TESTS)/FileReader_unittest
 	$(TESTS)/DataGenerator_unittest
 	$(TESTS)/UnitL2Normalizer_unittest
-	$(TESTS)/SumSquaredError_unittest
+	$(TESTS)/Error_unittest
 	rm $(TESTS)/*
 doc: libtsr.so doc/Doxyfile
 	doxygen doc/Doxyfile

@@ -22,29 +22,33 @@
  * SOFTWARE.
  */
 
-#ifndef SUM_SQUARED_ERROR_H__
-#define SUM_SQUARED_ERROR_H__
+#include <tesseract/errors/PearsonsCorrelation.hpp>
+#include <cmath>
 
-#include <tesseract/base/types.h>
+using namespace tesseract;
 
-namespace tesseract
-{
-
-/** @brief computes the sum of squares error as \f$\sigma=\sqrt{\frac{(Z-Z')^2}{N-2}}\f$.
- * where \f$Z\f$ is the labels and \f$Z'\f$ is the prediction according to regression
- * model.
- */
 template <typename T>
-struct SumSquaredError
+float64_t PearsonsCorrelation<T>::compute(const Vector<T>& Z, const Vector<T>& Zp)
 {
-	/**
-	 * @param Z the original regressands \f$Z\f$
-	 * @param Zp the predicted regressands according to model \f$Z'\f$
-	 * @return the sum of squares error (see class documentation)
-	 */
-	float64_t compute(const Vector<T>& Z, const Vector<T>& Zp);
-};
+	assert(Z.rows() == Zp.rows());
+	assert(Z.rows() > 2);
 
+	int32_t N = Z.rows();
+
+	// compute mean
+	Vector<float64_t> mu_Z = Vector<float64_t>::Constant(N, Z.array().template sum() * 1.0 / N);
+	Vector<float64_t> mu_Zp = Vector<float64_t>::Constant(N, Zp.array().template sum() * 1.0 / N);
+
+	// compute sample std dev
+	float64_t s_Z = sqrt((Z - mu_Z).array().template square().template sum() / (N - 1.0));
+	float64_t s_Zp = sqrt((Zp - mu_Zp).array().template square().template sum() / (N - 1.0));
+
+	// compute Pearson product-moment correlation coefficient
+	float64_t r = (((Z - mu_Z) / s_Z).array() * ((Zp - mu_Zp) / s_Zp).array()).template sum() / (N - 1);
+
+	// compute Pearson's correlation
+	float64_t SSY = (Z - mu_Z).array().template square().template sum();
+	return sqrt((1 - r*r) * SSY / (N - 2));
 }
 
-#endif // SUM_SQUARED_ERROR_H__
+template class PearsonsCorrelation<float64_t>;

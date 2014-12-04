@@ -31,7 +31,9 @@ template <typename T>
 float64_t SumSquaredError<T>::compute(const Vector<T>& Z, const Vector<T>& Zp)
 {
 	assert(Z.rows() == Zp.rows());
-	return sqrt((Z-Zp).array().template square().template sum() * 1.0 / Z.rows());
+	assert(Z.rows() > 2);
+
+	return sqrt((Z-Zp).array().template square().template sum() * 1.0 / (Z.rows() - 2));
 }
 
 template class SumSquaredError<float64_t>;
