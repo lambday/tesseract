@@ -26,18 +26,72 @@
 #define DATA_GENERATOR_H__
 
 #include <tesseract/base/types.h>
-#include <shogun/features/DenseFeatures.h>
 
 namespace tesseract
 {
 
-template <class DataSet>
+/** @brief template class DataGenerator which generates test data.
+ * It reads the features and labels for given number of examples
+ * inside it's generate method using FeatureReader and LabelReader
+ * and then performs a normalization on the data (both features and
+ * labels) using the Normalizer. The generated data is stored inside
+ * as real valued Eigen3 matrix and vector format.
+ */
+template <class FeatureReader, class LabelReader, class Normalizer>
 class DataGenerator
 {
+public:
+	/** default constructor */
+	DataGenerator();
+
+	/** constructor */
+	explicit DataGenerator(std::string feats_file, std::string labels_file);
+
+	/** destructor */
+	~DataGenerator();
+
+	/*
+	 * It reads the features and labels for given number of examples
+	 * inside it's generate method using FeatureReader and LabelReader
+	 * and then performs a normalization on the data (both features and
+	 * labels) using the Normalizer. The generated data is stored inside
+	 * as real valued Eigen3 matrix and vector format.
+	 */
 	void generate();
+
+	/** @param _seed for rng */
+	void set_seed(int32_t _seed);
+
+	/** @param _num_examples the number of examples */
+	void set_num_examples(int32_t _num_examples);
+
+	/** @return the number of examples */
+	int32_t get_num_examples() const;
+
+	/** @return the regressors (real valued dense feature matrix) */
+	const Matrix<float64_t>& get_regressors() const;
+
+	/** @return the regressand (real valued dense label vector) */
+	const Vector<float64_t>& get_regressand() const;
+
 private:
-	CDenseFeatures<float64_t> regressors;
+	/** the regressors (real valued dense feature matrix) */
+	Matrix<float64_t> regressors;
+
+	/** the regressand (real valued label vector) */
 	Vector<float64_t> regressand;
+
+	/** number of examples */
+	int32_t num_examples;
+
+	/** seed for random sampling */
+	int32_t seed;
+
+	/** feature filename */
+	std::string feats_filename;
+
+	/** labels filename */
+	std::string labels_filename;
 };
 
 }
