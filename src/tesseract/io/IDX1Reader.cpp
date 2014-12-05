@@ -71,7 +71,7 @@ void IDX1Reader::load()
 
 		is.close();
 
-		delete buffer;
+		delete [] buffer;
 	} else {
 		std::cerr << "Could not open file " << filename << std::endl;
 		exit(2);

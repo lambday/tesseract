@@ -29,6 +29,7 @@
 #include <tesseract/algorithm/Dummy.hpp>
 #include <tesseract/errors/SumSquaredError.hpp>
 #include <tesseract/errors/PearsonsCorrelation.hpp>
+#include <tesseract/errors/SquaredMultipleCorrelation.hpp>
 #include <tesseract/evaluation/Evaluation.hpp>
 #include <tesseract/evaluation/DataSet.hpp>
 #include <ctime>
@@ -56,5 +57,6 @@ int main(int argc, char** argv)
 {
 	test<Dummy,SumSquaredError<float64_t>>();
 	test<Dummy,PearsonsCorrelation<float64_t>>();
+	test<Dummy,SquaredMultipleCorrelation<float64_t>>();
 	return 0;
 }

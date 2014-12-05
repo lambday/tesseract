@@ -30,6 +30,7 @@
 #include <tesseract/normalizer/UnitL2Normalizer.hpp>
 #include <tesseract/errors/SumSquaredError.hpp>
 #include <tesseract/errors/PearsonsCorrelation.hpp>
+#include <tesseract/errors/SquaredMultipleCorrelation.hpp>
 #include <tesseract/algorithm/Dummy.hpp>
 #include <tesseract/regression/LeastSquares.hpp>
 #include <tesseract/features/Features.hpp>
@@ -65,7 +66,7 @@ std::pair<index_t,float64_t> Evaluation<DataSet,DataGenerator,Algorithm,ErrorMea
 	typedef typename std::remove_cv<typename std::remove_reference<decltype(gen.get_regressand())>::type>::type label_type;
 
 	// fit least square on test data for the selected features
-	LeastSquares<feat_type, label_type, LS_SVD> model;
+	LeastSquares<feat_type, label_type, LS_NORMAL> model;
 	const feat_type& feats_in_use = Features<float64_t>::copy_dimension_subset(gen.get_regressors(), indices);
 	label_type result(num_examples);
 	model.solve(feats_in_use, gen.get_regressand(), result);
@@ -103,3 +104,5 @@ template class Evaluation<MNISTDataSet,DataGenerator<IDX3Reader,IDX1Reader,UnitL
 		 Dummy,SumSquaredError<float64_t>>;
 template class Evaluation<MNISTDataSet,DataGenerator<IDX3Reader,IDX1Reader,UnitL2Normalizer>,
 		 Dummy,PearsonsCorrelation<float64_t>>;
+template class Evaluation<MNISTDataSet,DataGenerator<IDX3Reader,IDX1Reader,UnitL2Normalizer>,
+		 Dummy,SquaredMultipleCorrelation<float64_t>>;

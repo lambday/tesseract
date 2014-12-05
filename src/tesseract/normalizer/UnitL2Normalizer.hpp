@@ -30,8 +30,8 @@
 namespace tesseract
 {
 
-/** @brief template class UnitL2Normalizer which normalizes the container
- * (matrix or vector) so that the result container have 1 \f$l^2\f$ norm.
+/** @brief template class UnitL2Normalizer which normalizes the columns
+ * (matrix or vector) so that the result columns have 1 \f$l^2\f$ norm.
  */
 template <class Container>
 struct UnitL2Normalizer
@@ -39,7 +39,12 @@ struct UnitL2Normalizer
 	/** @param samples the samples which are to be normalized */
 	void normalize(Container& samples)
 	{
-		samples.normalize();
+		// normalize all non-zero columns
+		for (index_t i = 0; i < samples.cols(); ++i)
+		{
+			if (samples.col(i).norm())
+				samples.col(i).normalize();
+		}
 	}
 };
 
