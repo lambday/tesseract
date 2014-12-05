@@ -11,13 +11,15 @@ ERRORS		= $(SRC)/errors
 ALGORITHM	= $(SRC)/algorithm
 EVALUATION	= $(SRC)/evaluation
 FEATURES	= $(SRC)/features
+REGULARIZER	= $(SRC)/regularizer
 OBJECTS		= $(REGRESSION)/LeastSquares.o \
 			  $(IO)/IDX3Reader.o $(IO)/IDX1Reader.o $(IO)/FileReader.o \
 			  $(PREPROCESSOR)/DataGenerator.o \
 			  $(ERRORS)/SumSquaredError.o $(ERRORS)/PearsonsCorrelation.o $(ERRORS)/SquaredMultipleCorrelation.o \
 			  $(EVALUATION)/DataSet.o $(EVALUATION)/Evaluation.o \
 			  $(ALGORITHM)/Dummy.o \
-			  $(FEATURES)/Features.o
+			  $(FEATURES)/Features.o \
+			  $(REGULARIZER)/DummyRegularizer.o
 UNITSRC		= sanity/unit
 INTSRC		= sanity/integration
 TESTDIR		= tests
@@ -31,8 +33,10 @@ MEMCHECK	= valgrind --leak-check=full --track-origins=yes
 
 all: libtsr.so $(TESTS) doc
 
+lib: libtsr.so
+
 libtsr.so: $(OBJECTS)
-	g++ $(OPTS) $(LIBFLAG) -shared $(OBJECTS) $(INCLUDES) -o libtsr.so -lshogun
+	g++ $(OPTS) $(LIBFLAG) -shared $(OBJECTS) $(INCLUDES) -o libtsr.so
 $(REGRESSION)/LeastSquares.o: $(REGRESSION)/LeastSquares.hpp $(REGRESSION)/LeastSquares.cpp
 	g++ $(OPTS) $(LIBFLAG) -c $(REGRESSION)/LeastSquares.cpp $(INCLUDES) -o $(REGRESSION)/LeastSquares.o
 $(IO)/IDX3Reader.o: $(IO)/IDX3Reader.hpp $(IO)/IDX3Reader.cpp
@@ -57,7 +61,8 @@ $(EVALUATION)/DataSet.o: $(EVALUATION)/DataSet.hpp $(EVALUATION)/DataSet.cpp
 	g++ $(OPTS) $(LIBFLAG) -c $(EVALUATION)/DataSet.cpp $(INCLUDES) -o $(EVALUATION)/DataSet.o
 $(EVALUATION)/Evaluation.o: $(EVALUATION)/Evaluation.hpp $(EVALUATION)/Evaluation.cpp
 	g++ $(OPTS) $(LIBFLAG) -c $(EVALUATION)/Evaluation.cpp $(INCLUDES) -o $(EVALUATION)/Evaluation.o
-
+$(REGULARIZER)/DummyRegularizer.o: $(REGULARIZER)/DummyRegularizer.hpp $(REGULARIZER)/DummyRegularizer.cpp
+	g++ $(OPTS) $(LIBFLAG) -c $(REGULARIZER)/DummyRegularizer.cpp $(INCLUDES) -o $(REGULARIZER)/DummyRegularizer.o
 
 check: libtsr.so $(TESTS)
 	$(TESTDIR)/LeastSquares_unittest
