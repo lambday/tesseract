@@ -10,6 +10,5 @@ MNIST dataset is obtained from [here](http://yann.lecun.com/exdb/mnist/)
 Dependencies
 ============
 - [Eigen3 linear algebra library](http://eigen.tuxfamily.org/index.php?title=Main_Page)
-- [Shogun ML toolbox](https://github.com/shogun-toolbox/shogun)
-- Presently only works with GCC C++ compiler
+- GCC C++ compiler with C++11 features enabled (4.8.3 or higher)
 - Doxygen
