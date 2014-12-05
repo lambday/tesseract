@@ -28,8 +28,6 @@
 #include <tesseract/features/Features.hpp>
 #include <vector>
 
-#include <iostream>
-
 using namespace tesseract;
 
 template <template <class> class Regularizer>
@@ -63,7 +61,7 @@ std::vector<index_t> ForwardRegression<Regularizer>::run()
 	{
 		// store the values for argmax operation
 		float64_t max = 0;
-		index_t max_inds = 0;
+		index_t max_inds = -1;
 
 		// can be parallelised
 		for (index_t j = 0; j < regressors.cols(); ++j)
@@ -71,10 +69,11 @@ std::vector<index_t> ForwardRegression<Regularizer>::run()
 			if (!selected[j])
 			{
 				// note that in case of parallel, inds should have individual copies
-				inds.push_back(j);
+				std::vector<index_t> cur_inds(inds);
+				cur_inds.push_back(j);
 
 				// evaluate the function
-				const Matrix<float64_t>& m = Features<float64_t>::copy_feats(regressors, regressand, inds);
+				const Matrix<float64_t>& m = Features<float64_t>::copy_feats(regressors, regressand, cur_inds);
 				float64_t val = g(m);
 
 				// update running max, need to be write protected
@@ -84,8 +83,6 @@ std::vector<index_t> ForwardRegression<Regularizer>::run()
 					max_inds = j;
 				}
 
-				// restore indices back
-				inds.resize(inds.size()-1);
 			}
 		}
 
@@ -95,12 +92,6 @@ std::vector<index_t> ForwardRegression<Regularizer>::run()
 		// update selected flag
 		selected[max_inds] = true;
 	}
-
-	// TODO remove
-	std::for_each(inds.begin(), inds.end(), [](index_t i)
-	{
-		std::cout << i << std::endl;
-	});
 
 	return inds;
 }

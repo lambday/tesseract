@@ -51,17 +51,29 @@ void test()
 
 	std::pair<index_t,float64_t> result = evaluator.evaluate();
 
-	std::cout << result.first << std::endl;
-	std::cout << result.second << std::endl;
+	std::cout << "number of features selected " << result.first << std::endl;
+	std::cout << "error in measurement " << result.second << std::endl;
 }
 
 int main(int argc, char** argv)
 {
+	std::cout << "Test 1 : Dummy algorithm, Sum-squared error" << std::endl;
+	std::cout << "===========================================" << std::endl;
 	test<Dummy,SumSquaredError<float64_t>>();
+	std::cout << "Test 2 : Dummy algorithm, Pearson's correlation" << std::endl;
+	std::cout << "===============================================" << std::endl;
 	test<Dummy,PearsonsCorrelation<float64_t>>();
+	std::cout << "Test 3 : Dummy algorithm, Squared multiple correlation" << std::endl;
+	std::cout << "======================================================" << std::endl;
 	test<Dummy,SquaredMultipleCorrelation<float64_t>>();
+	std::cout << "Test 4 : Forward regression, dummy regularizer, Sum-squared error" << std::endl;
+	std::cout << "=================================================================" << std::endl;
 	test<ForwardRegression<DummyRegularizer>,SumSquaredError<float64_t>>();
+	std::cout << "Test 5 : Forward regression, dummy regularizer, Pearson's correlation" << std::endl;
+	std::cout << "=====================================================================" << std::endl;
 	test<ForwardRegression<DummyRegularizer>,PearsonsCorrelation<float64_t>>();
+	std::cout << "Test 6 : Forward regression, dummy regularizer, Squared multiple correlation" << std::endl;
+	std::cout << "============================================================================" << std::endl;
 	test<ForwardRegression<DummyRegularizer>,SquaredMultipleCorrelation<float64_t>>();
 	return 0;
 }
