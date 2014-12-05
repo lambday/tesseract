@@ -22,58 +22,18 @@
  * SOFTWARE.
  */
 
-#include <tesseract/errors/SumSquaredError.hpp>
 #include <tesseract/errors/SquaredMultipleCorrelation.hpp>
-#include <tesseract/errors/PearsonsCorrelation.hpp>
-#include <iostream>
+#include <cmath>
 
 using namespace tesseract;
-using namespace Eigen;
 
-// tested from http://onlinestatbook.com/2/regression/accuracy.html
-void test1()
+template <typename T>
+float64_t SquaredMultipleCorrelation<T>::compute(const Vector<T>& Z, const Vector<T>& Zp)
 {
-	VectorXd Z(5);
-	Z << 1.0, 2.0, 1.3, 3.75, 2.25;
-	VectorXd Zp(5);
-	Zp << 1.210, 1.635, 2.060, 2.485, 2.910;
+	assert(Z.rows() == Zp.rows());
+	assert(Z.rows() > 2);
 
-	SumSquaredError<float64_t> error;
-//	std::cout << error.compute(Z, Zp) << std::endl;
-	// expected result 0.747 (for population) and 0.964 (for sample)
+	return 1.0 - pow((Z-Zp).norm(), 2);
 }
 
-// tested from http://onlinestatbook.com/2/regression/accuracy.html
-void test2()
-{
-	VectorXd Z(5);
-	Z << 1.0, 2.0, 1.3, 3.75, 2.25;
-	VectorXd Zp(5);
-	Zp << 1.210, 1.635, 2.060, 2.485, 2.910;
-
-	PearsonsCorrelation<float64_t> error;
-//	std::cout << error.compute(Z, Zp) << std::endl;
-	// expected result 0.747 (for population) and 0.964 (for sample)
-}
-
-void test3()
-{
-	VectorXd Z(5);
-	Z << 1.0, 2.0, 1.3, 3.75, 2.25;
-	VectorXd Zp(5);
-	Zp << 1.210, 1.635, 2.060, 2.485, 2.910;
-
-	Z.normalize();
-	Zp.normalize();
-
-	SquaredMultipleCorrelation<float64_t> error;
-//	std::cout << error.compute(Z, Zp) << std::endl;
-}
-
-int main(int argc, char** argv)
-{
-	test1();
-	test2();
-	test3();
-	return 0;
-}
+template class SquaredMultipleCorrelation<float64_t>;

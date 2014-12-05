@@ -11,7 +11,7 @@ FEATURES	= $(SRC)/features
 OBJECTS		= $(REGRESSION)/LeastSquares.o \
 			  $(IO)/IDX3Reader.o $(IO)/IDX1Reader.o $(IO)/FileReader.o \
 			  $(PREPROCESSOR)/DataGenerator.o \
-			  $(ERRORS)/SumSquaredError.o $(ERRORS)/PearsonsCorrelation.o \
+			  $(ERRORS)/SumSquaredError.o $(ERRORS)/PearsonsCorrelation.o $(ERRORS)/SquaredMultipleCorrelation.o \
 			  $(EVALUATION)/DataSet.o $(EVALUATION)/Evaluation.o \
 			  $(ALGORITHM)/Dummy.o \
 			  $(FEATURES)/Features.o
@@ -41,6 +41,8 @@ $(ERRORS)/SumSquaredError.o: $(ERRORS)/SumSquaredError.hpp $(ERRORS)/SumSquaredE
 	g++ $(OPTS) -c $(ERRORS)/SumSquaredError.cpp $(INCLUDES) -o $(ERRORS)/SumSquaredError.o
 $(ERRORS)/PearsonsCorrelation.o: $(ERRORS)/PearsonsCorrelation.hpp $(ERRORS)/PearsonsCorrelation.cpp
 	g++ $(OPTS) -c $(ERRORS)/PearsonsCorrelation.cpp $(INCLUDES) -o $(ERRORS)/PearsonsCorrelation.o
+$(ERRORS)/SquaredMultipleCorrelation.o: $(ERRORS)/SquaredMultipleCorrelation.hpp $(ERRORS)/SquaredMultipleCorrelation.cpp
+	g++ $(OPTS) -c $(ERRORS)/SquaredMultipleCorrelation.cpp $(INCLUDES) -o $(ERRORS)/SquaredMultipleCorrelation.o
 $(ALGORITHM)/Dummy.o: $(ALGORITHM)/Dummy.hpp $(ALGORITHM)/Dummy.cpp
 	g++ $(OPTS) -c $(ALGORITHM)/Dummy.cpp $(INCLUDES) -o $(ALGORITHM)/Dummy.o
 $(FEATURES)/Features.o: $(FEATURES)/Features.hpp $(FEATURES)/Features.cpp
