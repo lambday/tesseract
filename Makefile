@@ -29,6 +29,7 @@ TESTS		= $(TESTDIR)/LeastSquares_unittest $(TESTDIR)/IDX3Reader_unittest \
 			  $(TESTDIR)/IDX1Reader_unittest $(TESTDIR)/FileReader_unittest \
 			  $(TESTDIR)/DataGenerator_unittest $(TESTDIR)/UnitL2Normalizer_unittest \
 			  $(TESTDIR)/Error_unittest $(TESTDIR)/ComputeFunction_unittest\
+			  $(TESTDIR)/ForwardRegression_unittest \
 			  $(TESTDIR)/Evaluation_integration
 LIBS		= -L. -ltsr
 MEMCHECK	= valgrind --leak-check=full --track-origins=yes
@@ -79,6 +80,7 @@ check: libtsr.so $(TESTS)
 	$(TESTDIR)/UnitL2Normalizer_unittest
 	$(TESTDIR)/Error_unittest
 	$(TESTDIR)/ComputeFunction_unittest
+	$(TESTDIR)/ForwardRegression_unittest
 	$(TESTDIR)/Evaluation_integration
 
 memcheck: libtsr.so $(TESTS)
@@ -90,6 +92,7 @@ memcheck: libtsr.so $(TESTS)
 	$(MEMCHECK) $(TESTDIR)/UnitL2Normalizer_unittest
 	$(MEMCHECK) $(TESTDIR)/Error_unittest
 	$(MEMCHECK) $(TESTDIR)/ComputeFunction_unittest
+	$(MEMCHECK) $(TESTDIR)/ForwardRegression_unittest
 	$(MEMCHECK) $(TESTDIR)/Evaluation_integration
 
 $(TESTDIR)/LeastSquares_unittest: $(UNITSRC)/LeastSquares_unittest.cpp libtsr.so
@@ -108,6 +111,8 @@ $(TESTDIR)/Error_unittest: $(UNITSRC)/Error_unittest.cpp libtsr.so
 	g++ $(OPTS) $(INCLUDES) $(LIBS) $(UNITSRC)/Error_unittest.cpp -o $(TESTDIR)/Error_unittest
 $(TESTDIR)/ComputeFunction_unittest: $(UNITSRC)/ComputeFunction_unittest.cpp libtsr.so
 	g++ $(OPTS) $(INCLUDES) $(LIBS) $(UNITSRC)/ComputeFunction_unittest.cpp -o $(TESTDIR)/ComputeFunction_unittest
+$(TESTDIR)/ForwardRegression_unittest: $(UNITSRC)/ForwardRegression_unittest.cpp libtsr.so
+	g++ $(OPTS) $(INCLUDES) $(LIBS) $(UNITSRC)/ForwardRegression_unittest.cpp -o $(TESTDIR)/ForwardRegression_unittest
 $(TESTDIR)/Evaluation_integration: $(INTSRC)/Evaluation_integration.cpp libtsr.so
 	g++ $(OPTS) $(INCLUDES) $(LIBS) $(INTSRC)/Evaluation_integration.cpp -o $(TESTDIR)/Evaluation_integration
 

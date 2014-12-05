@@ -57,8 +57,35 @@ void test1()
 	assert(abs(val - val2) < std::numeric_limits<float64_t>::epsilon());
 }
 
+void test2()
+{
+	int dim = 3;
+	int n = 5;
+	MatrixXd m(n, dim + 1);
+
+	m << -0.620251,   0.043870,   0.126634,   0.883738,
+		-0.649199,  -0.156014,   0.025161,  -0.116296,
+		-0.179758,  -0.387849,   0.067516,   0.270564,
+		0.256471,  -0.463623,  -0.604798,  -0.161666,
+		-0.309417,   0.779976,   0.782938,   0.325794;
+	ComputeFunction<DummyRegularizer, float64_t> f;
+	float64_t val = f(m);
+
+	// octave computed value from the following code
+	/*
+	   X = m(:,linspace(1, dim, dim))
+	   y = m(:,[dim + 1])
+	   C = m'*m
+	   C_S = C(linspace(1, dim, dim),linspace(1, dim, dim))
+	   b_S = C(linspace(1, dim, dim),[dim + 1])
+	   R_sq = dot(b_S, C_S \ b_S)
+	*/
+	assert(abs(val - 0.46923) < 1E-6);
+}
+
 int main(int argc, char** argv)
 {
 	test1();
+	test2();
 	return 0;
 }
