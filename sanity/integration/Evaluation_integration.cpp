@@ -27,11 +27,13 @@
 #include <tesseract/preprocessor/DataGenerator.hpp>
 #include <tesseract/normalizer/UnitL2Normalizer.hpp>
 #include <tesseract/algorithm/Dummy.hpp>
+#include <tesseract/algorithm/ForwardRegression.hpp>
 #include <tesseract/errors/SumSquaredError.hpp>
 #include <tesseract/errors/PearsonsCorrelation.hpp>
 #include <tesseract/errors/SquaredMultipleCorrelation.hpp>
 #include <tesseract/evaluation/Evaluation.hpp>
 #include <tesseract/evaluation/DataSet.hpp>
+#include <tesseract/regularizer/DummyRegularizer.hpp>
 #include <ctime>
 #include <map>
 #include <iostream>
@@ -45,7 +47,7 @@ void test()
 		Algorithm,ErrorMeasures> evaluator;
 	evaluator.set_seed(std::time(0));
 	evaluator.set_num_examples(1000);
-	evaluator.set_target_feats(0);
+	evaluator.set_target_feats(20);
 
 	std::pair<index_t,float64_t> result = evaluator.evaluate();
 
@@ -58,5 +60,8 @@ int main(int argc, char** argv)
 	test<Dummy,SumSquaredError<float64_t>>();
 	test<Dummy,PearsonsCorrelation<float64_t>>();
 	test<Dummy,SquaredMultipleCorrelation<float64_t>>();
+	test<ForwardRegression<DummyRegularizer>,SumSquaredError<float64_t>>();
+	test<ForwardRegression<DummyRegularizer>,PearsonsCorrelation<float64_t>>();
+	test<ForwardRegression<DummyRegularizer>,SquaredMultipleCorrelation<float64_t>>();
 	return 0;
 }

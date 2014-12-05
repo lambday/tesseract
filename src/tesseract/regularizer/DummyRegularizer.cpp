@@ -27,9 +27,9 @@
 using namespace tesseract;
 
 template <typename T>
-float64_t DummyRegularizer<T>::compute(const Matrix<T>& m)
+const T DummyRegularizer<T>::operator()(const Matrix<T>& cov) const
 {
-	return 0;
+	return static_cast<T>(0);
 }
 
 template class DummyRegularizer<float64_t>;

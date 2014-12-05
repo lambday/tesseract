@@ -22,40 +22,43 @@
  * SOFTWARE.
  */
 
-#include <tesseract/features/Features.hpp>
+#include <tesseract/computation/ComputeFunction.hpp>
+#include <tesseract/regularizer/DummyRegularizer.hpp>
+#include <cstdlib>
+#include <limits>
+#include <iostream>
+#include <cmath>
 
 using namespace tesseract;
+using namespace Eigen;
 
-template <typename T>
-Matrix<T> Features<T>::copy_feats(const Matrix<T>& m, std::vector<index_t>& inds)
+void test1()
 {
-	Matrix<T> mat(m.rows(), inds.size());
-	std::sort(inds.begin(), inds.end());
+	int dim = 2;
+	int n = 3;
+	MatrixXd m(n, dim + 1);
 
-	for (index_t i = 0; i < inds.size(); ++i)
-	{
-		mat.col(i) = m.col(inds[i]);
-	}
+	m << 0.68037, 0.59688, -0.32955,
+		-0.21123, 0.82329, 0.53646,
+		0.56620, -0.60490, -0.44445;
+	ComputeFunction<DummyRegularizer, float64_t> f;
+	float64_t val = f(m);
 
-	return mat;
+	// compute it another way
+	MatrixXd A = m.block(0, 0, n, dim);
+	VectorXd b = m.col(m.cols()-1);
+
+	// compute by solving least squares
+	VectorXd beta = (A.transpose() * A).ldlt().solve(A.transpose() * b);
+	float val2 = 1 - pow((b - A*beta).norm(),2);
+
+	// since we are using dummy regularizer so these two values should be same
+	// in fact is should be 0.936133 (computed using octave)
+	assert(abs(val - val2) < std::numeric_limits<float64_t>::epsilon());
 }
 
-template <typename T>
-Matrix<T> Features<T>::copy_feats(const Matrix<T>& m, const Vector<T>& v,
-		std::vector<index_t>& inds)
+int main(int argc, char** argv)
 {
-	Matrix<T> mat(m.rows(), inds.size() + 1);
-	std::sort(inds.begin(), inds.end());
-
-	assert(m.rows() == v.rows());
-
-	for (index_t i = 0; i < inds.size(); ++i)
-	{
-		mat.col(i) = m.col(inds[i]);
-	}
-	mat.col(mat.cols() - 1) = v;
-
-	return mat;
+	test1();
+	return 0;
 }
-
-template class Features<float64_t>;

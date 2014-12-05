@@ -22,40 +22,45 @@
  * SOFTWARE.
  */
 
-#include <tesseract/features/Features.hpp>
+#ifndef FORWARD_REGRESSION_H__
+#define FORWARD_REGRESSION_H__
 
-using namespace tesseract;
+#include <tesseract/base/types.h>
 
-template <typename T>
-Matrix<T> Features<T>::copy_feats(const Matrix<T>& m, std::vector<index_t>& inds)
+namespace tesseract
 {
-	Matrix<T> mat(m.rows(), inds.size());
-	std::sort(inds.begin(), inds.end());
 
-	for (index_t i = 0; i < inds.size(); ++i)
-	{
-		mat.col(i) = m.col(inds[i]);
-	}
+/** @brief class ForwardRegression for a dummy algorithm which does nothing and returns
+ * all the features that are there in the input problem
+ */
+template <template <class> class Regularizer>
+class ForwardRegression
+{
+public:
+	/** constructor
+	 * @param _regressors the regressors (real valued dense feature matrix)
+	 * @param _regressand the regressand (real valued dense labels vector)
+	 * @param _target_feats number of target features (default value is 0)
+	 */
+	ForwardRegression(const Matrix<float64_t>& _regressors, const Vector<float64_t>& _regressand,
+			index_t _target_feats = 0);
 
-	return mat;
+	/** destructor */
+	~ForwardRegression();
+
+	/** @return the vector of selected feature indices */
+	std::vector<index_t> run();
+private:
+	/** real valued dense feature matrix */
+	const Matrix<float64_t>& regressors;
+
+	/** real valued dense labels vector */
+	const Vector<float64_t>& regressand;
+
+	/** number of target features */
+	index_t target_feats;
+};
+
 }
 
-template <typename T>
-Matrix<T> Features<T>::copy_feats(const Matrix<T>& m, const Vector<T>& v,
-		std::vector<index_t>& inds)
-{
-	Matrix<T> mat(m.rows(), inds.size() + 1);
-	std::sort(inds.begin(), inds.end());
-
-	assert(m.rows() == v.rows());
-
-	for (index_t i = 0; i < inds.size(); ++i)
-	{
-		mat.col(i) = m.col(inds[i]);
-	}
-	mat.col(mat.cols() - 1) = v;
-
-	return mat;
-}
-
-template class Features<float64_t>;
+#endif // FORWARD_REGRESSION_H__

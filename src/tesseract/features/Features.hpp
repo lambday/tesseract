@@ -29,11 +29,26 @@
 
 namespace tesseract
 {
-
+/** @brief template class Features provides static methods for feature manipulation */
 template <typename T>
 struct Features
 {
-	static Matrix<T> copy_dimension_subset(const Matrix<T>& m, std::vector<index_t>& indices);
+	/** copies the specified dimensions into a new matrix object
+	 * @param m the feature matrix
+	 * @param indices the indices which are to be copied
+	 * @return the new feature matrix with columns as specified by the indices param
+	 */
+	static Matrix<T> copy_feats(const Matrix<T>& m, std::vector<index_t>& inds);
+
+	/** copies the specified dimensions into a new matrix object and appends that
+	 * with a column vector
+	 * @param m the feature matrix
+	 * @param v the column vector to be appended at the end (this would be the last
+	 * column of the result matrix
+	 * @param indices the indices which are to be copied
+	 * @return the new feature matrix with columns as specified by the indices param
+	 */
+	static Matrix<T> copy_feats(const Matrix<T>& m, const Vector<T>& v, std::vector<index_t>& inds);
 };
 
 }

@@ -38,10 +38,10 @@ template <typename T>
 struct DummyRegularizer
 {
 	/**
-	 * @param m the regressors (dense feature matrix)
+	 * @param cov the covariance matrix
 	 * @return the regularizer value (always 0 in this case)
 	 */
-	float64_t compute(const Matrix<T>& m);
+	const T operator()(const Matrix<T>& cov) const;
 };
 
 }
