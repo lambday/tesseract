@@ -3,6 +3,13 @@ Tesseract
 
 Tesseract is a work-in-progress library for performing diverse feature selection for linear regression problems using spectral regularizers.
 
+Instruction
+===========
+0. install the dependencies (mentioned below)
+1. create a directory named tests in the root directory
+2. run "make" for compiling lib, unit/integration tests (goes inside tests dir) and documentation
+3. run "make check" for running the tests
+
 Dataset
 =======
 MNIST dataset is obtained from [here](http://yann.lecun.com/exdb/mnist/)
