@@ -24,6 +24,7 @@
 
 #include <tesseract/computation/ComputeFunction.hpp>
 #include <tesseract/regularizer/DummyRegularizer.hpp>
+#include <tesseract/regularizer/SmoothedDifferentialEntropy.hpp>
 #include <cstdlib>
 #include <limits>
 #include <iostream>
@@ -59,6 +60,84 @@ void test1()
 
 void test2()
 {
+	int dim = 2;
+	int n = 3;
+	MatrixXd m(n, dim + 1);
+
+	m << 0.68037, 0.59688, -0.32955,
+		-0.21123, 0.82329, 0.53646,
+		0.56620, -0.60490, -0.44445;
+
+	float64_t eta = ComputeFunction<SmoothedDifferentialEntropy, float64_t>::default_eta;
+	float64_t delta = SmoothedDifferentialEntropyParam<float64_t>::default_delta;
+
+	typedef SmoothedDifferentialEntropy<float64_t>::param_type reg_param_type;
+
+	ComputeFunction<SmoothedDifferentialEntropy, float64_t> f;
+	f.set_eta(eta);
+	f.set_reg_params(reg_param_type(delta));
+	float64_t val = f(m);
+
+	// compute it another way
+	MatrixXd A = m.block(0, 0, n, dim);
+	VectorXd b = m.col(m.cols()-1);
+
+	// compute by solving least squares
+	VectorXd beta = (A.transpose() * A).ldlt().solve(A.transpose() * b);
+	float64_t val2 = 1 - pow((b - A*beta).norm(),2);
+
+	// compute the regularizer
+
+	SmoothedDifferentialEntropy<float64_t> r;
+	r.set_params(reg_param_type(delta));
+	float64_t val3 = r(A.transpose() * A);
+
+	// since we are using dummy regularizer so these two values should be same
+	// in fact is should be 0.936133 (computed using octave)
+	assert(abs(val - (val2 + eta * val3)) < std::numeric_limits<float64_t>::epsilon());
+}
+
+void test3()
+{
+	int dim = 2;
+	int n = 3;
+	MatrixXd m(n, dim + 1);
+
+	m << 0.68037, 0.59688, -0.32955,
+		-0.21123, 0.82329, 0.53646,
+		0.56620, -0.60490, -0.44445;
+
+	float64_t eta = 0.8;
+	float64_t delta = 0.1;
+
+	typedef SmoothedDifferentialEntropy<float64_t>::param_type reg_param_type;
+
+	ComputeFunction<SmoothedDifferentialEntropy, float64_t> f;
+	f.set_eta(eta);
+	f.set_reg_params(reg_param_type(delta));
+	float64_t val = f(m);
+
+	// compute it another way
+	MatrixXd A = m.block(0, 0, n, dim);
+	VectorXd b = m.col(m.cols()-1);
+
+	// compute by solving least squares
+	VectorXd beta = (A.transpose() * A).ldlt().solve(A.transpose() * b);
+	float64_t val2 = 1 - pow((b - A*beta).norm(),2);
+
+	// compute the regularizer
+
+	SmoothedDifferentialEntropy<float64_t> r;
+	r.set_params(reg_param_type(delta));
+	float64_t val3 = r(A.transpose() * A);
+
+	// since we are using dummy regularizer so these two values should be same
+	// in fact is should be 0.936133 (computed using octave)
+	assert(abs(val - (val2 + eta * val3)) < std::numeric_limits<float64_t>::epsilon());
+}
+
+void test4()
+{
 	int dim = 3;
 	int n = 5;
 	MatrixXd m(n, dim + 1);
@@ -87,5 +166,7 @@ int main(int argc, char** argv)
 {
 	test1();
 	test2();
+	test3();
+	test4();
 	return 0;
 }

@@ -52,6 +52,9 @@ public:
 	/** @return a pair containing number of features used and error measure based */
 	std::pair<index_t, float64_t> evaluate();
 
+	/** @param _param params to be used by the algorithm */
+	void set_params(typename Algorithm::param_type _params);
+
 	/** @param _seed seed to be used for data generation */
 	void set_seed(int32_t _seed);
 
@@ -62,7 +65,11 @@ public:
 	 * algorithm. 0 value indicates that all the features will be used
 	 */
 	void set_target_feats(index_t _target_feats);
+
 private:
+	/** parameters for the training algorithm */
+	typename Algorithm::param_type params;
+
 	/** seed for random number generator for data generation */
 	int32_t seed;
 

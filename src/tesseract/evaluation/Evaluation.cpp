@@ -53,6 +53,8 @@ std::vector<index_t> Evaluation<DataSet,DataGenerator,Algorithm,ErrorMeasure>::t
 
 	// run algorithm
 	Algorithm algo(gen.get_regressors(), gen.get_regressand(), target_feats);
+	algo.set_params(params);
+
 	return algo.run();
 }
 
@@ -83,6 +85,13 @@ template <class DataSet, class DataGenerator, class Algorithm, class ErrorMeasur
 std::pair<index_t,float64_t> Evaluation<DataSet,DataGenerator,Algorithm,ErrorMeasure>::evaluate()
 {
 	return test(train());
+}
+
+template <class DataSet, class DataGenerator, class Algorithm, class ErrorMeasure>
+void Evaluation<DataSet,DataGenerator,Algorithm,ErrorMeasure>::set_params(typename
+		Algorithm::param_type _params)
+{
+	params = _params;
 }
 
 template <class DataSet, class DataGenerator, class Algorithm, class ErrorMeasure>

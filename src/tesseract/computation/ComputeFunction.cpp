@@ -29,12 +29,7 @@
 using namespace tesseract;
 
 template <template <class> class Regularizer, typename T>
-ComputeFunction<Regularizer, T>::ComputeFunction() : eta(static_cast<T>(0.5))
-{
-}
-
-template <template <class> class Regularizer, typename T>
-ComputeFunction<Regularizer, T>::ComputeFunction(T _eta) : eta(_eta)
+ComputeFunction<Regularizer, T>::ComputeFunction() : eta(default_eta)
 {
 }
 
@@ -58,9 +53,24 @@ const T ComputeFunction<Regularizer, T>::operator ()(const Matrix<T>& X) const
 
 	// compute the regularizer on C_S
 	Regularizer<T> regularizer;
+	regularizer.set_params(reg_params);
+
 	T f = regularizer(cov.topLeftCorner(N, N));
 
 	return R_sq + eta * f;
+}
+
+template <template <class> class Regularizer, typename T>
+void ComputeFunction<Regularizer, T>::set_eta(T _eta)
+{
+	eta = _eta;
+}
+
+template <template <class> class Regularizer, typename T>
+void ComputeFunction<Regularizer, T>::set_reg_params(typename
+		ComputeFunction<Regularizer,T>::reg_param_type _reg_params)
+{
+	reg_params = _reg_params;
 }
 
 template class ComputeFunction<DummyRegularizer, float64_t>;

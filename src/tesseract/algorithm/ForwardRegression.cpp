@@ -31,6 +31,18 @@
 
 using namespace tesseract;
 
+template <template <class> class Regularizer, typename T>
+ForwardRegressionParam<Regularizer, T>::ForwardRegressionParam()
+: eta(ComputeFunction<Regularizer,T>::default_eta)
+{
+}
+
+template <template <class> class Regularizer, typename T>
+ForwardRegressionParam<Regularizer, T>::ForwardRegressionParam(T _eta, param_type reg_params)
+: eta(_eta), regularizer_params(reg_params)
+{
+}
+
 template <template <class> class Regularizer>
 ForwardRegression<Regularizer>::ForwardRegression(const Matrix<float64_t>& _regressors,
 		const Vector<float64_t>& _regressand, index_t _target_feats)
@@ -48,6 +60,8 @@ std::vector<index_t> ForwardRegression<Regularizer>::run()
 {
 	// create the compute function
 	ComputeFunction<Regularizer, float64_t> g;
+	g.set_eta(params.eta);
+	g.set_reg_params(params.regularizer_params);
 
 	// return vector - indices of selected features
 	std::vector<index_t> inds;
@@ -97,5 +111,13 @@ std::vector<index_t> ForwardRegression<Regularizer>::run()
 	return inds;
 }
 
+template <template <class> class Regularizer>
+void ForwardRegression<Regularizer>::set_params(ForwardRegression<Regularizer>::param_type _params)
+{
+	params = _params;
+}
+
+template class ForwardRegressionParam<DummyRegularizer, float64_t>;
+template class ForwardRegressionParam<SmoothedDifferentialEntropy, float64_t>;
 template class ForwardRegression<DummyRegularizer>;
 template class ForwardRegression<SmoothedDifferentialEntropy>;

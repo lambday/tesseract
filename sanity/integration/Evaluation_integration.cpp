@@ -50,6 +50,9 @@ void test(index_t num_examples, index_t target_feats)
 	evaluator.set_num_examples(num_examples);
 	evaluator.set_target_feats(target_feats);
 
+	// run with default set of params
+	evaluator.set_params(typename Algorithm::param_type());
+
 	std::pair<index_t,float64_t> result = evaluator.evaluate();
 
 	std::cout << "number of datapoints " << num_examples << std::endl;

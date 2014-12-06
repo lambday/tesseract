@@ -32,4 +32,9 @@ const T DummyRegularizer<T>::operator()(const Matrix<T>& cov) const
 	return static_cast<T>(0);
 }
 
+template <typename T>
+void DummyRegularizer<T>::set_params(typename DummyRegularizer<T>::param_type params)
+{
+}
+
 template class DummyRegularizer<float64_t>;

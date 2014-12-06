@@ -42,3 +42,7 @@ std::vector<index_t> Dummy::run()
 	std::iota(indices.begin(), indices.end(), 0);
 	return indices;
 }
+
+void Dummy::set_params(Dummy::param_type params)
+{
+}

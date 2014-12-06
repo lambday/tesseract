@@ -30,6 +30,26 @@
 namespace tesseract
 {
 
+/** @brief struct for parameters used in forward-regression */
+template <template <class> class Regularizer, typename T>
+struct ForwardRegressionParam
+{
+	/** regularizer param type */
+	typedef typename Regularizer<T>::param_type param_type;
+
+	/** default constructor */
+	ForwardRegressionParam();
+
+	/** constructor */
+	ForwardRegressionParam(T _eta, param_type reg_params);
+
+	/** regularization constant \f$\eta > 0\f$ */
+	T eta;
+
+	/** regularizer params */
+	param_type regularizer_params;
+};
+
 /** @brief class ForwardRegression for a dummy algorithm which does nothing and returns
  * all the features that are there in the input problem
  */
@@ -37,6 +57,9 @@ template <template <class> class Regularizer>
 class ForwardRegression
 {
 public:
+	/** parameter type */
+	typedef ForwardRegressionParam<Regularizer, float64_t> param_type;
+
 	/** constructor
 	 * @param _regressors the regressors (real valued dense feature matrix)
 	 * @param _regressand the regressand (real valued dense labels vector)
@@ -50,7 +73,14 @@ public:
 
 	/** @return the vector of selected feature indices */
 	std::vector<index_t> run();
+
+	/** @param param the parameter type */
+	void set_params(param_type _params);
+
 private:
+	/** parameters */
+	param_type params;
+
 	/** real valued dense feature matrix */
 	const Matrix<float64_t>& regressors;
 

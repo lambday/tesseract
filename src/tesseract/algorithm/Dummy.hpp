@@ -30,12 +30,20 @@
 namespace tesseract
 {
 
+/** @brief dummy parameters */
+struct DummyParams
+{
+};
+
 /** @brief class Dummy for a dummy algorithm which does nothing and returns
  * all the features that are there in the input problem
  */
 class Dummy
 {
 public:
+	/** parameter type */
+	typedef DummyParams param_type;
+
 	/** constructor
 	 * @param _regressors the regressors (real valued dense feature matrix)
 	 * @param _regressand the regressand (real valued dense labels vector)
@@ -49,6 +57,10 @@ public:
 
 	/** @return the vector of selected feature indices */
 	std::vector<index_t> run();
+
+	/** @param param the parameter type */
+	void set_params(param_type param);
+
 private:
 	/** real valued dense feature matrix */
 	const Matrix<float64_t>& regressors;

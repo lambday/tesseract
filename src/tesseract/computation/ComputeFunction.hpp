@@ -35,11 +35,11 @@ namespace tesseract
 template <template <class> class Regularizer, typename T>
 struct ComputeFunction
 {
-	/** default constructor. initializes eta = 0.5 */
-	ComputeFunction();
+	/** regularizer param */
+	typedef typename Regularizer<T>::param_type reg_param_type;
 
-	/** constructor */
-	ComputeFunction(T _eta);
+	/** default constructor */
+	ComputeFunction();
 
 	/*
 	 * @param X the regressors (real valued dense feature matrix) and
@@ -48,8 +48,20 @@ struct ComputeFunction
 	 */
 	const T operator ()(const Matrix<T>& X) const;
 
-	/** regularization constant > 0 */
+	/** @param _eta regularization constant */
+	void set_eta(T _eta);
+
+	/** @param _param regularizer params */
+	void set_reg_params(reg_param_type _reg_params);
+
+	/** regularization constant \f$\eta > 0\f$ */
 	T eta;
+
+	/** regularizer params */
+	reg_param_type reg_params;
+
+	/** default value of eta = 0.5 */
+	static constexpr T default_eta = static_cast<T>(0.5);
 };
 
 }

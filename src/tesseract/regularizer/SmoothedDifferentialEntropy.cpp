@@ -28,14 +28,19 @@
 using namespace tesseract;
 
 template <typename T>
-SmoothedDifferentialEntropy<T>::SmoothedDifferentialEntropy()
-	: delta(static_cast<T>(0.1))
+SmoothedDifferentialEntropyParam<T>::SmoothedDifferentialEntropyParam()
+: delta(default_delta)
 {
 }
 
 template <typename T>
-SmoothedDifferentialEntropy<T>::SmoothedDifferentialEntropy(T _delta)
-	: delta(_delta)
+SmoothedDifferentialEntropyParam<T>::SmoothedDifferentialEntropyParam(T _delta)
+: delta(_delta)
+{
+}
+
+template <typename T>
+SmoothedDifferentialEntropy<T>::SmoothedDifferentialEntropy()
 {
 }
 
@@ -54,11 +59,19 @@ const T SmoothedDifferentialEntropy<T>::operator()(const Matrix<T>& cov) const
 	T inv_log_2 = static_cast<T>(1.0 / log(2));
 	std::for_each(eigenvalues.data(), eigenvalues.data() + k, [this, inv_log_2](T& val)
 	{
-		val = log(this->delta + val) * inv_log_2;
+		val = log(this->params.delta + val) * inv_log_2;
 	});
 
-	return eigenvalues.array().sum() - 3 * k * log(delta) * inv_log_2;
+	return eigenvalues.array().sum() - 3 * k * log(params.delta) * inv_log_2;
 
 }
 
+template <typename T>
+void SmoothedDifferentialEntropy<T>::set_params(typename
+		SmoothedDifferentialEntropy<T>::param_type _params)
+{
+	params = _params;
+}
+
+template class SmoothedDifferentialEntropyParam<float64_t>;
 template class SmoothedDifferentialEntropy<float64_t>;
