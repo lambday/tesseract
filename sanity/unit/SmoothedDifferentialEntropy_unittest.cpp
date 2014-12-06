@@ -22,45 +22,33 @@
  * SOFTWARE.
  */
 
-#include <tesseract/computation/ComputeFunction.hpp>
-#include <tesseract/regularizer/DummyRegularizer.hpp>
 #include <tesseract/regularizer/SmoothedDifferentialEntropy.hpp>
+#include <cstdlib>
+#include <iostream>
+#include <cmath>
 
 using namespace tesseract;
+using namespace Eigen;
 
-template <template <class> class Regularizer, typename T>
-ComputeFunction<Regularizer, T>::ComputeFunction() : eta(static_cast<T>(0.5))
+void test1()
 {
+	int dim = 2;
+	int n = 3;
+	MatrixXd m(n, dim + 1);
+
+	m <<
+	0.539426,   0.097298,   0.343196,
+	0.602504,   0.478170,   0.685719,
+	0.588226,   0.872861,   0.641877;
+
+	SmoothedDifferentialEntropy<float64_t> f;
+	float64_t val = f(m.transpose() * m);
+
+	assert(abs(val - 2.1616) < 1E-6);
 }
 
-template <template <class> class Regularizer, typename T>
-ComputeFunction<Regularizer, T>::ComputeFunction(T _eta) : eta(_eta)
+int main(int argc, char** argv)
 {
+	test1();
+	return 0;
 }
-
-template <template <class> class Regularizer, typename T>
-const T ComputeFunction<Regularizer, T>::operator ()(const Matrix<T>& X) const
-{
-	// compute covariance which is X^TX since the columns of the matrices have unit norm
-	Matrix<T> cov = X.transpose() * X;
-	index_t N = cov.rows() - 1;
-
-	// evaluate the squared multiple correlation which is b_S.C_S^1 b_S
-	T R_sq = 0;
-
-	// avoid nan values when the C_S matrix is singular
-	if (cov.block(0,0,N,N).diagonal().minCoeff() > 0.0)
-	{
-		Vector<T> b_S = cov.block(0,N,N,1);
-		R_sq = b_S.dot(cov.block(0,0,N,N).llt().solve(b_S));
-	}
-
-	// compute the regularizer
-	Regularizer<T> regularizer;
-	T f = regularizer(cov);
-
-	return R_sq + eta * f;
-}
-
-template class ComputeFunction<DummyRegularizer, float64_t>;
-template class ComputeFunction<SmoothedDifferentialEntropy, float64_t>;

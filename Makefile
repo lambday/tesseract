@@ -20,7 +20,7 @@ OBJECTS		= $(REGRESSION)/LeastSquares.o \
 			  $(EVALUATION)/DataSet.o $(EVALUATION)/Evaluation.o \
 			  $(ALGORITHM)/Dummy.o $(ALGORITHM)/ForwardRegression.o \
 			  $(FEATURES)/Features.o \
-			  $(REGULARIZER)/DummyRegularizer.o \
+			  $(REGULARIZER)/DummyRegularizer.o $(REGULARIZER)/SmoothedDifferentialEntropy.o \
 			  $(COMPUTATION)/ComputeFunction.o
 UNITSRC		= sanity/unit
 INTSRC		= sanity/integration
@@ -29,7 +29,7 @@ TESTS		= $(TESTDIR)/LeastSquares_unittest $(TESTDIR)/IDX3Reader_unittest \
 			  $(TESTDIR)/IDX1Reader_unittest $(TESTDIR)/FileReader_unittest \
 			  $(TESTDIR)/DataGenerator_unittest $(TESTDIR)/UnitL2Normalizer_unittest \
 			  $(TESTDIR)/Error_unittest $(TESTDIR)/ComputeFunction_unittest\
-			  $(TESTDIR)/ForwardRegression_unittest \
+			  $(TESTDIR)/ForwardRegression_unittest $(TESTDIR)/SmoothedDifferentialEntropy_unittest \
 			  $(TESTDIR)/Evaluation_integration
 LIBS		= -L. -ltsr
 MEMCHECK	= valgrind --leak-check=full --track-origins=yes
@@ -70,6 +70,8 @@ $(COMPUTATION)/ComputeFunction.o: $(COMPUTATION)/ComputeFunction.hpp $(COMPUTATI
 	g++ $(OPTS) $(LIBFLAG) -c $(COMPUTATION)/ComputeFunction.cpp $(INCLUDES) -o $(COMPUTATION)/ComputeFunction.o
 $(REGULARIZER)/DummyRegularizer.o: $(REGULARIZER)/DummyRegularizer.hpp $(REGULARIZER)/DummyRegularizer.cpp
 	g++ $(OPTS) $(LIBFLAG) -c $(REGULARIZER)/DummyRegularizer.cpp $(INCLUDES) -o $(REGULARIZER)/DummyRegularizer.o
+$(REGULARIZER)/SmoothedDifferentialEntropy.o: $(REGULARIZER)/SmoothedDifferentialEntropy.hpp $(REGULARIZER)/SmoothedDifferentialEntropy.cpp
+	g++ $(OPTS) $(LIBFLAG) -c $(REGULARIZER)/SmoothedDifferentialEntropy.cpp $(INCLUDES) -o $(REGULARIZER)/SmoothedDifferentialEntropy.o
 
 check: libtsr.so $(TESTS)
 	$(TESTDIR)/LeastSquares_unittest
@@ -81,6 +83,7 @@ check: libtsr.so $(TESTS)
 	$(TESTDIR)/Error_unittest
 	$(TESTDIR)/ComputeFunction_unittest
 	$(TESTDIR)/ForwardRegression_unittest
+	$(TESTDIR)/SmoothedDifferentialEntropy_unittest
 	$(TESTDIR)/Evaluation_integration
 
 memcheck: libtsr.so $(TESTS)
@@ -93,6 +96,7 @@ memcheck: libtsr.so $(TESTS)
 	$(MEMCHECK) $(TESTDIR)/Error_unittest
 	$(MEMCHECK) $(TESTDIR)/ComputeFunction_unittest
 	$(MEMCHECK) $(TESTDIR)/ForwardRegression_unittest
+	$(MEMCHECK) $(TESTDIR)/SmoothedDifferentialEntropy_unittest
 	$(MEMCHECK) $(TESTDIR)/Evaluation_integration
 
 $(TESTDIR)/LeastSquares_unittest: $(UNITSRC)/LeastSquares_unittest.cpp libtsr.so
@@ -113,6 +117,8 @@ $(TESTDIR)/ComputeFunction_unittest: $(UNITSRC)/ComputeFunction_unittest.cpp lib
 	g++ $(OPTS) $(INCLUDES) $(LIBS) $(UNITSRC)/ComputeFunction_unittest.cpp -o $(TESTDIR)/ComputeFunction_unittest
 $(TESTDIR)/ForwardRegression_unittest: $(UNITSRC)/ForwardRegression_unittest.cpp libtsr.so
 	g++ $(OPTS) $(INCLUDES) $(LIBS) $(UNITSRC)/ForwardRegression_unittest.cpp -o $(TESTDIR)/ForwardRegression_unittest
+$(TESTDIR)/SmoothedDifferentialEntropy_unittest: $(UNITSRC)/SmoothedDifferentialEntropy_unittest.cpp libtsr.so
+	g++ $(OPTS) $(INCLUDES) $(LIBS) $(UNITSRC)/SmoothedDifferentialEntropy_unittest.cpp -o $(TESTDIR)/SmoothedDifferentialEntropy_unittest
 $(TESTDIR)/Evaluation_integration: $(INTSRC)/Evaluation_integration.cpp libtsr.so
 	g++ $(OPTS) $(INCLUDES) $(LIBS) $(INTSRC)/Evaluation_integration.cpp -o $(TESTDIR)/Evaluation_integration
 

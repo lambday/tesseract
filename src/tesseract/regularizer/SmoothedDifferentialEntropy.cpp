@@ -22,45 +22,43 @@
  * SOFTWARE.
  */
 
-#include <tesseract/computation/ComputeFunction.hpp>
-#include <tesseract/regularizer/DummyRegularizer.hpp>
 #include <tesseract/regularizer/SmoothedDifferentialEntropy.hpp>
+#include <cmath>
 
 using namespace tesseract;
 
-template <template <class> class Regularizer, typename T>
-ComputeFunction<Regularizer, T>::ComputeFunction() : eta(static_cast<T>(0.5))
+template <typename T>
+SmoothedDifferentialEntropy<T>::SmoothedDifferentialEntropy()
+	: delta(static_cast<T>(1))
 {
 }
 
-template <template <class> class Regularizer, typename T>
-ComputeFunction<Regularizer, T>::ComputeFunction(T _eta) : eta(_eta)
+template <typename T>
+SmoothedDifferentialEntropy<T>::SmoothedDifferentialEntropy(T _delta)
+	: delta(_delta)
 {
 }
 
-template <template <class> class Regularizer, typename T>
-const T ComputeFunction<Regularizer, T>::operator ()(const Matrix<T>& X) const
+template <typename T>
+SmoothedDifferentialEntropy<T>::~SmoothedDifferentialEntropy()
 {
-	// compute covariance which is X^TX since the columns of the matrices have unit norm
-	Matrix<T> cov = X.transpose() * X;
-	index_t N = cov.rows() - 1;
+}
 
-	// evaluate the squared multiple correlation which is b_S.C_S^1 b_S
-	T R_sq = 0;
+template <typename T>
+const T SmoothedDifferentialEntropy<T>::operator()(const Matrix<T>& cov) const
+{
+	// compute the eigen values
+	Vector<T> eigenvalues = cov.eigenvalues().real();
+	index_t k = eigenvalues.rows();
 
-	// avoid nan values when the C_S matrix is singular
-	if (cov.block(0,0,N,N).diagonal().minCoeff() > 0.0)
+	T inv_log_2 = static_cast<T>(1.0 / log(2));
+	std::for_each(eigenvalues.data(), eigenvalues.data() + k, [this, inv_log_2](T& val)
 	{
-		Vector<T> b_S = cov.block(0,N,N,1);
-		R_sq = b_S.dot(cov.block(0,0,N,N).llt().solve(b_S));
-	}
+		val = log(this->delta + val) * inv_log_2;
+	});
 
-	// compute the regularizer
-	Regularizer<T> regularizer;
-	T f = regularizer(cov);
+	return eigenvalues.array().sum() - 3 * k * log(delta) * inv_log_2;
 
-	return R_sq + eta * f;
 }
 
-template class ComputeFunction<DummyRegularizer, float64_t>;
-template class ComputeFunction<SmoothedDifferentialEntropy, float64_t>;
+template class SmoothedDifferentialEntropy<float64_t>;

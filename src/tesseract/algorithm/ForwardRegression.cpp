@@ -25,6 +25,7 @@
 #include <tesseract/algorithm/ForwardRegression.hpp>
 #include <tesseract/computation/ComputeFunction.hpp>
 #include <tesseract/regularizer/DummyRegularizer.hpp>
+#include <tesseract/regularizer/SmoothedDifferentialEntropy.hpp>
 #include <tesseract/features/Features.hpp>
 #include <vector>
 
@@ -97,3 +98,4 @@ std::vector<index_t> ForwardRegression<Regularizer>::run()
 }
 
 template class ForwardRegression<DummyRegularizer>;
+template class ForwardRegression<SmoothedDifferentialEntropy>;

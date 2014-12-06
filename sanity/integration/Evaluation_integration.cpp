@@ -34,6 +34,7 @@
 #include <tesseract/evaluation/Evaluation.hpp>
 #include <tesseract/evaluation/DataSet.hpp>
 #include <tesseract/regularizer/DummyRegularizer.hpp>
+#include <tesseract/regularizer/SmoothedDifferentialEntropy.hpp>
 #include <ctime>
 #include <map>
 #include <iostream>
@@ -70,6 +71,7 @@ int main(int argc, char** argv)
 	std::cout << "Test 3 : Dummy algorithm, Squared multiple correlation" << std::endl;
 	std::cout << "======================================================" << std::endl;
 	test<Dummy,SquaredMultipleCorrelation<float64_t>>(num_examples, target_feats);
+
 	std::cout << "Test 4 : Forward regression, dummy regularizer, Sum-squared error" << std::endl;
 	std::cout << "=================================================================" << std::endl;
 	test<ForwardRegression<DummyRegularizer>,SumSquaredError<float64_t>>(num_examples, target_feats);
@@ -79,5 +81,15 @@ int main(int argc, char** argv)
 	std::cout << "Test 6 : Forward regression, dummy regularizer, Squared multiple correlation" << std::endl;
 	std::cout << "============================================================================" << std::endl;
 	test<ForwardRegression<DummyRegularizer>,SquaredMultipleCorrelation<float64_t>>(num_examples, target_feats);
+
+	std::cout << "Test 7 : Forward regression, logdet regularizer, Sum-squared error" << std::endl;
+	std::cout << "=================================================================" << std::endl;
+	test<ForwardRegression<SmoothedDifferentialEntropy>,SumSquaredError<float64_t>>(num_examples, target_feats);
+	std::cout << "Test 8 : Forward regression, logdet regularizer, Pearson's correlation" << std::endl;
+	std::cout << "=====================================================================" << std::endl;
+	test<ForwardRegression<SmoothedDifferentialEntropy>,PearsonsCorrelation<float64_t>>(num_examples, target_feats);
+	std::cout << "Test 9 : Forward regression, logdet regularizer, Squared multiple correlation" << std::endl;
+	std::cout << "============================================================================" << std::endl;
+	test<ForwardRegression<SmoothedDifferentialEntropy>,SquaredMultipleCorrelation<float64_t>>(num_examples, target_feats);
 	return 0;
 }

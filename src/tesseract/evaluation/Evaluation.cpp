@@ -35,6 +35,7 @@
 #include <tesseract/algorithm/ForwardRegression.hpp>
 #include <tesseract/regression/LeastSquares.hpp>
 #include <tesseract/regularizer/DummyRegularizer.hpp>
+#include <tesseract/regularizer/SmoothedDifferentialEntropy.hpp>
 #include <tesseract/features/Features.hpp>
 #include <map>
 #include <type_traits>
@@ -114,3 +115,9 @@ template class Evaluation<MNISTDataSet,DataGenerator<IDX3Reader,IDX1Reader,UnitL
 		 ForwardRegression<DummyRegularizer>,PearsonsCorrelation<float64_t>>;
 template class Evaluation<MNISTDataSet,DataGenerator<IDX3Reader,IDX1Reader,UnitL2Normalizer>,
 		 ForwardRegression<DummyRegularizer>,SquaredMultipleCorrelation<float64_t>>;
+template class Evaluation<MNISTDataSet,DataGenerator<IDX3Reader,IDX1Reader,UnitL2Normalizer>,
+		 ForwardRegression<SmoothedDifferentialEntropy>,SumSquaredError<float64_t>>;
+template class Evaluation<MNISTDataSet,DataGenerator<IDX3Reader,IDX1Reader,UnitL2Normalizer>,
+		 ForwardRegression<SmoothedDifferentialEntropy>,PearsonsCorrelation<float64_t>>;
+template class Evaluation<MNISTDataSet,DataGenerator<IDX3Reader,IDX1Reader,UnitL2Normalizer>,
+		 ForwardRegression<SmoothedDifferentialEntropy>,SquaredMultipleCorrelation<float64_t>>;
