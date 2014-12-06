@@ -49,15 +49,16 @@ const T ComputeFunction<Regularizer, T>::operator ()(const Matrix<T>& X) const
 	T R_sq = 0;
 
 	// avoid nan values when the C_S matrix is singular
-	if (cov.block(0,0,N,N).diagonal().minCoeff() > 0.0)
+	// TODO think of using Moore-Penrose pseudo-inverse
+	if (cov.diagonal().topRows(N).minCoeff() > 0.0)
 	{
-		Vector<T> b_S = cov.block(0,N,N,1);
-		R_sq = b_S.dot(cov.block(0,0,N,N).llt().solve(b_S));
+		Vector<T> b_S = cov.rightCols(1).topRows(N);
+		R_sq = b_S.dot(cov.topLeftCorner(N, N).llt().solve(b_S));
 	}
 
-	// compute the regularizer
+	// compute the regularizer on C_S
 	Regularizer<T> regularizer;
-	T f = regularizer(cov);
+	T f = regularizer(cov.topLeftCorner(N, N));
 
 	return R_sq + eta * f;
 }
