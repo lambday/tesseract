@@ -25,7 +25,7 @@
 #include <tesseract/errors/SumSquaredError.hpp>
 #include <tesseract/errors/SquaredMultipleCorrelation.hpp>
 #include <tesseract/errors/PearsonsCorrelation.hpp>
-#include <iostream>
+#include <cmath>
 
 using namespace tesseract;
 using namespace Eigen;
@@ -39,8 +39,9 @@ void test1()
 	Zp << 1.210, 1.635, 2.060, 2.485, 2.910;
 
 	SumSquaredError<float64_t> error;
-//	std::cout << error.compute(Z, Zp) << std::endl;
+
 	// expected result 0.747 (for population) and 0.964 (for sample)
+	assert(abs(error.compute(Z,Zp) - 0.964) < 1E-6);
 }
 
 // tested from http://onlinestatbook.com/2/regression/accuracy.html
@@ -52,8 +53,9 @@ void test2()
 	Zp << 1.210, 1.635, 2.060, 2.485, 2.910;
 
 	PearsonsCorrelation<float64_t> error;
-//	std::cout << error.compute(Z, Zp) << std::endl;
+
 	// expected result 0.747 (for population) and 0.964 (for sample)
+	assert(abs(error.compute(Z,Zp) - 0.964) < 1E-6);
 }
 
 void test3()
@@ -67,7 +69,9 @@ void test3()
 	Zp.normalize();
 
 	SquaredMultipleCorrelation<float64_t> error;
-//	std::cout << error.compute(Z, Zp) << std::endl;
+
+	// expected result
+	assert(abs(error.compute(Z,Zp) - 0.888803) < 1E-6);
 }
 
 int main(int argc, char** argv)

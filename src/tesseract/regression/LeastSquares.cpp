@@ -25,10 +25,9 @@
 #include <tesseract/regression/LeastSquares.hpp>
 #include <tesseract/base/types.h>
 
+using namespace tesseract;
 using namespace Eigen;
 
-namespace tesseract
-{
 template class LeastSquares<MatrixXd, VectorXd, LS_SVD>;
 template class LeastSquares<MatrixXf, VectorXf, LS_SVD>;
 template class LeastSquares<MatrixXi, VectorXi, LS_SVD>;
@@ -52,4 +51,3 @@ template class LeastSquares<Map<MatrixXi>, Map<VectorXi>, LS_QR>;
 template class LeastSquares<Map<MatrixXd>, Map<VectorXd>, LS_NORMAL>;
 template class LeastSquares<Map<MatrixXf>, Map<VectorXf>, LS_NORMAL>;
 template class LeastSquares<Map<MatrixXi>, Map<VectorXi>, LS_NORMAL>;
-}

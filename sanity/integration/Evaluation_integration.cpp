@@ -41,39 +41,43 @@
 using namespace tesseract;
 
 template <class Algorithm, class ErrorMeasures>
-void test()
+void test(index_t num_examples, index_t target_feats)
 {
 	Evaluation<MNISTDataSet,DataGenerator<IDX3Reader,IDX1Reader,UnitL2Normalizer>,
 		Algorithm,ErrorMeasures> evaluator;
 	evaluator.set_seed(std::time(0));
-	evaluator.set_num_examples(1000);
-	evaluator.set_target_feats(20);
+	evaluator.set_num_examples(num_examples);
+	evaluator.set_target_feats(target_feats);
 
 	std::pair<index_t,float64_t> result = evaluator.evaluate();
 
-	std::cout << "number of features selected " << result.first << std::endl;
-	std::cout << "error in measurement " << result.second << std::endl;
+	std::cout << "number of datapoints " << num_examples << std::endl;
+	std::cout << "number of features used " << result.first << std::endl;
+	std::cout << "statistic measure " << result.second << std::endl;
 }
 
 int main(int argc, char** argv)
 {
+	index_t num_examples = 1000;
+	index_t target_feats = 20;
+
 	std::cout << "Test 1 : Dummy algorithm, Sum-squared error" << std::endl;
 	std::cout << "===========================================" << std::endl;
-	test<Dummy,SumSquaredError<float64_t>>();
+	test<Dummy,SumSquaredError<float64_t>>(num_examples, target_feats);
 	std::cout << "Test 2 : Dummy algorithm, Pearson's correlation" << std::endl;
 	std::cout << "===============================================" << std::endl;
-	test<Dummy,PearsonsCorrelation<float64_t>>();
+	test<Dummy,PearsonsCorrelation<float64_t>>(num_examples, target_feats);
 	std::cout << "Test 3 : Dummy algorithm, Squared multiple correlation" << std::endl;
 	std::cout << "======================================================" << std::endl;
-	test<Dummy,SquaredMultipleCorrelation<float64_t>>();
+	test<Dummy,SquaredMultipleCorrelation<float64_t>>(num_examples, target_feats);
 	std::cout << "Test 4 : Forward regression, dummy regularizer, Sum-squared error" << std::endl;
 	std::cout << "=================================================================" << std::endl;
-	test<ForwardRegression<DummyRegularizer>,SumSquaredError<float64_t>>();
+	test<ForwardRegression<DummyRegularizer>,SumSquaredError<float64_t>>(num_examples, target_feats);
 	std::cout << "Test 5 : Forward regression, dummy regularizer, Pearson's correlation" << std::endl;
 	std::cout << "=====================================================================" << std::endl;
-	test<ForwardRegression<DummyRegularizer>,PearsonsCorrelation<float64_t>>();
+	test<ForwardRegression<DummyRegularizer>,PearsonsCorrelation<float64_t>>(num_examples, target_feats);
 	std::cout << "Test 6 : Forward regression, dummy regularizer, Squared multiple correlation" << std::endl;
 	std::cout << "============================================================================" << std::endl;
-	test<ForwardRegression<DummyRegularizer>,SquaredMultipleCorrelation<float64_t>>();
+	test<ForwardRegression<DummyRegularizer>,SquaredMultipleCorrelation<float64_t>>(num_examples, target_feats);
 	return 0;
 }
