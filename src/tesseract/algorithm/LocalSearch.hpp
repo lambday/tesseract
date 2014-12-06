@@ -22,33 +22,45 @@
  * SOFTWARE.
  */
 
-#include <tesseract/regularizer/SmoothedDifferentialEntropy.hpp>
-#include <cstdlib>
-#include <iostream>
-#include <cmath>
+#ifndef LOCAL_SEARCH_H__
+#define LOCAL_SEARCH_H__
 
-using namespace tesseract;
-using namespace Eigen;
+#include <tesseract/base/types.h>
 
-void test1()
+namespace tesseract
 {
-	int dim = 2;
-	int n = 3;
-	MatrixXd m(n, dim + 1);
 
-	m <<
-	0.539426,   0.097298,   0.343196,
-	0.602504,   0.478170,   0.685719,
-	0.588226,   0.872861,   0.641877;
+/** @brief class LocalSearch for a dummy algorithm which does nothing and returns
+ * all the features that are there in the input problem
+ */
+template <template <class> class Regularizer>
+class LocalSearch
+{
+public:
+	/** constructor
+	 * @param _regressors the regressors (real valued dense feature matrix)
+	 * @param _regressand the regressand (real valued dense labels vector)
+	 * @param _eps the epsilon of the algorithm (default value 0.1)
+	 */
+	LocalSearch(const Matrix<float64_t>& _regressors, const Vector<float64_t>& _regressand,
+			float64_t _eps = 22);
 
-	SmoothedDifferentialEntropy<float64_t> f(1);
-	float64_t val = f(m.transpose() * m);
+	/** destructor */
+	~LocalSearch();
 
-	assert(abs(val - 2.1616) < 1E-6);
+	/** @return the vector of selected feature indices */
+	std::vector<index_t> run();
+private:
+	/** real valued dense feature matrix */
+	const Matrix<float64_t>& regressors;
+
+	/** real valued dense labels vector */
+	const Vector<float64_t>& regressand;
+
+	/** epsilon of the algorithm */
+	float64_t eps;
+};
+
 }
 
-int main(int argc, char** argv)
-{
-	test1();
-	return 0;
-}
+#endif // LOCAL_SEARCH_H__

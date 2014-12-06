@@ -29,7 +29,7 @@ using namespace tesseract;
 
 template <typename T>
 SmoothedDifferentialEntropy<T>::SmoothedDifferentialEntropy()
-	: delta(static_cast<T>(1))
+	: delta(static_cast<T>(0.1))
 {
 }
 
