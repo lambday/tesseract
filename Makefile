@@ -19,7 +19,7 @@ OBJECTS		= $(REGRESSION)/LeastSquares.o \
 			  $(ERRORS)/SumSquaredError.o $(ERRORS)/PearsonsCorrelation.o $(ERRORS)/SquaredMultipleCorrelation.o \
 			  $(EVALUATION)/DataSet.o $(EVALUATION)/Evaluation.o \
 			  $(ALGORITHM)/Dummy.o $(ALGORITHM)/ForwardRegression.o $(ALGORITHM)/LocalSearch.o \
-			  $(FEATURES)/Features.o \
+			  $(ALGORITHM)/GreedyLocalSearch.o $(FEATURES)/Features.o \
 			  $(REGULARIZER)/DummyRegularizer.o $(REGULARIZER)/SmoothedDifferentialEntropy.o \
 			  $(COMPUTATION)/ComputeFunction.o
 UNITSRC		= sanity/unit
@@ -63,6 +63,8 @@ $(ALGORITHM)/ForwardRegression.o: $(ALGORITHM)/ForwardRegression.hpp $(ALGORITHM
 	g++ $(OPTS) $(LIBFLAG) -c $(ALGORITHM)/ForwardRegression.cpp $(INCLUDES) -o $(ALGORITHM)/ForwardRegression.o
 $(ALGORITHM)/LocalSearch.o: $(ALGORITHM)/LocalSearch.hpp $(ALGORITHM)/LocalSearch.cpp
 	g++ $(OPTS) $(LIBFLAG) -c $(ALGORITHM)/LocalSearch.cpp $(INCLUDES) -o $(ALGORITHM)/LocalSearch.o
+$(ALGORITHM)/GreedyLocalSearch.o: $(ALGORITHM)/GreedyLocalSearch.hpp $(ALGORITHM)/GreedyLocalSearch.cpp
+	g++ $(OPTS) $(LIBFLAG) -c $(ALGORITHM)/GreedyLocalSearch.cpp $(INCLUDES) -o $(ALGORITHM)/GreedyLocalSearch.o
 $(FEATURES)/Features.o: $(FEATURES)/Features.hpp $(FEATURES)/Features.cpp
 	g++ $(OPTS) $(LIBFLAG) -c $(FEATURES)/Features.cpp $(INCLUDES) -o $(FEATURES)/Features.o
 $(EVALUATION)/DataSet.o: $(EVALUATION)/DataSet.hpp $(EVALUATION)/DataSet.cpp

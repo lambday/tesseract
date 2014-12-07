@@ -22,82 +22,94 @@
  * SOFTWARE.
  */
 
-#ifndef LOCAL_SEARCH_H__
-#define LOCAL_SEARCH_H__
+#ifndef GREEDY_LOCAL_SEARCH_H__
+#define GREEDY_LOCAL_SEARCH_H__
 
 #include <tesseract/base/types.h>
 
 namespace tesseract
 {
 
-/** @brief class LocalSearchParam for storing local search parameters */
-template <template <class> class Regularizer, typename T>
-struct LocalSearchParam
+/** @brief struct for parameters used in greedy local-search */
+template <template<template<class>class,typename> class FRAlgo,
+		 template <template<class>class,typename> class LSAlgo,
+		 template <class> class Regularizer, typename T>
+struct GreedyLocalSearchParam
 {
+	/** forward regression algo param type */
+	typedef typename FRAlgo<Regularizer,T>::param_type fr_param_type;
+
+	/** local search algo param type */
+	typedef typename LSAlgo<Regularizer,T>::param_type ls_param_type;
+
 	/** regularizer param type */
 	typedef typename Regularizer<T>::param_type reg_param_type;
 
 	/** default constructor */
-	LocalSearchParam();
+	GreedyLocalSearchParam();
 
 	/** constructor */
-	LocalSearchParam(T _eta);
+	GreedyLocalSearchParam(ls_param_type ls_params);
 
 	/** constructor */
-	LocalSearchParam(T _eta, reg_param_type reg_params);
+	GreedyLocalSearchParam(T _eta, reg_param_type _regularizer_params);
 
-	/** constructor */
-	LocalSearchParam(T _eta, T _eps, reg_param_type reg_params);
-
-	/** regularization constant \f$\eta > 0\f$ */
+	/** eta */
 	T eta;
-
-	/** epsilon of the algorithm */
-	T eps;
 
 	/** regularizer params */
 	reg_param_type regularizer_params;
 
-	/** default epsilon value */
-	static constexpr T default_eps = static_cast<T>(22);
+	/** forward regression params */
+	fr_param_type fr_params;
+
+	/** local search params */
+	ls_param_type ls_params;
 };
 
-/** @brief class LocalSearch for a dummy algorithm which does nothing and returns
+/** @brief class GreedyLocalSearch for a dummy algorithm which does nothing and returns
  * all the features that are there in the input problem
  */
-template <template <class> class Regularizer, typename T>
-class LocalSearch
+template <template<template<class>class,typename> class FRAlgo,
+		 template <template<class>class,typename> class LSAlgo,
+		 template <class> class Regularizer, typename T>
+class GreedyLocalSearch
 {
 public:
 	/** parameter type */
-	typedef LocalSearchParam<Regularizer, T> param_type;
+	typedef GreedyLocalSearchParam<FRAlgo,LSAlgo,Regularizer,T> param_type;
 
 	/** constructor
 	 * @param _regressors the regressors (real valued dense feature matrix)
 	 * @param _regressand the regressand (real valued dense labels vector)
+	 * @param _target_feats number of target features (default value is 0)
 	 */
-	LocalSearch(const Matrix<T>& _regressors, const Vector<T>& _regressand);
+	GreedyLocalSearch(const Matrix<T>& _regressors, const Vector<T>& _regressand,
+			index_t _target_feats = 0);
 
 	/** destructor */
-	~LocalSearch();
+	~GreedyLocalSearch();
 
 	/** @return the vector of selected feature indices */
 	std::vector<index_t> run();
 
-	/** @param params the parameters of the algorithm */
+	/** @param param the parameter type */
 	void set_params(param_type _params);
 
 private:
+	/** parameters */
+	param_type params;
+
 	/** real valued dense feature matrix */
 	const Matrix<T>& regressors;
 
 	/** real valued dense labels vector */
 	const Vector<T>& regressand;
 
-	/** the algorithm params */
-	param_type params;
+	/** number of target features */
+	index_t target_feats;
 };
 
 }
 
-#endif // LOCAL_SEARCH_H__
+#endif // GREEDY_LOCAL_SEARCH_H__

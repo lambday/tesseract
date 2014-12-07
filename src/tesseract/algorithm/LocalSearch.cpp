@@ -42,6 +42,19 @@ LocalSearchParam<Regularizer, T>::LocalSearchParam()
 }
 
 template <template <class> class Regularizer, typename T>
+LocalSearchParam<Regularizer, T>::LocalSearchParam(T _eta)
+:eta(_eta), eps(LocalSearchParam<Regularizer,T>::default_eps)
+{
+}
+
+template <template <class> class Regularizer, typename T>
+LocalSearchParam<Regularizer, T>::LocalSearchParam(T _eta,reg_param_type reg_params)
+:eta(_eta), eps(LocalSearchParam<Regularizer,T>::default_eps),
+	regularizer_params(reg_params)
+{
+}
+
+template <template <class> class Regularizer, typename T>
 LocalSearchParam<Regularizer, T>::LocalSearchParam(T _eta, T _eps,
 		LocalSearchParam<Regularizer,T>::reg_param_type reg_params)
 : eta(_eta), eps(_eps), regularizer_params(reg_params)
