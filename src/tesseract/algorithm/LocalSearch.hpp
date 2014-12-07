@@ -59,18 +59,18 @@ struct LocalSearchParam
 /** @brief class LocalSearch for a dummy algorithm which does nothing and returns
  * all the features that are there in the input problem
  */
-template <template <class> class Regularizer>
+template <template <class> class Regularizer, typename T>
 class LocalSearch
 {
 public:
 	/** parameter type */
-	typedef LocalSearchParam<Regularizer, float64_t> param_type;
+	typedef LocalSearchParam<Regularizer, T> param_type;
 
 	/** constructor
 	 * @param _regressors the regressors (real valued dense feature matrix)
 	 * @param _regressand the regressand (real valued dense labels vector)
 	 */
-	LocalSearch(const Matrix<float64_t>& _regressors, const Vector<float64_t>& _regressand);
+	LocalSearch(const Matrix<T>& _regressors, const Vector<T>& _regressand);
 
 	/** destructor */
 	~LocalSearch();
@@ -83,10 +83,10 @@ public:
 
 private:
 	/** real valued dense feature matrix */
-	const Matrix<float64_t>& regressors;
+	const Matrix<T>& regressors;
 
 	/** real valued dense labels vector */
-	const Vector<float64_t>& regressand;
+	const Vector<T>& regressand;
 
 	/** the algorithm params */
 	param_type params;

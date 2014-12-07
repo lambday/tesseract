@@ -53,19 +53,19 @@ struct ForwardRegressionParam
 /** @brief class ForwardRegression for a dummy algorithm which does nothing and returns
  * all the features that are there in the input problem
  */
-template <template <class> class Regularizer>
+template <template <class> class Regularizer, typename T>
 class ForwardRegression
 {
 public:
 	/** parameter type */
-	typedef ForwardRegressionParam<Regularizer, float64_t> param_type;
+	typedef ForwardRegressionParam<Regularizer, T> param_type;
 
 	/** constructor
 	 * @param _regressors the regressors (real valued dense feature matrix)
 	 * @param _regressand the regressand (real valued dense labels vector)
 	 * @param _target_feats number of target features (default value is 0)
 	 */
-	ForwardRegression(const Matrix<float64_t>& _regressors, const Vector<float64_t>& _regressand,
+	ForwardRegression(const Matrix<T>& _regressors, const Vector<T>& _regressand,
 			index_t _target_feats = 0);
 
 	/** destructor */
@@ -82,10 +82,10 @@ private:
 	param_type params;
 
 	/** real valued dense feature matrix */
-	const Matrix<float64_t>& regressors;
+	const Matrix<T>& regressors;
 
 	/** real valued dense labels vector */
-	const Vector<float64_t>& regressand;
+	const Vector<T>& regressand;
 
 	/** number of target features */
 	index_t target_feats;

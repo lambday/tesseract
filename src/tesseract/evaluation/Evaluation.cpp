@@ -119,14 +119,14 @@ template class Evaluation<MNISTDataSet,DataGenerator<IDX3Reader,IDX1Reader,UnitL
 template class Evaluation<MNISTDataSet,DataGenerator<IDX3Reader,IDX1Reader,UnitL2Normalizer>,
 		 Dummy,SquaredMultipleCorrelation<float64_t>>;
 template class Evaluation<MNISTDataSet,DataGenerator<IDX3Reader,IDX1Reader,UnitL2Normalizer>,
-		 ForwardRegression<DummyRegularizer>,SumSquaredError<float64_t>>;
+		 ForwardRegression<DummyRegularizer,float64_t>,SumSquaredError<float64_t>>;
 template class Evaluation<MNISTDataSet,DataGenerator<IDX3Reader,IDX1Reader,UnitL2Normalizer>,
-		 ForwardRegression<DummyRegularizer>,PearsonsCorrelation<float64_t>>;
+		 ForwardRegression<DummyRegularizer,float64_t>,PearsonsCorrelation<float64_t>>;
 template class Evaluation<MNISTDataSet,DataGenerator<IDX3Reader,IDX1Reader,UnitL2Normalizer>,
-		 ForwardRegression<DummyRegularizer>,SquaredMultipleCorrelation<float64_t>>;
+		 ForwardRegression<DummyRegularizer,float64_t>,SquaredMultipleCorrelation<float64_t>>;
 template class Evaluation<MNISTDataSet,DataGenerator<IDX3Reader,IDX1Reader,UnitL2Normalizer>,
-		 ForwardRegression<SmoothedDifferentialEntropy>,SumSquaredError<float64_t>>;
+		 ForwardRegression<SmoothedDifferentialEntropy,float64_t>,SumSquaredError<float64_t>>;
 template class Evaluation<MNISTDataSet,DataGenerator<IDX3Reader,IDX1Reader,UnitL2Normalizer>,
-		 ForwardRegression<SmoothedDifferentialEntropy>,PearsonsCorrelation<float64_t>>;
+		 ForwardRegression<SmoothedDifferentialEntropy,float64_t>,PearsonsCorrelation<float64_t>>;
 template class Evaluation<MNISTDataSet,DataGenerator<IDX3Reader,IDX1Reader,UnitL2Normalizer>,
-		 ForwardRegression<SmoothedDifferentialEntropy>,SquaredMultipleCorrelation<float64_t>>;
+		 ForwardRegression<SmoothedDifferentialEntropy,float64_t>,SquaredMultipleCorrelation<float64_t>>;

@@ -52,8 +52,8 @@ void test1()
 	MatrixXd X = m.block(0,0,N,dim);
 	VectorXd y = m.block(0,dim,N,1);
 
-	LocalSearch<SmoothedDifferentialEntropy> ls(X,y);
-	typedef LocalSearch<SmoothedDifferentialEntropy>::param_type param_type;
+	LocalSearch<SmoothedDifferentialEntropy, float64_t> ls(X,y);
+	typedef LocalSearch<SmoothedDifferentialEntropy, float64_t>::param_type param_type;
 	ls.set_params(param_type());
 	std::vector<index_t> inds = ls.run();
 

@@ -48,30 +48,30 @@ LocalSearchParam<Regularizer, T>::LocalSearchParam(T _eta, T _eps,
 {
 }
 
-template <template <class> class Regularizer>
-LocalSearch<Regularizer>::LocalSearch(const Matrix<float64_t>& _regressors,
-		const Vector<float64_t>& _regressand)
+template <template <class> class Regularizer, typename T>
+LocalSearch<Regularizer, T>::LocalSearch(const Matrix<T>& _regressors,
+		const Vector<T>& _regressand)
 	: regressors(_regressors), regressand(_regressand)
 {
 }
 
-template <template <class> class Regularizer>
-LocalSearch<Regularizer>::~LocalSearch()
+template <template <class> class Regularizer, typename T>
+LocalSearch<Regularizer, T>::~LocalSearch()
 {
 }
 
-template <template <class> class Regularizer>
-std::vector<index_t> LocalSearch<Regularizer>::run()
+template <template <class> class Regularizer, typename T>
+std::vector<index_t> LocalSearch<Regularizer, T>::run()
 {
 	// number of total features
 	index_t n = regressors.cols();
 
 	// need to keep track of the maximum evaluated value of f
-	float64_t maxval = 0;
+	T maxval = 0;
 	index_t argmax = -1;
 
 	// create the regularizer function
-	Regularizer<float64_t> f;
+	Regularizer<T> f;
 	f.set_params(params.regularizer_params);
 
 	// computing the argmax part
@@ -81,8 +81,8 @@ std::vector<index_t> LocalSearch<Regularizer>::run()
 		inds.push_back(j);
 
 		// evaluate the function on the regressors
-		const Matrix<float64_t>& m = Features<float64_t>::copy_feats(regressors, inds);
-		float64_t val = f(m.transpose() * m);
+		const Matrix<T>& m = Features<T>::copy_feats(regressors, inds);
+		T val = f(m.transpose() * m);
 
 		// update running max and argmax
 		if (val > maxval)
@@ -118,7 +118,7 @@ std::vector<index_t> LocalSearch<Regularizer>::run()
 	};
 
 	// limit
-	float64_t limit = 1 + params.eps / n / n;
+	T limit = 1 + params.eps / n / n;
 
 	// if there exists any more features to increase f
 	bool exists = false;
@@ -128,7 +128,7 @@ std::vector<index_t> LocalSearch<Regularizer>::run()
 	{
 		// need to update since the last iteration
 		exists = false;
-		float64_t threshold = limit * maxval;
+		T threshold = limit * maxval;
 
 		// loop through the features
 		for (index_t j = 0; j < n && !exists; ++j)
@@ -141,8 +141,8 @@ std::vector<index_t> LocalSearch<Regularizer>::run()
 				cur_inds.push_back(j);
 
 				// evaluate the function on the regressors
-				const Matrix<float64_t>& m = Features<float64_t>::copy_feats(regressors, cur_inds);
-				float64_t val = f(m.transpose() * m);
+				const Matrix<T>& m = Features<T>::copy_feats(regressors, cur_inds);
+				T val = f(m.transpose() * m);
 
 				// update running max and argmax
 				if (exists = val >= threshold)
@@ -163,7 +163,7 @@ std::vector<index_t> LocalSearch<Regularizer>::run()
 	} while (end_cond(exists));
 
 	// finally, compute the objective function
-	ComputeFunction<Regularizer, float64_t> g;
+	ComputeFunction<Regularizer, T> g;
 	g.set_eta(params.eta);
 	g.set_reg_params(params.regularizer_params);
 
@@ -171,7 +171,7 @@ std::vector<index_t> LocalSearch<Regularizer>::run()
 	std::vector<index_t>& ret_inds = inds;
 
 	// on S
-	float64_t g_S = g(Features<float64_t>::copy_feats(regressors,regressand,inds));
+	T g_S = g(Features<T>::copy_feats(regressors,regressand,inds));
 
 	// on U\S and U
 	std::vector<index_t> rest_inds;
@@ -188,7 +188,7 @@ std::vector<index_t> LocalSearch<Regularizer>::run()
 			}
 		}
 
-		float64_t g_UminusS = g(Features<float64_t>::copy_feats(regressors,regressand,rest_inds));
+		T g_UminusS = g(Features<T>::copy_feats(regressors,regressand,rest_inds));
 
 		if (g_UminusS > g_S)
 		{
@@ -198,7 +198,7 @@ std::vector<index_t> LocalSearch<Regularizer>::run()
 		all_inds.resize(n);
 		std::iota(all_inds.begin(), all_inds.end(), 0);
 
-		float64_t g_U = g(Features<float64_t>::copy_feats(regressors,regressand,all_inds));
+		T g_U = g(Features<T>::copy_feats(regressors,regressand,all_inds));
 
 		if (g_U > g_UminusS)
 		{
@@ -209,13 +209,13 @@ std::vector<index_t> LocalSearch<Regularizer>::run()
 	return ret_inds;
 }
 
-template <template <class> class Regularizer>
-void LocalSearch<Regularizer>::set_params(LocalSearch<Regularizer>::param_type _params)
+template <template <class> class Regularizer, typename T>
+void LocalSearch<Regularizer, T>::set_params(LocalSearch<Regularizer, T>::param_type _params)
 {
 	params = _params;
 }
 
 template class LocalSearchParam<DummyRegularizer, float64_t>;
 template class LocalSearchParam<SmoothedDifferentialEntropy, float64_t>;
-template class LocalSearch<DummyRegularizer>;
-template class LocalSearch<SmoothedDifferentialEntropy>;
+template class LocalSearch<DummyRegularizer, float64_t>;
+template class LocalSearch<SmoothedDifferentialEntropy, float64_t>;

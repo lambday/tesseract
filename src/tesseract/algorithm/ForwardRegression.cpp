@@ -44,23 +44,23 @@ ForwardRegressionParam<Regularizer, T>::ForwardRegressionParam(T _eta,
 {
 }
 
-template <template <class> class Regularizer>
-ForwardRegression<Regularizer>::ForwardRegression(const Matrix<float64_t>& _regressors,
-		const Vector<float64_t>& _regressand, index_t _target_feats)
+template <template <class> class Regularizer, typename T>
+ForwardRegression<Regularizer,T>::ForwardRegression(const Matrix<T>& _regressors,
+		const Vector<T>& _regressand, index_t _target_feats)
 	: regressors(_regressors), regressand(_regressand), target_feats(_target_feats)
 {
 }
 
-template <template <class> class Regularizer>
-ForwardRegression<Regularizer>::~ForwardRegression()
+template <template <class> class Regularizer, typename T>
+ForwardRegression<Regularizer,T>::~ForwardRegression()
 {
 }
 
-template <template <class> class Regularizer>
-std::vector<index_t> ForwardRegression<Regularizer>::run()
+template <template <class> class Regularizer, typename T>
+std::vector<index_t> ForwardRegression<Regularizer,T>::run()
 {
 	// create the compute function
-	ComputeFunction<Regularizer, float64_t> g;
+	ComputeFunction<Regularizer, T> g;
 	g.set_eta(params.eta);
 	g.set_reg_params(params.regularizer_params);
 
@@ -76,7 +76,7 @@ std::vector<index_t> ForwardRegression<Regularizer>::run()
 	for (index_t i = 0; i < target_feats; ++i)
 	{
 		// store the values for argmax operation
-		float64_t max = 0;
+		T max = 0;
 		index_t max_inds = -1;
 
 		// can be parallelised
@@ -89,8 +89,8 @@ std::vector<index_t> ForwardRegression<Regularizer>::run()
 				cur_inds.push_back(j);
 
 				// evaluate the function
-				const Matrix<float64_t>& m = Features<float64_t>::copy_feats(regressors, regressand, cur_inds);
-				float64_t val = g(m);
+				const Matrix<T>& m = Features<T>::copy_feats(regressors, regressand, cur_inds);
+				T val = g(m);
 
 				// update running max, need to be write protected
 				if (val > max)
@@ -112,13 +112,13 @@ std::vector<index_t> ForwardRegression<Regularizer>::run()
 	return inds;
 }
 
-template <template <class> class Regularizer>
-void ForwardRegression<Regularizer>::set_params(ForwardRegression<Regularizer>::param_type _params)
+template <template <class> class Regularizer, typename T>
+void ForwardRegression<Regularizer,T>::set_params(ForwardRegression<Regularizer,T>::param_type _params)
 {
 	params = _params;
 }
 
 template class ForwardRegressionParam<DummyRegularizer, float64_t>;
 template class ForwardRegressionParam<SmoothedDifferentialEntropy, float64_t>;
-template class ForwardRegression<DummyRegularizer>;
-template class ForwardRegression<SmoothedDifferentialEntropy>;
+template class ForwardRegression<DummyRegularizer, float64_t>;
+template class ForwardRegression<SmoothedDifferentialEntropy, float64_t>;

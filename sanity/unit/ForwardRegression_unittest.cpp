@@ -52,7 +52,7 @@ void test1()
 	MatrixXd X = m.block(0,0,N,dim);
 	VectorXd y = m.block(0,dim,N,1);
 
-	ForwardRegression<DummyRegularizer> fr(X,y,k);
+	ForwardRegression<DummyRegularizer, float64_t> fr(X,y,k);
 	std::vector<index_t> inds = fr.run();
 
 	// octave computed value from the following code
