@@ -115,7 +115,8 @@ std::vector<index_t> GreedyLocalSearch<FRAlgo,LSAlgo,Regularizer,T>::run()
 
 	// if returned set is of same size as of S_1, don't bother
 	// otherwise, since the above returned indices are mapped, we need to map it back
-	if (S_p.size() < S_1.size())
+	bool ls_useful = S_p.size() < S_1.size();
+	if (ls_useful)
 	{
 		std::sort(S_p.begin(), S_p.end());
 		inds_map(S_1, S_p);
@@ -139,6 +140,10 @@ std::vector<index_t> GreedyLocalSearch<FRAlgo,LSAlgo,Regularizer,T>::run()
 	fr2.set_params(params.fr_params);
 	std::vector<index_t> S_2 = fr2.run();
 
+	// map these indices
+	std::sort(S_2.begin(), S_2.end());
+	inds_map(rest, S_2);
+
 	// create the compute function
 	ComputeFunction<Regularizer, T> g;
 	g.set_eta(params.eta);
@@ -151,12 +156,14 @@ std::vector<index_t> GreedyLocalSearch<FRAlgo,LSAlgo,Regularizer,T>::run()
 	T max = g(Features<T>::copy_feats(regressors,regressand,S_1));
 
 	// compute g(S_p)
-	T g_S_p = g(Features<T>::copy_feats(regressors,regressand,S_p));
-
-	if (max < g_S_p)
+	if (ls_useful)
 	{
-		max = g_S_p;
-		inds = S_p;
+		T g_S_p = g(Features<T>::copy_feats(regressors,regressand,S_p));
+		if (max < g_S_p)
+		{
+			max = g_S_p;
+			inds = S_p;
+		}
 	}
 
 	// compute g(S_2)
