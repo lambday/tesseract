@@ -34,10 +34,24 @@
 
 using namespace tesseract;
 
+template <template <class> class Regularizer, typename T>
+LocalSearchParam<Regularizer, T>::LocalSearchParam()
+:eta(ComputeFunction<Regularizer,T>::default_eta),
+	eps(LocalSearchParam<Regularizer,T>::default_eps)
+{
+}
+
+template <template <class> class Regularizer, typename T>
+LocalSearchParam<Regularizer, T>::LocalSearchParam(T _eta, T _eps,
+		LocalSearchParam<Regularizer,T>::reg_param_type reg_params)
+: eta(_eta), eps(_eps), regularizer_params(reg_params)
+{
+}
+
 template <template <class> class Regularizer>
 LocalSearch<Regularizer>::LocalSearch(const Matrix<float64_t>& _regressors,
-		const Vector<float64_t>& _regressand, float64_t _eps)
-	: regressors(_regressors), regressand(_regressand), eps(_eps)
+		const Vector<float64_t>& _regressand)
+	: regressors(_regressors), regressand(_regressand)
 {
 }
 
@@ -58,6 +72,7 @@ std::vector<index_t> LocalSearch<Regularizer>::run()
 
 	// create the regularizer function
 	Regularizer<float64_t> f;
+	f.set_params(params.regularizer_params);
 
 	// computing the argmax part
 	for (index_t j = 0; j < n; ++j)
@@ -103,7 +118,7 @@ std::vector<index_t> LocalSearch<Regularizer>::run()
 	};
 
 	// limit
-	float64_t limit = 1 + eps / n / n;
+	float64_t limit = 1 + params.eps / n / n;
 
 	// if there exists any more features to increase f
 	bool exists = false;
@@ -149,6 +164,8 @@ std::vector<index_t> LocalSearch<Regularizer>::run()
 
 	// finally, compute the objective function
 	ComputeFunction<Regularizer, float64_t> g;
+	g.set_eta(params.eta);
+	g.set_reg_params(params.regularizer_params);
 
 	// reference of the indices that will be returned
 	std::vector<index_t>& ret_inds = inds;
@@ -192,5 +209,13 @@ std::vector<index_t> LocalSearch<Regularizer>::run()
 	return ret_inds;
 }
 
+template <template <class> class Regularizer>
+void LocalSearch<Regularizer>::set_params(LocalSearch<Regularizer>::param_type _params)
+{
+	params = _params;
+}
+
+template class LocalSearchParam<DummyRegularizer, float64_t>;
+template class LocalSearchParam<SmoothedDifferentialEntropy, float64_t>;
 template class LocalSearch<DummyRegularizer>;
 template class LocalSearch<SmoothedDifferentialEntropy>;

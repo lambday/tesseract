@@ -35,19 +35,19 @@ template <template <class> class Regularizer, typename T>
 struct ForwardRegressionParam
 {
 	/** regularizer param type */
-	typedef typename Regularizer<T>::param_type param_type;
+	typedef typename Regularizer<T>::param_type reg_param_type;
 
 	/** default constructor */
 	ForwardRegressionParam();
 
 	/** constructor */
-	ForwardRegressionParam(T _eta, param_type reg_params);
+	ForwardRegressionParam(T _eta, reg_param_type reg_params);
 
 	/** regularization constant \f$\eta > 0\f$ */
 	T eta;
 
 	/** regularizer params */
-	param_type regularizer_params;
+	reg_param_type regularizer_params;
 };
 
 /** @brief class ForwardRegression for a dummy algorithm which does nothing and returns

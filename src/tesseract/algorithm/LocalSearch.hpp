@@ -30,6 +30,32 @@
 namespace tesseract
 {
 
+/** @brief class LocalSearchParam for storing local search parameters */
+template <template <class> class Regularizer, typename T>
+struct LocalSearchParam
+{
+	/** regularizer param type */
+	typedef typename Regularizer<T>::param_type reg_param_type;
+
+	/** default constructor */
+	LocalSearchParam();
+
+	/** constructor */
+	LocalSearchParam(T _eta, T _eps, reg_param_type reg_params);
+
+	/** regularization constant \f$\eta > 0\f$ */
+	T eta;
+
+	/** epsilon of the algorithm */
+	T eps;
+
+	/** regularizer params */
+	reg_param_type regularizer_params;
+
+	/** default epsilon value */
+	static constexpr T default_eps = static_cast<T>(22);
+};
+
 /** @brief class LocalSearch for a dummy algorithm which does nothing and returns
  * all the features that are there in the input problem
  */
@@ -37,19 +63,24 @@ template <template <class> class Regularizer>
 class LocalSearch
 {
 public:
+	/** parameter type */
+	typedef LocalSearchParam<Regularizer, float64_t> param_type;
+
 	/** constructor
 	 * @param _regressors the regressors (real valued dense feature matrix)
 	 * @param _regressand the regressand (real valued dense labels vector)
-	 * @param _eps the epsilon of the algorithm (default value 0.1)
 	 */
-	LocalSearch(const Matrix<float64_t>& _regressors, const Vector<float64_t>& _regressand,
-			float64_t _eps = 22);
+	LocalSearch(const Matrix<float64_t>& _regressors, const Vector<float64_t>& _regressand);
 
 	/** destructor */
 	~LocalSearch();
 
 	/** @return the vector of selected feature indices */
 	std::vector<index_t> run();
+
+	/** @param params the parameters of the algorithm */
+	void set_params(param_type _params);
+
 private:
 	/** real valued dense feature matrix */
 	const Matrix<float64_t>& regressors;
@@ -57,8 +88,8 @@ private:
 	/** real valued dense labels vector */
 	const Vector<float64_t>& regressand;
 
-	/** epsilon of the algorithm */
-	float64_t eps;
+	/** the algorithm params */
+	param_type params;
 };
 
 }

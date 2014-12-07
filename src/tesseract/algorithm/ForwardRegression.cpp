@@ -38,7 +38,8 @@ ForwardRegressionParam<Regularizer, T>::ForwardRegressionParam()
 }
 
 template <template <class> class Regularizer, typename T>
-ForwardRegressionParam<Regularizer, T>::ForwardRegressionParam(T _eta, param_type reg_params)
+ForwardRegressionParam<Regularizer, T>::ForwardRegressionParam(T _eta,
+		ForwardRegressionParam<Regularizer,T>::reg_param_type reg_params)
 : eta(_eta), regularizer_params(reg_params)
 {
 }

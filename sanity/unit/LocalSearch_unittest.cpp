@@ -53,6 +53,8 @@ void test1()
 	VectorXd y = m.block(0,dim,N,1);
 
 	LocalSearch<SmoothedDifferentialEntropy> ls(X,y);
+	typedef LocalSearch<SmoothedDifferentialEntropy>::param_type param_type;
+	ls.set_params(param_type());
 	std::vector<index_t> inds = ls.run();
 
 	// all the features are selected
