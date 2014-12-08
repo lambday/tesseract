@@ -62,9 +62,8 @@ LocalSearchParam<Regularizer, T>::LocalSearchParam(T _eta, T _eps,
 }
 
 template <template <class> class Regularizer, typename T>
-LocalSearch<Regularizer, T>::LocalSearch(const Matrix<T>& _regressors,
-		const Vector<T>& _regressand)
-	: regressors(_regressors), regressand(_regressand)
+LocalSearch<Regularizer, T>::LocalSearch(const Eigen::Ref<const Matrix<T>>& _cov)
+: cov(_cov)
 {
 }
 
@@ -74,10 +73,10 @@ LocalSearch<Regularizer, T>::~LocalSearch()
 }
 
 template <template <class> class Regularizer, typename T>
-std::vector<index_t> LocalSearch<Regularizer, T>::run()
+std::pair<T,std::vector<index_t>> LocalSearch<Regularizer, T>::run()
 {
 	// number of total features
-	index_t n = regressors.cols();
+	index_t n = cov.cols() - 1;
 
 	// need to keep track of the maximum evaluated value of f
 	T maxval = 0;
@@ -94,8 +93,7 @@ std::vector<index_t> LocalSearch<Regularizer, T>::run()
 		inds.push_back(j);
 
 		// evaluate the function on the regressors
-		const Matrix<T>& m = Features<T>::copy_feats(regressors, inds);
-		T val = f(m.transpose() * m);
+		T val = f(Features<T>::copy_cov(cov, inds));
 
 		// update running max and argmax
 		if (val > maxval)
@@ -154,8 +152,7 @@ std::vector<index_t> LocalSearch<Regularizer, T>::run()
 				cur_inds.push_back(j);
 
 				// evaluate the function on the regressors
-				const Matrix<T>& m = Features<T>::copy_feats(regressors, cur_inds);
-				T val = f(m.transpose() * m);
+				T val = f(Features<T>::copy_cov(cov, inds));
 
 				// update running max and argmax
 				if (exists = val >= threshold)
@@ -183,16 +180,20 @@ std::vector<index_t> LocalSearch<Regularizer, T>::run()
 	// reference of the indices that will be returned
 	std::vector<index_t>& ret_inds = inds;
 
+	// make sure that the last row/col is also included since it contains the b_S part
+	inds.push_back(cov.cols()-1);
+
 	// on S
-	T g_S = g(Features<T>::copy_feats(regressors,regressand,inds));
+	T retval = g(Features<T>::copy_cov(cov,inds));
 
 	// on U\S and U
 	std::vector<index_t> rest_inds;
 	std::vector<index_t> all_inds;
 
 	// if all features are selected, then no use of checking any further
-	if (inds.size() < n)
+	if (inds.size()-1 < n)
 	{
+		// compute the indices U \ S
 		for (index_t i = 0; i < selected.size(); ++i)
 		{
 			if (!selected[i])
@@ -201,25 +202,30 @@ std::vector<index_t> LocalSearch<Regularizer, T>::run()
 			}
 		}
 
-		T g_UminusS = g(Features<T>::copy_feats(regressors,regressand,rest_inds));
-
-		if (g_UminusS > g_S)
+		// make sure that the last row/col is also included since it contains the b_S part
+		rest_inds.push_back(cov.cols()-1);
+		T g_UminusS = g(Features<T>::copy_cov(cov,rest_inds));
+		if (g_UminusS > retval)
 		{
 			ret_inds = rest_inds;
+			retval = g_UminusS;
 		}
 
-		all_inds.resize(n);
+		// last col already included
+		all_inds.resize(n + 1);
 		std::iota(all_inds.begin(), all_inds.end(), 0);
-
-		T g_U = g(Features<T>::copy_feats(regressors,regressand,all_inds));
-
-		if (g_U > g_UminusS)
+		T g_U = g(Features<T>::copy_cov(cov,all_inds));
+		if (g_U > retval)
 		{
 			ret_inds = all_inds;
+			retval = g_U;
 		}
 	}
 
-	return ret_inds;
+	// make sure to pop back the last added index since it's the col related to Z
+	ret_inds.pop_back();
+
+	return std::make_pair(retval,ret_inds);
 }
 
 template <template <class> class Regularizer, typename T>

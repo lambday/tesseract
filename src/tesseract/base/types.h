@@ -34,6 +34,8 @@ template <typename T>
 	using Matrix = Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>;
 template <typename T>
 	using Vector = Eigen::Matrix<T, Eigen::Dynamic, 1>;
+template <typename T>
+	using Block = Eigen::Block<const Matrix<T>, Eigen::Dynamic, Eigen::Dynamic, true>;
 
 typedef size_t index_t;
 typedef int int32_t;

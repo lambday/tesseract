@@ -38,7 +38,8 @@ struct Features
 	 * @param inds the indices which are to be copied
 	 * @return the new feature matrix with columns as specified by the indices param
 	 */
-	static Matrix<T> copy_feats(const Matrix<T>& m, std::vector<index_t>& inds);
+	static Matrix<T> copy_feats(const Eigen::Ref<const Matrix<T>>& m,
+			std::vector<index_t>& inds);
 
 	/** copies the specified dimensions into a new matrix object and appends that
 	 * with a column vector
@@ -48,7 +49,16 @@ struct Features
 	 * @param inds the indices which are to be copied
 	 * @return the new feature matrix with columns as specified by the indices param
 	 */
-	static Matrix<T> copy_feats(const Matrix<T>& m, const Vector<T>& v, std::vector<index_t>& inds);
+	static Matrix<T> copy_feats(const Eigen::Ref<const Matrix<T>>& m,
+			const Eigen::Ref<const Vector<T>>& v, std::vector<index_t>& inds);
+
+	/** copies the specified subset of the covariance matrix
+	 * @param cov the whole covariance matrix C
+	 * @param inds the indices defining the subset S
+	 * @return the submatrix of C containing only S, C_S
+	 */
+	static Matrix<T> copy_cov(const Eigen::Ref<const Matrix<T>>& cov,
+			std::vector<index_t>& inds);
 };
 
 }

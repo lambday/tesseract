@@ -49,7 +49,7 @@ struct DummyRegularizer
 	 * @param cov the covariance matrix
 	 * @return the regularizer value (always 0 in this case)
 	 */
-	const T operator()(const Matrix<T>& cov) const;
+	const T operator()(const Eigen::Ref<const Matrix<T>>& cov) const;
 
 	/** @param _param the regularizer param */
 	void set_params(param_type params);

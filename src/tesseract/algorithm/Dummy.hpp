@@ -45,28 +45,23 @@ public:
 	typedef DummyParams param_type;
 
 	/** constructor
-	 * @param _regressors the regressors (real valued dense feature matrix)
-	 * @param _regressand the regressand (real valued dense labels vector)
+	 * @param _cov the covariance matrix
 	 * @param _target_feats number of target features (default value is 0)
 	 */
-	Dummy(const Matrix<float64_t>& _regressors, const Vector<float64_t>& _regressand,
-			index_t _target_feats = 0);
+	Dummy(const Eigen::Ref<const Matrix<float64_t>>& _cov, index_t _target_feats = 0);
 
 	/** destructor */
 	~Dummy();
 
-	/** @return the vector of selected feature indices */
-	std::vector<index_t> run();
+	/** @return a pair of the function value and selected feature indices */
+	std::pair<float64_t,std::vector<index_t>> run();
 
 	/** @param param the parameter type */
 	void set_params(param_type param);
 
 private:
-	/** real valued dense feature matrix */
-	const Matrix<float64_t>& regressors;
-
-	/** real valued dense labels vector */
-	const Vector<float64_t>& regressand;
+	/** real valued dense covariance matrix */
+	const Eigen::Ref<const Matrix<float64_t>> cov;
 
 	/** number of target features */
 	index_t target_feats;

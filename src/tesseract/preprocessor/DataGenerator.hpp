@@ -68,18 +68,18 @@ public:
 	/** @return the number of examples */
 	int32_t get_num_examples() const;
 
+	/** @return the covariance matrix on the whole data */
+	const Matrix<float64_t> get_cov() const;
+
 	/** @return the regressors (real valued dense feature matrix) */
-	const Matrix<float64_t>& get_regressors() const;
+	const Eigen::Ref<const Matrix<float64_t>> get_regressors() const;
 
 	/** @return the regressand (real valued dense label vector) */
-	const Vector<float64_t>& get_regressand() const;
+	const Eigen::Ref<const Vector<float64_t>> get_regressand() const;
 
 private:
-	/** the regressors (real valued dense feature matrix) */
-	Matrix<float64_t> regressors;
-
-	/** the regressand (real valued label vector) */
-	Vector<float64_t> regressand;
+	/** the regressors (all but last column) and regressand (last column) */
+	Matrix<float64_t> data;
 
 	/** number of examples */
 	int32_t num_examples;

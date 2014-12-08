@@ -34,27 +34,25 @@ ComputeFunction<Regularizer, T>::ComputeFunction() : eta(default_eta)
 }
 
 template <template <class> class Regularizer, typename T>
-const T ComputeFunction<Regularizer, T>::operator ()(const Matrix<T>& X) const
+const T ComputeFunction<Regularizer, T>::operator ()(const Eigen::Ref<const Matrix<T>>& cov) const
 {
-	// compute covariance which is X^TX since the columns of the matrices have unit norm
-	Matrix<T> cov = X.transpose() * X;
 	index_t N = cov.rows() - 1;
 
-	// evaluate the squared multiple correlation which is b_S.C_S^1 b_S
+	// evaluate the squared multiple correlation which is b_S.C_S^{-1} b_S
 	T R_sq = 0;
 
 	// avoid nan values when the C_S matrix is singular
 	// TODO think of using Moore-Penrose pseudo-inverse
-	if (cov.diagonal().topRows(N).minCoeff() > 0.0)
+	if (cov.topLeftCorner(N, N).diagonal().minCoeff() > std::numeric_limits<float64_t>::epsilon())
 	{
-		Vector<T> b_S = cov.rightCols(1).topRows(N);
-		R_sq = b_S.dot(cov.topLeftCorner(N, N).llt().solve(b_S));
+		auto& b_S = cov.rightCols(1).topRows(N);
+		Eigen::Map<Vector<T>> b_S_map(const_cast<float64_t*>(b_S.data()), N);
+		R_sq = b_S_map.dot(cov.topLeftCorner(N, N).llt().solve(b_S_map));
 	}
 
 	// compute the regularizer on C_S
 	Regularizer<T> regularizer;
 	regularizer.set_params(reg_params);
-
 	T f = regularizer(cov.topLeftCorner(N, N));
 
 	return R_sq + eta * f;

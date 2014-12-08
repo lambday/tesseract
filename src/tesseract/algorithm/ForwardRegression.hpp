@@ -61,18 +61,16 @@ public:
 	typedef ForwardRegressionParam<Regularizer, T> param_type;
 
 	/** constructor
-	 * @param _regressors the regressors (real valued dense feature matrix)
-	 * @param _regressand the regressand (real valued dense labels vector)
+	 * @param _cov the covariance matrix
 	 * @param _target_feats number of target features (default value is 0)
 	 */
-	ForwardRegression(const Matrix<T>& _regressors, const Vector<T>& _regressand,
-			index_t _target_feats = 0);
+	ForwardRegression(const Eigen::Ref<const Matrix<T>>& _cov, index_t _target_feats = 0);
 
 	/** destructor */
 	~ForwardRegression();
 
-	/** @return the vector of selected feature indices */
-	std::vector<index_t> run();
+	/** @return a pair of the function value and selected feature indices */
+	std::pair<T,std::vector<index_t>> run();
 
 	/** @param param the parameter type */
 	void set_params(param_type _params);
@@ -81,11 +79,8 @@ private:
 	/** parameters */
 	param_type params;
 
-	/** real valued dense feature matrix */
-	const Matrix<T>& regressors;
-
-	/** real valued dense labels vector */
-	const Vector<T>& regressand;
+	/** real valued dense covariance matrix */
+	const Eigen::Ref<const Matrix<float64_t>> cov;
 
 	/** number of target features */
 	index_t target_feats;

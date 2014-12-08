@@ -24,11 +24,12 @@
 
 #include <tesseract/errors/PearsonsCorrelation.hpp>
 #include <cmath>
+#include <numeric>
 
 using namespace tesseract;
 
 template <typename T>
-float64_t PearsonsCorrelation<T>::compute(const Vector<T>& Z, const Vector<T>& Zp)
+float64_t PearsonsCorrelation<T>::compute(const Eigen::Ref<const Vector<T>> Z, const Eigen::Ref<const Vector<T>> Zp)
 {
 	assert(Z.rows() == Zp.rows());
 	assert(Z.rows() > 2);
@@ -36,8 +37,11 @@ float64_t PearsonsCorrelation<T>::compute(const Vector<T>& Z, const Vector<T>& Z
 	int32_t N = Z.rows();
 
 	// compute mean
-	Vector<float64_t> mu_Z = Vector<float64_t>::Constant(N, Z.array().template sum() * 1.0 / N);
-	Vector<float64_t> mu_Zp = Vector<float64_t>::Constant(N, Zp.array().template sum() * 1.0 / N);
+	float64_t sum_Z = std::accumulate(const_cast<T*>(Z.data()), const_cast<T*>(Z.data() + N), 0);
+	float64_t sum_Zp = std::accumulate(const_cast<T*>(Zp.data()), const_cast<T*>(Zp.data() + N), 0);
+
+	Vector<float64_t> mu_Z = Vector<float64_t>::Constant(N, sum_Z / N);
+	Vector<float64_t> mu_Zp = Vector<float64_t>::Constant(N, sum_Zp / N);
 
 	// compute sample std dev
 	float64_t s_Z = sqrt((Z - mu_Z).array().template square().template sum() / (N - 1.0));
@@ -49,6 +53,8 @@ float64_t PearsonsCorrelation<T>::compute(const Vector<T>& Z, const Vector<T>& Z
 	// compute Pearson's correlation
 	float64_t SSY = (Z - mu_Z).array().template square().template sum();
 	return sqrt((1 - r*r) * SSY / (N - 2));
+
+	return 0;
 }
 
 template class PearsonsCorrelation<float64_t>;

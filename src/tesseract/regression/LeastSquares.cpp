@@ -28,26 +28,6 @@
 using namespace tesseract;
 using namespace Eigen;
 
-template class LeastSquares<MatrixXd, VectorXd, LS_SVD>;
-template class LeastSquares<MatrixXf, VectorXf, LS_SVD>;
-template class LeastSquares<MatrixXi, VectorXi, LS_SVD>;
-
-template class LeastSquares<MatrixXd, VectorXd, LS_QR>;
-template class LeastSquares<MatrixXf, VectorXf, LS_QR>;
-template class LeastSquares<MatrixXi, VectorXi, LS_QR>;
-
-template class LeastSquares<MatrixXd, VectorXd, LS_NORMAL>;
-template class LeastSquares<MatrixXf, VectorXf, LS_NORMAL>;
-template class LeastSquares<MatrixXi, VectorXi, LS_NORMAL>;
-
-template class LeastSquares<Map<MatrixXd>, Map<VectorXd>, LS_SVD>;
-template class LeastSquares<Map<MatrixXf>, Map<VectorXf>, LS_SVD>;
-template class LeastSquares<Map<MatrixXi>, Map<VectorXi>, LS_SVD>;
-
-template class LeastSquares<Map<MatrixXd>, Map<VectorXd>, LS_QR>;
-template class LeastSquares<Map<MatrixXf>, Map<VectorXf>, LS_QR>;
-template class LeastSquares<Map<MatrixXi>, Map<VectorXi>, LS_QR>;
-
-template class LeastSquares<Map<MatrixXd>, Map<VectorXd>, LS_NORMAL>;
-template class LeastSquares<Map<MatrixXf>, Map<VectorXf>, LS_NORMAL>;
-template class LeastSquares<Map<MatrixXi>, Map<VectorXi>, LS_NORMAL>;
+template class LeastSquares<float64_t, LS_SVD>;
+template class LeastSquares<float64_t, LS_QR>;
+template class LeastSquares<float64_t, LS_NORMAL>;

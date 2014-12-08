@@ -27,7 +27,7 @@
 using namespace tesseract;
 
 template <typename T>
-const T DummyRegularizer<T>::operator()(const Matrix<T>& cov) const
+const T DummyRegularizer<T>::operator()(const Eigen::Ref<const Matrix<T>>& cov) const
 {
 	return static_cast<T>(0);
 }

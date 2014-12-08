@@ -48,7 +48,8 @@ void test(index_t num_examples, index_t target_feats)
 {
 	Evaluation<MNISTDataSet,DataGenerator<IDX3Reader,IDX1Reader,UnitL2Normalizer>,
 		Algorithm,ErrorMeasures> evaluator;
-	evaluator.set_seed(std::time(0));
+	//evaluator.set_seed(std::time(0));
+	evaluator.set_seed(12345);
 	evaluator.set_num_examples(num_examples);
 	evaluator.set_target_feats(target_feats);
 

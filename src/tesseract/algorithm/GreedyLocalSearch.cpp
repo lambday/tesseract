@@ -72,9 +72,9 @@ GreedyLocalSearchParam<FRAlgo,LSAlgo,Regularizer,T>::GreedyLocalSearchParam(T _e
 template <template<template<class>class,typename> class FRAlgo,
 		 template <template<class>class,typename> class LSAlgo,
 		 template <class> class Regularizer, typename T>
-GreedyLocalSearch<FRAlgo,LSAlgo,Regularizer,T>::GreedyLocalSearch(const Matrix<T>& _regressors,
-		const Vector<T>& _regressand, index_t _target_feats)
-	: regressors(_regressors), regressand(_regressand), target_feats(_target_feats)
+GreedyLocalSearch<FRAlgo,LSAlgo,Regularizer,T>::GreedyLocalSearch(const Eigen::Ref<const Matrix<T>>& _cov,
+		index_t _target_feats)
+: cov(_cov), target_feats(_target_feats)
 {
 }
 
@@ -88,15 +88,20 @@ GreedyLocalSearch<FRAlgo,LSAlgo,Regularizer,T>::~GreedyLocalSearch()
 template <template<template<class>class,typename> class FRAlgo,
 		 template <template<class>class,typename> class LSAlgo,
 		 template <class> class Regularizer, typename T>
-std::vector<index_t> GreedyLocalSearch<FRAlgo,LSAlgo,Regularizer,T>::run()
+std::pair<T,std::vector<index_t>> GreedyLocalSearch<FRAlgo,LSAlgo,Regularizer,T>::run()
 {
+	// total number of feats
+	index_t N = cov.cols() - 1;
+
 	// run forward regression on the whole data
-	FRAlgo<Regularizer,T> fr(regressors, regressand, target_feats);
+	FRAlgo<Regularizer,T> fr(cov, target_feats);
 	fr.set_params(params.fr_params);
-	std::vector<index_t> S_1 = fr.run();
+	std::pair<T,std::vector<index_t>> S_1 = fr.run();
+	T g_S_1 = S_1.first;
+	std::vector<index_t> S_1_inds = S_1.second;
 
 	// sort the indices, needed for index mapping
-	std::sort(S_1.begin(), S_1.end());
+	std::sort(S_1_inds.begin(), S_1_inds.end());
 
 	// index map functor - needs unit-testing
 	std::function<void(const std::vector<index_t>&,std::vector<index_t>&)> inds_map
@@ -109,73 +114,73 @@ std::vector<index_t> GreedyLocalSearch<FRAlgo,LSAlgo,Regularizer,T>::run()
 		};
 
 	// run local search on the returned set
-	LSAlgo<Regularizer,T> ls(Features<T>::copy_feats(regressors,S_1), regressand);
+	// make sure to include the last column
+	S_1_inds.push_back(N);
+	LSAlgo<Regularizer,T> ls(Features<T>::copy_cov(cov,S_1_inds));
 	ls.set_params(params.ls_params);
-	std::vector<index_t> S_p = ls.run();
+	std::pair<T,std::vector<index_t>> S_p = ls.run();
+	T g_S_p = S_p.first;
+	std::vector<index_t> S_p_inds = S_p.second;
+
+	// pop back the last column from the index set
+	S_1_inds.pop_back();
 
 	// if returned set is of same size as of S_1, don't bother
 	// otherwise, since the above returned indices are mapped, we need to map it back
-	bool ls_useful = S_p.size() < S_1.size();
+	bool ls_useful = S_p_inds.size() < S_1_inds.size();
 	if (ls_useful)
 	{
-		std::sort(S_p.begin(), S_p.end());
-		inds_map(S_1, S_p);
+		std::sort(S_p_inds.begin(), S_p_inds.end());
+		inds_map(S_1_inds, S_p_inds);
 	}
 
 	// compute the rest of indices
 	std::vector<index_t> rest;
 	index_t in_s1 = 0;
-	for (index_t i = 0; i < regressors.cols(); ++i)
+	for (index_t i = 0; i < N; ++i)
 	{
-		if (S_1[in_s1] == i)
+		if (S_1_inds[in_s1] == i)
 			in_s1++;
 		else
 			rest.push_back(i);
 	}
 
-	assert(S_1.size() + rest.size() == regressors.cols());
+	assert(S_1_inds.size() + rest.size() == N);
+
+	// make sure to add the last column
+	rest.push_back(N);
 
 	// run forward regression for the rest of the data
-	FRAlgo<Regularizer,T> fr2(Features<T>::copy_feats(regressors,rest), regressand, target_feats);
+	FRAlgo<Regularizer,T> fr2(Features<T>::copy_cov(cov,rest),target_feats);
 	fr2.set_params(params.fr_params);
-	std::vector<index_t> S_2 = fr2.run();
+	std::pair<T,std::vector<index_t>> S_2 = fr2.run();
+	T g_S_2 = S_2.first;
+	std::vector<index_t> S_2_inds = S_2.second;
+
+	// pop back last column index from rest
+	rest.pop_back();
 
 	// map these indices
-	std::sort(S_2.begin(), S_2.end());
-	inds_map(rest, S_2);
-
-	// create the compute function
-	ComputeFunction<Regularizer, T> g;
-	g.set_eta(params.eta);
-	g.set_reg_params(params.regularizer_params);
+	std::sort(S_2_inds.begin(), S_2_inds.end());
+	inds_map(rest, S_2_inds);
 
 	// return inds
-	std::vector<index_t> inds = S_1;
+	std::vector<index_t>& argmax = S_1_inds;
+	T maxval = g_S_1;
 
-	// compute g(S_1)
-	T max = g(Features<T>::copy_feats(regressors,regressand,S_1));
-
-	// compute g(S_p)
-	if (ls_useful)
+	if (maxval < g_S_p)
 	{
-		T g_S_p = g(Features<T>::copy_feats(regressors,regressand,S_p));
-		if (max < g_S_p)
-		{
-			max = g_S_p;
-			inds = S_p;
-		}
+		maxval = g_S_p;
+		argmax = S_p_inds;
 	}
 
-	// compute g(S_2)
-	T g_S_2 = g(Features<T>::copy_feats(regressors,regressand,S_2));
-
-	if (max < g_S_2)
+	if (maxval < g_S_2)
 	{
-		max = g_S_2;
-		inds = S_2;
+		maxval = g_S_2;
+		argmax = S_2_inds;
 	}
 
-	return inds;
+	return std::make_pair(maxval, argmax);
 }
 
 template <template<template<class>class,typename> class FRAlgo,

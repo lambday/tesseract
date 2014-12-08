@@ -28,6 +28,7 @@
 #include <tesseract/regularizer/SmoothedDifferentialEntropy.hpp>
 #include <tesseract/features/Features.hpp>
 #include <vector>
+#include <map>
 
 using namespace tesseract;
 
@@ -45,9 +46,9 @@ ForwardRegressionParam<Regularizer, T>::ForwardRegressionParam(T _eta,
 }
 
 template <template <class> class Regularizer, typename T>
-ForwardRegression<Regularizer,T>::ForwardRegression(const Matrix<T>& _regressors,
-		const Vector<T>& _regressand, index_t _target_feats)
-	: regressors(_regressors), regressand(_regressand), target_feats(_target_feats)
+ForwardRegression<Regularizer,T>::ForwardRegression(const Eigen::Ref<const Matrix<T>>& _cov,
+		index_t _target_feats)
+: cov(_cov), target_feats(_target_feats)
 {
 }
 
@@ -57,8 +58,11 @@ ForwardRegression<Regularizer,T>::~ForwardRegression()
 }
 
 template <template <class> class Regularizer, typename T>
-std::vector<index_t> ForwardRegression<Regularizer,T>::run()
+std::pair<T,std::vector<index_t>> ForwardRegression<Regularizer,T>::run()
 {
+	// number of feats
+	index_t N = cov.cols() - 1;
+
 	// create the compute function
 	ComputeFunction<Regularizer, T> g;
 	g.set_eta(params.eta);
@@ -68,48 +72,55 @@ std::vector<index_t> ForwardRegression<Regularizer,T>::run()
 	std::vector<index_t> inds;
 
 	// status vector to avoid overchecking
-	std::vector<bool> selected(regressors.cols());
+	std::vector<bool> selected(N);
 	std::fill(selected.begin(), selected.end(), false);
+
+	// final function value
+	T maxval = 0;
 
 	// main loop runs until target_feats features are added
 	// cannot be parallelised since addition happens serially
 	for (index_t i = 0; i < target_feats; ++i)
 	{
 		// store the values for argmax operation
-		T max = 0;
-		index_t max_inds = -1;
+		maxval = 0;
+		index_t argmax = -1;
 
 		// can be parallelised
-		for (index_t j = 0; j < regressors.cols(); ++j)
+		for (index_t j = 0; j < N; ++j)
 		{
 			if (!selected[j])
 			{
 				// note that in case of parallel, inds should have individual copies
+				// the following indices are for C_S
 				std::vector<index_t> cur_inds(inds);
 				cur_inds.push_back(j);
 
+				// remember to push the index of last column
+				// since we need b_S also for compute function
+				cur_inds.push_back(N);
+
 				// evaluate the function
-				const Matrix<T>& m = Features<T>::copy_feats(regressors, regressand, cur_inds);
-				T val = g(m);
+				T val = g(Features<T>::copy_cov(cov, cur_inds));
 
 				// update running max, need to be write protected
-				if (val > max)
+				if (val > maxval)
 				{
-					max = val;
-					max_inds = j;
+					maxval = val;
+					argmax = j;
 				}
-
 			}
 		}
 
-		// update selected indices
-		inds.push_back(max_inds);
+		// make sure that we added something
+		assert(argmax != -1);
 
-		// update selected flag
-		selected[max_inds] = true;
+		// update the working set
+		inds.push_back(argmax);
+		selected[argmax] = true;
 	}
 
-	return inds;
+	return std::make_pair(maxval, inds);
 }
 
 template <template <class> class Regularizer, typename T>

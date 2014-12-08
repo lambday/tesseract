@@ -73,26 +73,23 @@ public:
 	typedef LocalSearchParam<Regularizer, T> param_type;
 
 	/** constructor
-	 * @param _regressors the regressors (real valued dense feature matrix)
-	 * @param _regressand the regressand (real valued dense labels vector)
+	 * @param _cov the covariance matrix
+	 * @param _target_feats number of target features (default value is 0)
 	 */
-	LocalSearch(const Matrix<T>& _regressors, const Vector<T>& _regressand);
+	LocalSearch(const Eigen::Ref<const Matrix<T>>& _cov);
 
 	/** destructor */
 	~LocalSearch();
 
-	/** @return the vector of selected feature indices */
-	std::vector<index_t> run();
+	/** @return a pair of the function value and selected feature indices */
+	std::pair<T,std::vector<index_t>> run();
 
 	/** @param params the parameters of the algorithm */
 	void set_params(param_type _params);
 
 private:
-	/** real valued dense feature matrix */
-	const Matrix<T>& regressors;
-
-	/** real valued dense labels vector */
-	const Vector<T>& regressand;
+	/** real valued dense covariance matrix */
+	const Eigen::Ref<const Matrix<float64_t>> cov;
 
 	/** the algorithm params */
 	param_type params;

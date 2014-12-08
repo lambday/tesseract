@@ -42,11 +42,11 @@ struct ComputeFunction
 	ComputeFunction();
 
 	/*
-	 * @param X the regressors (real valued dense feature matrix) and
-	 * the regressand (the last column)
+	 * @param cov the covariance matrix C_S and b_S (the last row and col
+	 * corresponds to b_S
 	 * @return the function value
 	 */
-	const T operator ()(const Matrix<T>& X) const;
+	const T operator ()(const Eigen::Ref<const Matrix<T>>& cov) const;
 
 	/** @param _eta regularization constant */
 	void set_eta(T _eta);
