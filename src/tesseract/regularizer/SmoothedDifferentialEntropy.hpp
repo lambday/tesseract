@@ -67,13 +67,14 @@ struct SmoothedDifferentialEntropy
 	 * @param cov the covariance matrix
 	 * @return the regularizer value
 	 */
-	const T operator()(const Matrix<T>& cov) const;
+	const T operator()(const Eigen::Ref<const Matrix<T>>& cov) const;
 
 	/** @param _param the regularizer param */
 	void set_params(param_type _params);
 
 	/** smoothing constant delta */
 	param_type params;
+
 };
 
 }

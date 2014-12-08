@@ -50,7 +50,7 @@ SmoothedDifferentialEntropy<T>::~SmoothedDifferentialEntropy()
 }
 
 template <typename T>
-const T SmoothedDifferentialEntropy<T>::operator()(const Matrix<T>& cov) const
+const T SmoothedDifferentialEntropy<T>::operator()(const Eigen::Ref<const Matrix<T>>& cov) const
 {
 	// compute the eigen values
 	Vector<T> eigenvalues = cov.eigenvalues().real();
@@ -63,7 +63,6 @@ const T SmoothedDifferentialEntropy<T>::operator()(const Matrix<T>& cov) const
 	});
 
 	return eigenvalues.array().sum() - 3 * k * log(params.delta) * inv_log_2;
-
 }
 
 template <typename T>

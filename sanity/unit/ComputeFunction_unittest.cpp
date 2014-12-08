@@ -43,7 +43,7 @@ void test1()
 		-0.21123, 0.82329, 0.53646,
 		0.56620, -0.60490, -0.44445;
 	ComputeFunction<DummyRegularizer, float64_t> f;
-	float64_t val = f(m);
+	float64_t val = f(m.transpose() * m);
 
 	// compute it another way
 	MatrixXd A = m.block(0, 0, n, dim);
@@ -76,7 +76,8 @@ void test2()
 	ComputeFunction<SmoothedDifferentialEntropy, float64_t> f;
 	f.set_eta(eta);
 	f.set_reg_params(reg_param_type(delta));
-	float64_t val = f(m);
+	MatrixXd cov = m.transpose() * m;
+	float64_t val = f(cov);
 
 	// compute it another way
 	MatrixXd A = m.block(0, 0, n, dim);
@@ -90,10 +91,8 @@ void test2()
 
 	SmoothedDifferentialEntropy<float64_t> r;
 	r.set_params(reg_param_type(delta));
-	float64_t val3 = r(A.transpose() * A);
+	float64_t val3 = r(cov.topLeftCorner(dim, dim));
 
-	// since we are using dummy regularizer so these two values should be same
-	// in fact is should be 0.936133 (computed using octave)
 	assert(abs(val - (val2 + eta * val3)) < std::numeric_limits<float64_t>::epsilon());
 }
 
@@ -115,7 +114,8 @@ void test3()
 	ComputeFunction<SmoothedDifferentialEntropy, float64_t> f;
 	f.set_eta(eta);
 	f.set_reg_params(reg_param_type(delta));
-	float64_t val = f(m);
+	MatrixXd cov = m.transpose() * m;
+	float64_t val = f(cov);
 
 	// compute it another way
 	MatrixXd A = m.block(0, 0, n, dim);
@@ -129,10 +129,8 @@ void test3()
 
 	SmoothedDifferentialEntropy<float64_t> r;
 	r.set_params(reg_param_type(delta));
-	float64_t val3 = r(A.transpose() * A);
+	float64_t val3 = r(cov.topLeftCorner(dim, dim));
 
-	// since we are using dummy regularizer so these two values should be same
-	// in fact is should be 0.936133 (computed using octave)
 	assert(abs(val - (val2 + eta * val3)) < std::numeric_limits<float64_t>::epsilon());
 }
 
@@ -148,7 +146,7 @@ void test4()
 		0.256471,  -0.463623,  -0.604798,  -0.161666,
 		-0.309417,   0.779976,   0.782938,   0.325794;
 	ComputeFunction<DummyRegularizer, float64_t> f;
-	float64_t val = f(m);
+	float64_t val = f(m.transpose() * m);
 
 	// octave computed value from the following code
 	/*

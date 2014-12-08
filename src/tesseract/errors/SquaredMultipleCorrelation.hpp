@@ -42,7 +42,7 @@ struct SquaredMultipleCorrelation
 	 * @param Zp the predicted regressands according to model \f$Z'\f$
 	 * @return the squared multiple correlation (see class documentation)
 	 */
-	float64_t compute(const Vector<T>& Z, const Vector<T>& Zp);
+	float64_t compute(const Eigen::Ref<const Vector<T>>& Z, const Eigen::Ref<const Vector<T>>& Zp);
 };
 
 }

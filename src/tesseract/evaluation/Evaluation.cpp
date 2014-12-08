@@ -47,17 +47,27 @@ using namespace tesseract;
 template <class DataSet, class DataGenerator, class Algorithm, class ErrorMeasure>
 std::vector<index_t> Evaluation<DataSet,DataGenerator,Algorithm,ErrorMeasure>::train()
 {
-	// read training data
-	DataGenerator gen(DataSet::feat_train, DataSet::label_train);
-	gen.set_seed(seed);
-	gen.set_num_examples(num_examples);
-	gen.generate();
+	// the covariance matrix required by the algorithm
+	Matrix<float64_t> cov;
+
+	// data generator is in the block because its destruction frees the
+	// memory holding the dataset
+	{
+		// read training data
+		DataGenerator gen(DataSet::feat_train, DataSet::label_train);
+		gen.set_seed(seed);
+		gen.set_num_examples(num_examples);
+		gen.generate();
+		cov = gen.get_cov();
+	}
+
+	// only cov matrix is in memory
 
 	// run algorithm
-	Algorithm algo(gen.get_regressors(), gen.get_regressand(), target_feats);
+	Algorithm algo(cov, target_feats);
 	algo.set_params(params);
 
-	return algo.run();
+	return algo.run().second;
 }
 
 template <class DataSet, class DataGenerator, class Algorithm, class ErrorMeasure>
@@ -69,18 +79,19 @@ std::pair<index_t,float64_t> Evaluation<DataSet,DataGenerator,Algorithm,ErrorMea
 	gen.set_num_examples(num_examples);
 	gen.generate();
 
-	typedef typename std::remove_cv<typename std::remove_reference<decltype(gen.get_regressors())>::type>::type feat_type;
-	typedef typename std::remove_cv<typename std::remove_reference<decltype(gen.get_regressand())>::type>::type label_type;
+	// copy only selected features
+	const Eigen::Ref<const Matrix<float64_t>> feats_in_use =
+		Features<float64_t>::copy_feats(gen.get_regressors(), indices);
+
+	Vector<float64_t> coeff = Vector<float64_t>::Zero(indices.size());
 
 	// fit least square on test data for the selected features
-	LeastSquares<feat_type, label_type, LS_NORMAL> model;
-	const feat_type& feats_in_use = Features<float64_t>::copy_feats(gen.get_regressors(), indices);
-	label_type result(num_examples);
-	model.solve(feats_in_use, gen.get_regressand(), result);
+	LeastSquares<float64_t, LS_NORMAL> model;
+	model.solve(feats_in_use, gen.get_regressand(), coeff);
 
 	// compute error measure
 	ErrorMeasure measure;
-	return std::make_pair(indices.size(),measure.compute(gen.get_regressand(), feats_in_use * result));
+	return std::make_pair(indices.size(),measure.compute(gen.get_regressand(), feats_in_use*coeff));
 }
 
 template <class DataSet, class DataGenerator, class Algorithm, class ErrorMeasure>

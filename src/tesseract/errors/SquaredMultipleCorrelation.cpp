@@ -28,7 +28,8 @@
 using namespace tesseract;
 
 template <typename T>
-float64_t SquaredMultipleCorrelation<T>::compute(const Vector<T>& Z, const Vector<T>& Zp)
+float64_t SquaredMultipleCorrelation<T>::compute(const Eigen::Ref<const Vector<T>>& Z,
+		const Eigen::Ref<const Vector<T>>& Zp)
 {
 	assert(Z.rows() == Zp.rows());
 	assert(Z.rows() > 2);

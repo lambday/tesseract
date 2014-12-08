@@ -23,12 +23,13 @@
  */
 
 #include <tesseract/algorithm/Dummy.hpp>
+#include <algorithm>
+#include <map>
 
 using namespace tesseract;
 
-Dummy::Dummy(const Matrix<float64_t>& _regressors, const Vector<float64_t>& _regressand,
-		index_t _target_feats)
-	: regressors(_regressors), regressand(_regressand), target_feats(_target_feats)
+Dummy::Dummy(const Eigen::Ref<const Matrix<float64_t>>& _cov, index_t _target_feats)
+	: cov(_cov), target_feats(_target_feats)
 {
 }
 
@@ -36,11 +37,11 @@ Dummy::~Dummy()
 {
 }
 
-std::vector<index_t> Dummy::run()
+std::pair<float64_t,std::vector<index_t>> Dummy::run()
 {
-	std::vector<index_t> indices(regressors.cols());
+	std::vector<index_t> indices(cov.cols()-1);
 	std::iota(indices.begin(), indices.end(), 0);
-	return indices;
+	return std::make_pair(0.0,indices);
 }
 
 void Dummy::set_params(Dummy::param_type params)

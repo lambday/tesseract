@@ -79,30 +79,31 @@ void DataGenerator<FeatureReader,LabelReader,Normalizer>::generate()
 	// further sanity check for number of labels
 	assert(num_vec == labels.size());
 
-	// allocate and copy feature matrix
-	regressors = Matrix<float64_t>(num_vec, num_feats);
-	for (index_t i = 0; i < regressors.rows(); ++i)
+	// allocate and copy feature matrix containing both the regressors
+	// (first num_feats columns) and the regressand (last column)
+	// storing the data this way will simplify the covariance computation
+	data = Matrix<float64_t>(num_vec, num_feats + 1);
+	for (index_t i = 0; i < num_examples; ++i)
 	{
 		const std::vector<ubyte_t>& current = features[i];
-		for (index_t j = 0; j < regressors.cols(); ++j)
+		for (index_t j = 0; j < num_feats; ++j)
 		{
-			regressors(i, j) = static_cast<float64_t>(current[j]);
+			data(i, j) = static_cast<float64_t>(current[j]);
 		}
+		data(i, num_feats) = static_cast<float64_t>(labels[i]);
 	}
 
-	// allocate and copy labels vector
-	regressand = Vector<float64_t>(num_vec);
-	for (index_t i = 0; i < regressand.rows(); ++i)
-	{
-		regressand[i] = static_cast<float64_t>(labels[i]);
-	}
+	// normalize the whole data (regressors and regressands) columnwise
+	Normalizer<Matrix<float64_t>> normalizer;
+	normalizer.normalize(data);
+}
 
-	// normalize the regressors and regressands
-	Normalizer<Matrix<float64_t>> regressors_normalizer;
-	regressors_normalizer.normalize(regressors);
-
-	Normalizer<Vector<float64_t>> regressand_normalizer;
-	regressand_normalizer.normalize(regressand);
+template <class FeatureReader, class LabelReader, template <class> class Normalizer>
+const Matrix<float64_t> DataGenerator<FeatureReader,LabelReader,Normalizer>::get_cov() const
+{
+	// compute covariance once and for all
+	// since the data is unit L2 normalized columnwise, the covarience would be A^T A
+	return data.transpose() * data;
 }
 
 template <class FeatureReader, class LabelReader, template <class> class Normalizer>
@@ -124,15 +125,17 @@ void DataGenerator<FeatureReader,LabelReader,Normalizer>::set_seed(int32_t _seed
 }
 
 template <class FeatureReader, class LabelReader, template <class> class Normalizer>
-const Matrix<float64_t>& DataGenerator<FeatureReader,LabelReader,Normalizer>::get_regressors() const
+const Eigen::Ref<const Matrix<float64_t>> DataGenerator<FeatureReader,LabelReader,
+	  Normalizer>::get_regressors() const
 {
-	return regressors;
+	return data.leftCols(data.cols() - 1);
 }
 
 template <class FeatureReader, class LabelReader, template <class> class Normalizer>
-const Vector<float64_t>& DataGenerator<FeatureReader,LabelReader,Normalizer>::get_regressand() const
+const Eigen::Ref<const Vector<float64_t>> DataGenerator<FeatureReader,LabelReader,
+	  Normalizer>::get_regressand() const
 {
-	return regressand;
+	return data.rightCols<1>();
 }
 
 template class DataGenerator<IDX3Reader,IDX1Reader,UnitL2Normalizer>;

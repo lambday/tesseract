@@ -52,10 +52,12 @@ void test1()
 	MatrixXd X = m.block(0,0,N,dim);
 	VectorXd y = m.block(0,dim,N,1);
 
-	LocalSearch<SmoothedDifferentialEntropy, float64_t> ls(X,y);
+	MatrixXd cov = m.transpose() * m;
+
+	LocalSearch<SmoothedDifferentialEntropy, float64_t> ls(cov);
 	typedef LocalSearch<SmoothedDifferentialEntropy, float64_t>::param_type param_type;
 	ls.set_params(param_type());
-	std::vector<index_t> inds = ls.run();
+	std::vector<index_t> inds = ls.run().second;
 
 	// all the features are selected
 	assert(inds.size() == dim);

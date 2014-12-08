@@ -44,7 +44,8 @@ void test1()
 	SmoothedDifferentialEntropy<float64_t> f;
 	typedef SmoothedDifferentialEntropy<float64_t>::param_type param_type;
 	f.set_params(param_type(1));
-	float64_t val = f(m.transpose() * m);
+	MatrixXd cov = m.transpose() * m;
+	float64_t val = f(cov);
 
 	assert(abs(val - 2.1616) < 1E-6);
 }

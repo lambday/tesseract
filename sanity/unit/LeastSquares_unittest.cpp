@@ -33,7 +33,7 @@ using namespace std;
 template <class Matrix, class Vector>
 void test_svd(const Matrix& A, const Vector& b, Vector& x)
 {
-	LeastSquares<Matrix, Vector, LS_SVD> ls;
+	LeastSquares<double, LS_SVD> ls;
 	ls.solve(A, b, x);
 //	cout << "beta = " << endl << x << endl;
 //	cout << "residual = " << b-A*x << endl;
@@ -42,7 +42,7 @@ void test_svd(const Matrix& A, const Vector& b, Vector& x)
 template <class Matrix, class Vector>
 void test_qr(const Matrix& A, const Vector& b, Vector& x)
 {
-	LeastSquares<Matrix, Vector, LS_QR> ls;
+	LeastSquares<double, LS_QR> ls;
 	ls.solve(A, b, x);
 //	cout << "beta = " << endl << x << endl;
 //	cout << "residual = " << b-A*x << endl;
@@ -51,7 +51,7 @@ void test_qr(const Matrix& A, const Vector& b, Vector& x)
 template <class Matrix, class Vector>
 void test_normal(Matrix& A, Vector& b, Vector& x)
 {
-	LeastSquares<Matrix, Vector, LS_NORMAL> ls;
+	LeastSquares<double, LS_NORMAL> ls;
 	ls.solve(A, b, x);
 //	cout << "beta = " << endl << x << endl;
 //	cout << "residual = " << b-A*x << endl;

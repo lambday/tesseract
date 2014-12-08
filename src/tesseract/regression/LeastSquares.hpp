@@ -45,7 +45,7 @@ enum LeastSquareMethod
  * @brief template class LeastSquares is the generic class for solving
  * least square problem for solving over-dertermined systems \f$Ax=b\f$.
  */
-template <class Matrix, class Vector, enum LeastSquareMethod>
+template <typename T, enum LeastSquareMethod>
 struct LeastSquares;
 
 /**
@@ -53,8 +53,8 @@ struct LeastSquares;
  * least square problem for solving over-dertermined system \f$Ax=b\f$
  * using Jacobi SVD.
  */
-template <class Matrix, class Vector>
-struct LeastSquares<Matrix, Vector, LS_SVD>
+template <typename T>
+struct LeastSquares<T, LS_SVD>
 {
 	/**
 	 * Solves the over-determined system \f$Ax=b\f$.
@@ -62,7 +62,8 @@ struct LeastSquares<Matrix, Vector, LS_SVD>
 	 * @param b vector \f$b\f$
 	 * @param result result vector \f$x\f$
 	 */
-	void solve(const Matrix& A, const Vector& b, Vector& result) const
+	void solve(const Eigen::Ref<const Matrix<T>>& A, const Eigen::Ref<const Vector<T>>& b,
+			Eigen::Ref<Vector<T>> result) const
 	{
 		result = A.jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(b);
 	}
@@ -73,8 +74,8 @@ struct LeastSquares<Matrix, Vector, LS_SVD>
  * least square problem for solving over-dertermined system \f$Ax=b\f$
  * using Householder QR decomposition.
  */
-template <class Matrix, class Vector>
-struct LeastSquares<Matrix, Vector, LS_QR>
+template <typename T>
+struct LeastSquares<T, LS_QR>
 {
 	/**
 	 * Solves the over-determined system \f$Ax=b\f$.
@@ -82,7 +83,8 @@ struct LeastSquares<Matrix, Vector, LS_QR>
 	 * @param b vector \f$b\f$
 	 * @param result result vector \f$x\f$
 	 */
-	void solve(const Matrix& A, const Vector& b, Vector& result) const
+	void solve(const Eigen::Ref<const Matrix<T>>& A, const Eigen::Ref<const Vector<T>>& b,
+			Eigen::Ref<Vector<T>> result) const
 	{
 		result = A.colPivHouseholderQr().solve(b);
 	}
@@ -93,8 +95,8 @@ struct LeastSquares<Matrix, Vector, LS_QR>
  * least square problem for solving over-dertermined system \f$Ax=b\f$
  * using \f$x=(A^T.A)^{-1}(A^T.b)\f$.
  */
-template <class Matrix, class Vector>
-struct LeastSquares<Matrix, Vector, LS_NORMAL>
+template <typename T>
+struct LeastSquares<T, LS_NORMAL>
 {
 	/**
 	 * Solves the over-determined system \f$Ax=b\f$.
@@ -102,7 +104,8 @@ struct LeastSquares<Matrix, Vector, LS_NORMAL>
 	 * @param b vector \f$b\f$
 	 * @param result result vector \f$x\f$
 	 */
-	void solve(const Matrix& A, const Vector& b, Vector& result) const
+	void solve(const Eigen::Ref<const Matrix<T>>& A, const Eigen::Ref<const Vector<T>>& b,
+			Eigen::Ref<Vector<T>> result) const
 	{
 		result = (A.transpose() * A).ldlt().solve(A.transpose() * b);
 	}
