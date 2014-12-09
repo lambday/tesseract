@@ -157,14 +157,14 @@ void train_test(const Ref<const MatrixXd>& cov, param_type params, index_t targe
 int main(int argc, char** argv)
 {
 	// algorithm parameters
-	float64_t eta = 0.5;
-	float64_t eps = 100;
-	float64_t delta = 0.001;
+	float64_t eta = 0.00001;
+	float64_t eps = 2;
+	float64_t delta = 0.1;
 
 	index_t num_examples = 1000;
 
 	index_t min_feats = 10;
-	index_t max_feats = 80;
+	index_t max_feats = 50;
 
 	// store cov once and run the algo for different number of feats
 	MatrixXd cov = get_training_data_cov(num_examples);

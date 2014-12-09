@@ -60,8 +60,8 @@ struct ComputeFunction
 	/** regularizer params */
 	reg_param_type reg_params;
 
-	/** default value of eta = 0.5 */
-	static constexpr T default_eta = static_cast<T>(0.5);
+	/** default value of eta = 0.0001 */
+	static constexpr T default_eta = static_cast<T>(0.0001);
 };
 
 }
