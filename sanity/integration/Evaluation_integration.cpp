@@ -22,6 +22,7 @@
  * SOFTWARE.
  */
 
+#include <tesseract/base/init.hpp>
 #include <tesseract/io/IDX1Reader.hpp>
 #include <tesseract/io/IDX3Reader.hpp>
 #include <tesseract/preprocessor/DataGenerator.hpp>
@@ -67,6 +68,8 @@ int main(int argc, char** argv)
 {
 	index_t num_examples = 1000;
 	index_t target_feats = 20;
+
+	logger.set_loglevel(None);
 
 	std::cout << "Test 1 : Dummy algorithm, Sum-squared error" << std::endl;
 	std::cout << "===========================================" << std::endl;

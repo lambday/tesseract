@@ -22,33 +22,47 @@
  * SOFTWARE.
  */
 
-#ifndef UNIT_L2_NORMALIZER_H__
-#define UNIT_L2_NORMALIZER_H__
+#include <tesseract/logger/Logger.hpp>
+#include <cstdio>
+#include <cstdarg>
+#include <algorithm>
+#include <iostream>
 
-#include <tesseract/base/types.h>
-#include <limits>
+using namespace tesseract;
 
-namespace tesseract
+Logger::Logger() : loglevel(None)
 {
-
-/** @brief template class UnitL2Normalizer which normalizes the columns
- * (matrix or vector) so that the result columns have 1 \f$l^2\f$ norm.
- */
-template <class Container>
-struct UnitL2Normalizer
-{
-	/** @param samples the samples which are to be normalized */
-	void normalize(Container& samples)
-	{
-		// normalize all non-zero columns
-		for (index_t i = 0; i < samples.cols(); ++i)
-		{
-			if (samples.col(i).norm() > std::numeric_limits<float64_t>::epsilon())
-				samples.col(i).normalize();
-		}
-	}
-};
-
 }
 
-#endif // UNIT_L2_NORMALIZER_H__
+void Logger::set_loglevel(LogLevel log_level)
+{
+	loglevel = log_level;
+}
+
+const LogLevel Logger::get_loglevel() const
+{
+	return loglevel;
+}
+
+void Logger::write(LogLevel level, const char* format, ...)
+{
+	if (level <= loglevel)
+	{
+		va_list args;
+		va_start(args, format);
+		vprintf(format, args);
+		va_end(args);
+	}
+}
+
+void Logger::print_vector(std::vector<index_t> inds)
+{
+	printf("vector = [");
+	std::for_each(inds.begin(), inds.end(), [](index_t val) { printf("%u ", val); });
+	printf("]\n");
+}
+
+void Logger::print_matrix(const Eigen::Ref<const Matrix<float64_t>>& mat)
+{
+	std::cout << "matrix = " << std::endl << mat << std::endl;
+}

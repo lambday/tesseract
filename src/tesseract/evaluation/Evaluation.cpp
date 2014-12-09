@@ -22,6 +22,7 @@
  * SOFTWARE.
  */
 
+#include <tesseract/base/init.hpp>
 #include <tesseract/evaluation/Evaluation.hpp>
 #include <tesseract/evaluation/DataSet.hpp>
 #include <tesseract/preprocessor/DataGenerator.hpp>
@@ -47,8 +48,12 @@ using namespace tesseract;
 template <class DataSet, class DataGenerator, class Algorithm, class ErrorMeasure>
 std::vector<index_t> Evaluation<DataSet,DataGenerator,Algorithm,ErrorMeasure>::train()
 {
+	logger.write(Debug, "%s: Entering!\n", __PRETTY_FUNCTION__);
+
 	// the covariance matrix required by the algorithm
 	Matrix<float64_t> cov;
+
+	logger.write(MemDebug, "Before initialization, cov.data = %p\n", cov.data());
 
 	// data generator is in the block because its destruction frees the
 	// memory holding the dataset
@@ -61,11 +66,19 @@ std::vector<index_t> Evaluation<DataSet,DataGenerator,Algorithm,ErrorMeasure>::t
 		cov = gen.get_cov();
 	}
 
+	logger.write(MemDebug, "After initialization, cov.data = %p\n", cov.data());
+	logger.write(MemDebug, "After initialization, cov.rows = %u\n", cov.rows());
+	logger.write(MemDebug, "After initialization, cov.cols = %u\n", cov.cols());
+
 	// only cov matrix is in memory
+
+	logger.write(MemDebug, "In %s, target_feats = %u\n", __PRETTY_FUNCTION__, target_feats);
 
 	// run algorithm
 	Algorithm algo(cov, target_feats);
 	algo.set_params(params);
+
+	logger.write(Debug, "%s: Exiting!\n", __PRETTY_FUNCTION__);
 
 	return algo.run().second;
 }
@@ -73,6 +86,8 @@ std::vector<index_t> Evaluation<DataSet,DataGenerator,Algorithm,ErrorMeasure>::t
 template <class DataSet, class DataGenerator, class Algorithm, class ErrorMeasure>
 std::pair<index_t,float64_t> Evaluation<DataSet,DataGenerator,Algorithm,ErrorMeasure>::test(std::vector<index_t> indices)
 {
+	logger.write(Debug, "%s: Entering!\n", __PRETTY_FUNCTION__);
+
 	// read test data
 	DataGenerator gen(DataSet::feat_test, DataSet::label_test);
 	gen.set_seed(seed);
@@ -80,17 +95,29 @@ std::pair<index_t,float64_t> Evaluation<DataSet,DataGenerator,Algorithm,ErrorMea
 	gen.generate();
 
 	// copy only selected features
-	const Eigen::Ref<const Matrix<float64_t>> feats_in_use =
-		Features<float64_t>::copy_feats(gen.get_regressors(), indices);
-
+	auto feats_in_use = Features<float64_t>::copy_feats(gen.get_regressors(), indices);
 	Vector<float64_t> coeff = Vector<float64_t>::Zero(indices.size());
+
+	logger.write(MemDebug, "feats_in_use.data = %p\n", feats_in_use.data());
+	logger.write(MemDebug, "feats_in_use.rows = %p\n", feats_in_use.rows());
+	logger.write(MemDebug, "feats_in_use.cols = %p\n", feats_in_use.cols());
+
+	logger.write(MemDebug, "coeff.data = %p\n", coeff.data());
+	logger.write(MemDebug, "coeff.rows = %p\n", coeff.rows());
+	logger.write(MemDebug, "coeff.cols = %p\n", coeff.rows());
 
 	// fit least square on test data for the selected features
 	LeastSquares<float64_t, LS_NORMAL> model;
 	model.solve(feats_in_use, gen.get_regressand(), coeff);
 
+	logger.write(MemDebug, "coeff.data = %p\n", coeff.data());
+	logger.write(MemDebug, "coeff.rows = %p\n", coeff.rows());
+	logger.write(MemDebug, "coeff.cols = %p\n", coeff.rows());
+
 	// compute error measure
 	ErrorMeasure measure;
+	logger.write(Debug, "%s: Exiting!\n", __PRETTY_FUNCTION__);
+
 	return std::make_pair(indices.size(),measure.compute(gen.get_regressand(), feats_in_use*coeff));
 }
 

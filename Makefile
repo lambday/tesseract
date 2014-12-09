@@ -4,6 +4,8 @@ OPTOPTS		= -O3 -std=c++11
 DEBUGOPTS	= -g3 -std=c++11
 OPTS		= $(OPTOPTS)
 LIBFLAG		= -fPIC
+BASE		= $(SRC)/base
+LOGGER		= $(SRC)/logger
 REGRESSION	= $(SRC)/regression
 IO			= $(SRC)/io
 PREPROCESSOR= $(SRC)/preprocessor
@@ -21,7 +23,8 @@ OBJECTS		= $(REGRESSION)/LeastSquares.o \
 			  $(ALGORITHM)/Dummy.o $(ALGORITHM)/ForwardRegression.o $(ALGORITHM)/LocalSearch.o \
 			  $(ALGORITHM)/GreedyLocalSearch.o $(FEATURES)/Features.o \
 			  $(REGULARIZER)/DummyRegularizer.o $(REGULARIZER)/SmoothedDifferentialEntropy.o \
-			  $(COMPUTATION)/ComputeFunction.o
+			  $(COMPUTATION)/ComputeFunction.o \
+			  $(BASE)/init.o $(LOGGER)/Logger.o
 UNITSRC		= sanity/unit
 INTSRC		= sanity/integration
 TESTDIR		= tests
@@ -41,6 +44,10 @@ lib: libtsr.so
 
 libtsr.so: $(OBJECTS)
 	g++ $(OPTS) $(LIBFLAG) -shared $(OBJECTS) $(INCLUDES) -o libtsr.so
+$(BASE)/init.o: $(BASE)/init.hpp $(BASE)/init.cpp
+	g++ $(OPTS) $(LIBFLAG) -c $(BASE)/init.cpp $(INCLUDES) -o $(BASE)/init.o
+$(LOGGER)/Logger.o: $(LOGGER)/Logger.hpp $(LOGGER)/Logger.cpp
+	g++ $(OPTS) $(LIBFLAG) -c $(LOGGER)/Logger.cpp $(INCLUDES) -o $(LOGGER)/Logger.o
 $(REGRESSION)/LeastSquares.o: $(REGRESSION)/LeastSquares.hpp $(REGRESSION)/LeastSquares.cpp
 	g++ $(OPTS) $(LIBFLAG) -c $(REGRESSION)/LeastSquares.cpp $(INCLUDES) -o $(REGRESSION)/LeastSquares.o
 $(IO)/IDX3Reader.o: $(IO)/IDX3Reader.hpp $(IO)/IDX3Reader.cpp

@@ -22,33 +22,61 @@
  * SOFTWARE.
  */
 
-#ifndef UNIT_L2_NORMALIZER_H__
-#define UNIT_L2_NORMALIZER_H__
+#ifndef LOGGER_H__
+#define LOGGER_H__
 
 #include <tesseract/base/types.h>
-#include <limits>
 
 namespace tesseract
 {
 
-/** @brief template class UnitL2Normalizer which normalizes the columns
- * (matrix or vector) so that the result columns have 1 \f$l^2\f$ norm.
- */
-template <class Container>
-struct UnitL2Normalizer
+/** log level */
+enum LogLevel
 {
-	/** @param samples the samples which are to be normalized */
-	void normalize(Container& samples)
-	{
-		// normalize all non-zero columns
-		for (index_t i = 0; i < samples.cols(); ++i)
-		{
-			if (samples.col(i).norm() > std::numeric_limits<float64_t>::epsilon())
-				samples.col(i).normalize();
-		}
-	}
+	// no log messasges (default)
+	None,
+	// generic information to the user
+	Info,
+	// warning
+	Warning,
+	// error
+	Error,
+	// function entry/exit, computed values
+	Debug,
+	// memory location, mem alloc/dealloc
+	MemDebug
+};
+
+/** @brief class Logger for logging purpose. Outputs the logs in stdout */
+class Logger
+{
+public:
+	/** default constructor */
+	Logger();
+
+	/** @param log_level desired loglevel */
+	void set_loglevel(LogLevel log_level);
+
+	/** @param log_level desired loglevel */
+	const LogLevel get_loglevel() const;
+
+	/** prints the log if specified message's loglevel is less that the loglevel specified
+	 * @param level the log level of the message
+	 * @param format the format of the log message
+	 */
+	void write(LogLevel level, const char* format, ...);
+
+	/** @param vector to be printed in stdout */
+	void print_vector(std::vector<index_t> inds);
+
+	/** @param matrix to be printed in stdout */
+	void print_matrix(const Eigen::Ref<const Matrix<float64_t>>& mat);
+
+private:
+	/** log level */
+	LogLevel loglevel;
 };
 
 }
 
-#endif // UNIT_L2_NORMALIZER_H__
+#endif // LOGGER_H__

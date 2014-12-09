@@ -22,33 +22,14 @@
  * SOFTWARE.
  */
 
-#ifndef UNIT_L2_NORMALIZER_H__
-#define UNIT_L2_NORMALIZER_H__
+#ifndef INIT_H__
+#define INIT_H__
 
-#include <tesseract/base/types.h>
-#include <limits>
+#include <tesseract/logger/Logger.hpp>
 
 namespace tesseract
 {
-
-/** @brief template class UnitL2Normalizer which normalizes the columns
- * (matrix or vector) so that the result columns have 1 \f$l^2\f$ norm.
- */
-template <class Container>
-struct UnitL2Normalizer
-{
-	/** @param samples the samples which are to be normalized */
-	void normalize(Container& samples)
-	{
-		// normalize all non-zero columns
-		for (index_t i = 0; i < samples.cols(); ++i)
-		{
-			if (samples.col(i).norm() > std::numeric_limits<float64_t>::epsilon())
-				samples.col(i).normalize();
-		}
-	}
-};
-
+	extern Logger logger;
 }
 
-#endif // UNIT_L2_NORMALIZER_H__
+#endif // INIT_H__

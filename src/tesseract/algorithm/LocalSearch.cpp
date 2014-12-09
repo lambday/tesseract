@@ -22,6 +22,7 @@
  * SOFTWARE.
  */
 
+#include <tesseract/base/init.hpp>
 #include <tesseract/algorithm/LocalSearch.hpp>
 #include <tesseract/computation/ComputeFunction.hpp>
 #include <tesseract/regularizer/DummyRegularizer.hpp>
@@ -93,7 +94,8 @@ std::pair<T,std::vector<index_t>> LocalSearch<Regularizer, T>::run()
 		inds.push_back(j);
 
 		// evaluate the function on the regressors
-		T val = f(Features<T>::copy_cov(cov, inds));
+		Matrix<T> c_s = Features<T>::copy_cov(cov, inds);
+		T val = f(c_s);
 
 		// update running max and argmax
 		if (val > maxval)
@@ -152,7 +154,8 @@ std::pair<T,std::vector<index_t>> LocalSearch<Regularizer, T>::run()
 				cur_inds.push_back(j);
 
 				// evaluate the function on the regressors
-				T val = f(Features<T>::copy_cov(cov, inds));
+				Matrix<T> c_s = Features<T>::copy_cov(cov, cur_inds);
+				T val = f(c_s);
 
 				// update running max and argmax
 				if (exists = val >= threshold)
@@ -172,6 +175,12 @@ std::pair<T,std::vector<index_t>> LocalSearch<Regularizer, T>::run()
 
 	} while (end_cond(exists));
 
+	logger.write(MemDebug, "computation of f is done, maxval = %f, indices ", maxval);
+	if (logger.get_loglevel() >= MemDebug)
+	{
+		logger.print_vector(inds);
+	}
+
 	// finally, compute the objective function
 	ComputeFunction<Regularizer, T> g;
 	g.set_eta(params.eta);
@@ -181,10 +190,11 @@ std::pair<T,std::vector<index_t>> LocalSearch<Regularizer, T>::run()
 	std::vector<index_t>& ret_inds = inds;
 
 	// make sure that the last row/col is also included since it contains the b_S part
-	inds.push_back(cov.cols()-1);
+	inds.push_back(n);
 
 	// on S
-	T retval = g(Features<T>::copy_cov(cov,inds));
+	Matrix<T> c_s = Features<T>::copy_cov(cov, inds);
+	T retval = g(c_s);
 
 	// on U\S and U
 	std::vector<index_t> rest_inds;
@@ -203,8 +213,10 @@ std::pair<T,std::vector<index_t>> LocalSearch<Regularizer, T>::run()
 		}
 
 		// make sure that the last row/col is also included since it contains the b_S part
-		rest_inds.push_back(cov.cols()-1);
-		T g_UminusS = g(Features<T>::copy_cov(cov,rest_inds));
+		rest_inds.push_back(n);
+		c_s = Features<T>::copy_cov(cov, rest_inds);
+		T g_UminusS = g(c_s);
+
 		if (g_UminusS > retval)
 		{
 			ret_inds = rest_inds;
@@ -214,7 +226,8 @@ std::pair<T,std::vector<index_t>> LocalSearch<Regularizer, T>::run()
 		// last col already included
 		all_inds.resize(n + 1);
 		std::iota(all_inds.begin(), all_inds.end(), 0);
-		T g_U = g(Features<T>::copy_cov(cov,all_inds));
+		T g_U = g(cov);
+
 		if (g_U > retval)
 		{
 			ret_inds = all_inds;

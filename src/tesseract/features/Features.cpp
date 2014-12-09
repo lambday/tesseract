@@ -22,6 +22,7 @@
  * SOFTWARE.
  */
 
+#include <tesseract/base/init.hpp>
 #include <tesseract/features/Features.hpp>
 
 using namespace tesseract;
@@ -64,12 +65,15 @@ Matrix<T> Features<T>::copy_feats(const Eigen::Ref<const Matrix<T>>& m,
 template <typename T>
 Matrix<T> Features<T>::copy_cov(const Eigen::Ref<const Matrix<T>>& cov, std::vector<index_t>& inds)
 {
+	logger.write(MemDebug, "original cov.data = %p(%ux%u)! ", cov.data(), cov.rows(), cov.cols());
+	logger.write(MemDebug, "copying a new one with size %ux%u!\n", inds.size(), inds.size());
+
 	// sanity check
 	assert(cov.rows() == cov.cols());
 	std::sort(inds.begin(), inds.end());
 	assert(inds[0] >= 0 && inds[inds.size()-1] < cov.cols());
 
-	Matrix<T> c(inds.size(), inds.size());
+	Matrix<T> c = Matrix<T>::Zero(inds.size(), inds.size());
 
 	// copying index-wise, slow but memory efficient
 	// since we are caching the whole covariance matrix, it reduces the computation

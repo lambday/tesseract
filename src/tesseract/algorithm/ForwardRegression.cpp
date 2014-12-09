@@ -22,6 +22,7 @@
  * SOFTWARE.
  */
 
+#include <tesseract/base/init.hpp>
 #include <tesseract/algorithm/ForwardRegression.hpp>
 #include <tesseract/computation/ComputeFunction.hpp>
 #include <tesseract/regularizer/DummyRegularizer.hpp>
@@ -50,18 +51,36 @@ ForwardRegression<Regularizer,T>::ForwardRegression(const Eigen::Ref<const Matri
 		index_t _target_feats)
 : cov(_cov), target_feats(_target_feats)
 {
+	logger.write(MemDebug, "In %s\n", __PRETTY_FUNCTION__);
+	logger.write(MemDebug, "cov.data = %p!\n", cov.data());
+	logger.write(MemDebug, "cov.rows = %u!\n", cov.rows());
+	logger.write(MemDebug, "cov.cols = %u!\n", cov.cols());
+	logger.write(MemDebug, "target features = %u!\n", target_feats);
 }
 
 template <template <class> class Regularizer, typename T>
 ForwardRegression<Regularizer,T>::~ForwardRegression()
 {
+	logger.write(MemDebug, "%s Dying\n", __PRETTY_FUNCTION__);
 }
 
 template <template <class> class Regularizer, typename T>
 std::pair<T,std::vector<index_t>> ForwardRegression<Regularizer,T>::run()
 {
+	logger.write(Debug, "%s Entering!\n", __PRETTY_FUNCTION__);
+	logger.write(MemDebug, "cov.data = %p!\n", cov.data());
+	logger.write(MemDebug, "cov.rows = %u!\n", cov.rows());
+	logger.write(MemDebug, "cov.cols = %u!\n", cov.cols());
+	logger.write(MemDebug, "target features = %u!\n", target_feats);
+
 	// number of feats
 	index_t N = cov.cols() - 1;
+	logger.write(Debug, "total feats = %u!\n", N);
+
+	if (logger.get_loglevel() >= MemDebug)
+	{
+		logger.print_matrix(cov);
+	}
 
 	// create the compute function
 	ComputeFunction<Regularizer, T> g;
@@ -101,7 +120,22 @@ std::pair<T,std::vector<index_t>> ForwardRegression<Regularizer,T>::run()
 				cur_inds.push_back(N);
 
 				// evaluate the function
-				T val = g(Features<T>::copy_cov(cov, cur_inds));
+				Matrix<float64_t> c_s = Features<T>::copy_cov(cov, cur_inds);
+
+				logger.write(MemDebug, "for indices\n");
+				if (logger.get_loglevel() >= MemDebug)
+				{
+					logger.print_vector(cur_inds);
+				}
+				logger.write(MemDebug, "cov.data in use = %p!\n", c_s.data());
+				if (logger.get_loglevel() >= MemDebug)
+				{
+					logger.print_matrix(c_s);
+				}
+
+				T val = g(c_s);
+				logger.write(Debug, "j = %u, val = %f, maxval = %f, argmax = %u!\n",
+						j, val, maxval, argmax);
 
 				// update running max, need to be write protected
 				if (val > maxval)
@@ -111,6 +145,8 @@ std::pair<T,std::vector<index_t>> ForwardRegression<Regularizer,T>::run()
 				}
 			}
 		}
+
+		logger.write(Debug, "i = %u, maxval = %f, argmax = %u!\n", i, maxval, argmax);
 
 		// make sure that we added something
 		assert(argmax != -1);
