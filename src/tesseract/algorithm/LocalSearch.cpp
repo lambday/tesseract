@@ -64,7 +64,7 @@ LocalSearchParam<Regularizer, T>::LocalSearchParam(T _eta, T _eps,
 
 template <template <class> class Regularizer, typename T>
 LocalSearch<Regularizer, T>::LocalSearch(const Eigen::Ref<const Matrix<T>>& _cov)
-: cov(_cov)
+: cov(_cov), global_value(0)
 {
 }
 
@@ -226,7 +226,13 @@ std::pair<T,std::vector<index_t>> LocalSearch<Regularizer, T>::run()
 		// last col already included
 		all_inds.resize(n + 1);
 		std::iota(all_inds.begin(), all_inds.end(), 0);
-		T g_U = g(cov);
+
+		// make use of computed global value if already provided externally
+		T g_U = global_value;
+		if (g_U == 0)
+		{
+			g_U = g(cov);
+		}
 
 		if (g_U > retval)
 		{
@@ -245,6 +251,12 @@ template <template <class> class Regularizer, typename T>
 void LocalSearch<Regularizer, T>::set_params(LocalSearch<Regularizer, T>::param_type _params)
 {
 	params = _params;
+}
+
+template <template <class> class Regularizer, typename T>
+void LocalSearch<Regularizer, T>::set_global_value(T value)
+{
+	global_value = value;
 }
 
 template class LocalSearchParam<DummyRegularizer, float64_t>;

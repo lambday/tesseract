@@ -161,7 +161,8 @@ int main(int argc, char** argv)
 	float64_t eps = 2;
 	float64_t delta = 0.1;
 
-	index_t num_examples = 1000;
+	index_t num_examples = 50000;
+	index_t num_test_examples = 1000;
 
 	index_t min_feats = 10;
 	index_t max_feats = 50;
@@ -173,7 +174,7 @@ int main(int argc, char** argv)
 	// generate testdata
 	DataGenerator<IDX3Reader, IDX1Reader, UnitL2Normalizer> gen(MNISTDataSet::feat_test, MNISTDataSet::label_test);
 	gen.set_seed(12345);
-	gen.set_num_examples(num_examples);
+	gen.set_num_examples(num_test_examples);
 	gen.generate();
 
 	for (index_t i = min_feats; i <= max_feats; ++i)

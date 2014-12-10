@@ -87,12 +87,20 @@ public:
 	/** @param params the parameters of the algorithm */
 	void set_params(param_type _params);
 
+	/** @param the final value of universal set. if not provided, then the
+	 * algorithm calculates it internally
+	 */
+	void set_global_value(T value);
+
 private:
 	/** real valued dense covariance matrix */
 	const Eigen::Ref<const Matrix<float64_t>> cov;
 
 	/** the algorithm params */
 	param_type params;
+
+	/** the global value g(U) */
+	T global_value;
 };
 
 }

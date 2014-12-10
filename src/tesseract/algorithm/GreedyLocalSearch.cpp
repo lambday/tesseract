@@ -147,6 +147,9 @@ std::pair<T,std::vector<index_t>> GreedyLocalSearch<FRAlgo,LSAlgo,Regularizer,T>
 	LSAlgo<Regularizer,T> ls(cov_S_1);
 	ls.set_params(params.ls_params);
 
+	// make use of the function value we just computed using FR
+	ls.set_global_value(g_S_1);
+
 	std::pair<T,std::vector<index_t>> S_p = ls.run();
 	T g_S_p = S_p.first;
 	std::vector<index_t> S_p_inds = S_p.second;
