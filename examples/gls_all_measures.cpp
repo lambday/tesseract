@@ -36,25 +36,12 @@
 #include <tesseract/regularizer/SmoothedDifferentialEntropy.hpp>
 #include <tesseract/regression/LeastSquares.hpp>
 #include <tesseract/features/Features.hpp>
-#include <ctime>
 #include <map>
-#include <sys/time.h>
 #include <iostream>
+#include <chrono>
 
 using namespace tesseract;
 using namespace Eigen;
-
-float64_t get_cpu_time()
-{
-	return clock();
-}
-
-/*
-float64_t get_wall_time()
-{
-	return gettimeofday();
-}
-*/
 
 // print statistics
 	// 1. number of target features
@@ -62,12 +49,11 @@ float64_t get_wall_time()
 	// 3. epsilon
 	// 4. delta of the regularizer
 	// 5. number of selected features
-//--	// 6. wall clock time for training algorithm
-	// 7. cpu time for training algorithm
-	// 8. optimal function value found by the algorithm
-	// 9. sum squared error
-	// 10. Pearson's correlation
-	// 11. R^2 statistic
+	// 6. cpu time for training algorithm
+	// 7. optimal function value found by the algorithm
+	// 8. sum squared error
+	// 9. Pearson's correlation
+	// 10. R^2 statistic
 
 typedef GreedyLocalSearch<ForwardRegression,LocalSearch,SmoothedDifferentialEntropy,float64_t>::param_type param_type;
 typedef SmoothedDifferentialEntropy<float64_t>::param_type reg_param_type;
@@ -115,10 +101,10 @@ void test(std::vector<index_t> inds, const Ref<const MatrixXd>& regressors, cons
 
 	// print statistics
 	// format
-	// 9. sum squared error
-	// 10. Pearson's correlation
-	// 11. R^2 statistic
-	printf("%.6f %.6f %.6f\n", measure_1.compute(regressand, Zp),
+	// 8. sum squared error
+	// 9. Pearson's correlation
+	// 10. R^2 statistic
+	printf("%.10f %.10f %.10f\n", measure_1.compute(regressand, Zp),
 			measure_2.compute(regressand, Zp), measure_3.compute(regressand, Zp));
 }
 
@@ -130,26 +116,21 @@ void train_test(const Ref<const MatrixXd>& cov, param_type params, index_t targe
 	algo.set_params(params);
 
 	// set timers
-//	float64_t wall0 = get_wall_time();
-	float64_t cpu0 = get_cpu_time();
+	const auto cpu0 = std::chrono::high_resolution_clock::now();
 
 	// run algo
 	std::pair<float64_t,std::vector<index_t>> ret = algo.run();
 
 	// stop timers
-//	float64_t wall1 = get_wall_time();
-	float64_t cpu1 = get_cpu_time();
-
-//	float64_t wall_elapsed = wall1 - wall0;
-	float64_t cpu_elapsed = cpu1 - cpu0;
+	const auto cpu1 = std::chrono::high_resolution_clock::now();
+	const auto cpu_elapsed = cpu1 - cpu0;
 
 	// print statistics
 	// format
 	// 5. number of selected features
-//--	// 6. wall clock time for training algorithm
-	// 7. cpu time for training algorithm
-	// 8. optimal function value found by the algorithm
-	printf("%u %.6fs %.6f ", ret.second.size(), cpu_elapsed/1E6, ret.first);
+	// 6. cpu time for training algorithm
+	// 7. optimal function value found by the algorithm
+	printf("%u %.10f %.10f ", ret.second.size(), std::chrono::duration<float64_t>(cpu_elapsed).count(), ret.first);
 
 	test(ret.second, regressors, regressand);
 }
