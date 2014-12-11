@@ -67,6 +67,8 @@ LinearLocalSearch<Regularizer, T>::~LinearLocalSearch()
 template <template <class> class Regularizer, typename T>
 std::pair<T,std::vector<index_t>> LinearLocalSearch<Regularizer, T>::run()
 {
+	logger.write(Debug, "Entering %s!\n", __PRETTY_FUNCTION__);
+
 	// number of total features
 	index_t n = cov.cols() - 1;
 
@@ -77,6 +79,8 @@ std::pair<T,std::vector<index_t>> LinearLocalSearch<Regularizer, T>::run()
 	// computing the initial values
 	T f_Xi = 0;
 	T f_Yi = f(cov.topLeftCorner(n, n));
+
+	logger.write(Debug, "f(null) = %f, f(all) = %f\n", f_Xi, f_Yi);
 
 	// make sure the function is non-negative
 	assert(f_Yi >= 0.0);
@@ -126,11 +130,23 @@ std::pair<T,std::vector<index_t>> LinearLocalSearch<Regularizer, T>::run()
 		// save time required by copying
 		if (is_consecutive)
 		{
+			logger.write(Debug, "i = %d, consecutive, no copy required!\n", i);
+
 			// for consecutive case, submatrix of cov(0,0) to cov(i,i) will be c_S
 			current_fX = f(cov.topLeftCorner(i+1,i+1));
 
+			if (logger.get_loglevel() >= MemDebug)
+			{
+				logger.print_matrix(cov.topLeftCorner(i+1,i+1));
+			}
+
 			// similarly, submatrix of cov(i+1,i+1) to cov(n-1,n-1) will be c_(U-S)
 			current_fY = f(cov.topLeftCorner(n,n).bottomRightCorner(n-i-1,n-i-1));
+
+			if (logger.get_loglevel() >= MemDebug)
+			{
+				logger.print_matrix(cov.topLeftCorner(n,n).bottomRightCorner(n-i-1,n-i-1));
+			}
 		}
 		else
 		{
@@ -141,6 +157,11 @@ std::pair<T,std::vector<index_t>> LinearLocalSearch<Regularizer, T>::run()
 
 				Matrix<T> c_X = Features<T>::copy_cov(cov, cur_inds);
 				current_fX = f(c_X);
+
+				if (logger.get_loglevel() >= MemDebug)
+				{
+					logger.print_matrix(c_X);
+				}
 			}
 
 			{
@@ -151,22 +172,33 @@ std::pair<T,std::vector<index_t>> LinearLocalSearch<Regularizer, T>::run()
 
 				Matrix<T> c_Y = Features<T>::copy_cov(cov, unremoved_inds);
 				current_fY = f(c_Y);
+
+				if (logger.get_loglevel() >= MemDebug)
+				{
+					logger.print_matrix(c_Y);
+				}
 			}
 		}
+
+		logger.write(Debug,"%d: f(Xi) = %f, f(Yi) = %f\n", i, current_fX, current_fY);
 
 		// compute the differences
 		T a_i = current_fX - f_Xi;
 		T b_i = current_fY - f_Yi;
 
+		logger.write(Debug,"%d: a_i = %f, b_i = %f\n", i, a_i, b_i);
+
 		if (a_i >= b_i)
 		{
 			// add i-th element to X, keep Y the same
 			inds.push_back(i);
+			logger.write(Debug, "%d is added to Xn!\n", i);
 		}
 		else
 		{
 			// keep X same, remove i-th element from Y
 			removed[i] = true;
+			logger.write(Debug, "%d is removed from Yn!\n", i);
 		}
 
 		// check if addition or removal is still consecutive
@@ -183,6 +215,16 @@ std::pair<T,std::vector<index_t>> LinearLocalSearch<Regularizer, T>::run()
 	// make sure that Xn and Yn are indeed the same
 	std::vector<index_t> Yn;
 	find_unremoved_inds(removed, Yn);
+
+	logger.write(Debug, "f(S) = %f\n", f_Xi);
+
+	if (logger.get_loglevel() >= MemDebug)
+	{
+		logger.print_vector(inds);
+		logger.print_vector(Yn);
+	}
+
+	logger.write(Debug, "selected features = %u!\n", inds.size());
 
 	// the indices are added in sorted order already
 	assert(inds.size() == Yn.size());

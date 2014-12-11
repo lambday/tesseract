@@ -27,7 +27,7 @@
 #include <tesseract/preprocessor/DataGenerator.hpp>
 #include <tesseract/normalizer/UnitL2Normalizer.hpp>
 #include <tesseract/algorithm/ForwardRegression.hpp>
-#include <tesseract/algorithm/LocalSearch.hpp>
+#include <tesseract/algorithm/LinearLocalSearch.hpp>
 #include <tesseract/algorithm/GreedyLocalSearch.hpp>
 #include <tesseract/errors/SumSquaredError.hpp>
 #include <tesseract/errors/PearsonsCorrelation.hpp>
@@ -46,7 +46,7 @@ using namespace Eigen;
 // print statistics
 	// 1. number of target features
 	// 2. eta
-	// 3. epsilon
+//--	// 3. epsilon
 	// 4. delta of the regularizer
 	// 5. number of selected features
 	// 6. cpu time for training algorithm
@@ -55,9 +55,9 @@ using namespace Eigen;
 	// 9. Pearson's correlation
 	// 10. R^2 statistic
 
-typedef GreedyLocalSearch<ForwardRegression,LocalSearch,SmoothedDifferentialEntropy,float64_t>::param_type param_type;
+typedef GreedyLocalSearch<ForwardRegression,LinearLocalSearch,SmoothedDifferentialEntropy,float64_t>::param_type param_type;
 typedef SmoothedDifferentialEntropy<float64_t>::param_type reg_param_type;
-typedef LocalSearch<SmoothedDifferentialEntropy,float64_t>::param_type ls_param_type;
+typedef LinearLocalSearch<SmoothedDifferentialEntropy,float64_t>::param_type ls_param_type;
 
 MatrixXd get_training_data_cov(index_t num_examples)
 {
@@ -68,7 +68,7 @@ MatrixXd get_training_data_cov(index_t num_examples)
 	return gen.get_cov();
 }
 
-param_type get_params(float64_t eta, float64_t eps, float64_t delta)
+param_type get_params(float64_t eta, float64_t delta)
 {
 	// specify the parameters via underlying local search parameters
 
@@ -77,7 +77,7 @@ param_type get_params(float64_t eta, float64_t eps, float64_t delta)
 
 	// local search parameter contains eta for objective function computation (regularization const)
 	// eps for local search itself and underlying regularizer parameters
-	param_type params(ls_param_type(eta,eps,reg_params));
+	param_type params(ls_param_type(eta,reg_params));
 
 	return params;
 }
@@ -112,7 +112,7 @@ void train_test(const Ref<const MatrixXd>& cov, param_type params, index_t targe
 		const Ref<const MatrixXd>& regressors, const Ref<const VectorXd>& regressand)
 {
 	// initialize the algo and set up parameters
-	GreedyLocalSearch<ForwardRegression,LocalSearch,SmoothedDifferentialEntropy,float64_t> algo(cov, target_feats);
+	GreedyLocalSearch<ForwardRegression,LinearLocalSearch,SmoothedDifferentialEntropy,float64_t> algo(cov, target_feats);
 	algo.set_params(params);
 
 	// set timers
@@ -139,7 +139,6 @@ int main(int argc, char** argv)
 {
 	// algorithm parameters
 	float64_t eta = 0.00001;
-	float64_t eps = 2;
 	float64_t delta = 0.1;
 
 	index_t num_examples = 10000;
@@ -150,7 +149,7 @@ int main(int argc, char** argv)
 
 	// store cov once and run the algo for different number of feats
 	MatrixXd cov = get_training_data_cov(num_examples);
-	param_type params = get_params(eta, eps, delta);
+	param_type params = get_params(eta, delta);
 
 	// generate testdata
 	DataGenerator<IDX3Reader, IDX1Reader, UnitL2Normalizer> gen(MNISTDataSet::feat_test, MNISTDataSet::label_test);
@@ -164,7 +163,7 @@ int main(int argc, char** argv)
 		// 2. eta
 		// 3. epsilon
 		// 4. delta of the regularizer
-		printf("%u %f %f %f ", i, eta, eps, delta);
+		printf("%u %f %f ", i, eta, delta);
 		train_test(cov, params, i, gen.get_regressors(), gen.get_regressand());
 	}
 
