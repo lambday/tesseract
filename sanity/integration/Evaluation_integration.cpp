@@ -30,6 +30,7 @@
 #include <tesseract/algorithm/Dummy.hpp>
 #include <tesseract/algorithm/ForwardRegression.hpp>
 #include <tesseract/algorithm/LocalSearch.hpp>
+#include <tesseract/algorithm/LinearLocalSearch.hpp>
 #include <tesseract/algorithm/GreedyLocalSearch.hpp>
 #include <tesseract/errors/SumSquaredError.hpp>
 #include <tesseract/errors/PearsonsCorrelation.hpp>
@@ -118,6 +119,19 @@ int main(int argc, char** argv)
 	std::cout << "Test 12: GLS(FR, LS, logdet regularizer) Squared multiple correlation" << std::endl;
 	std::cout << "============================================================================" << std::endl;
 	test<GreedyLocalSearch<ForwardRegression,LocalSearch,SmoothedDifferentialEntropy,float64_t>,
+		SquaredMultipleCorrelation<float64_t>>(num_examples, target_feats);
+
+	std::cout << "Test 13: GLS(FR, Linear LS, logdet regularizer) Sum-squared error" << std::endl;
+	std::cout << "=================================================================" << std::endl;
+	test<GreedyLocalSearch<ForwardRegression,LinearLocalSearch,SmoothedDifferentialEntropy,float64_t>,
+		SumSquaredError<float64_t>>(num_examples, target_feats);
+	std::cout << "Test 14: GLS(FR, Linear LS, logdet regularizer) Pearson's correlation" << std::endl;
+	std::cout << "=====================================================================" << std::endl;
+	test<GreedyLocalSearch<ForwardRegression,LinearLocalSearch,SmoothedDifferentialEntropy,float64_t>,
+		PearsonsCorrelation<float64_t>>(num_examples, target_feats);
+	std::cout << "Test 15: GLS(FR, Linear LS, logdet regularizer) Squared multiple correlation" << std::endl;
+	std::cout << "============================================================================" << std::endl;
+	test<GreedyLocalSearch<ForwardRegression,LinearLocalSearch,SmoothedDifferentialEntropy,float64_t>,
 		SquaredMultipleCorrelation<float64_t>>(num_examples, target_feats);
 
 	return 0;

@@ -35,6 +35,7 @@
 #include <tesseract/algorithm/Dummy.hpp>
 #include <tesseract/algorithm/ForwardRegression.hpp>
 #include <tesseract/algorithm/LocalSearch.hpp>
+#include <tesseract/algorithm/LinearLocalSearch.hpp>
 #include <tesseract/algorithm/GreedyLocalSearch.hpp>
 #include <tesseract/regression/LeastSquares.hpp>
 #include <tesseract/regularizer/DummyRegularizer.hpp>
@@ -181,4 +182,14 @@ template class Evaluation<MNISTDataSet,DataGenerator<IDX3Reader,IDX1Reader,UnitL
 		 PearsonsCorrelation<float64_t>>;
 template class Evaluation<MNISTDataSet,DataGenerator<IDX3Reader,IDX1Reader,UnitL2Normalizer>,
 		 GreedyLocalSearch<ForwardRegression,LocalSearch,SmoothedDifferentialEntropy,float64_t>,
+		 SquaredMultipleCorrelation<float64_t>>;
+
+template class Evaluation<MNISTDataSet,DataGenerator<IDX3Reader,IDX1Reader,UnitL2Normalizer>,
+		 GreedyLocalSearch<ForwardRegression,LinearLocalSearch,SmoothedDifferentialEntropy,float64_t>,
+		 SumSquaredError<float64_t>>;
+template class Evaluation<MNISTDataSet,DataGenerator<IDX3Reader,IDX1Reader,UnitL2Normalizer>,
+		 GreedyLocalSearch<ForwardRegression,LinearLocalSearch,SmoothedDifferentialEntropy,float64_t>,
+		 PearsonsCorrelation<float64_t>>;
+template class Evaluation<MNISTDataSet,DataGenerator<IDX3Reader,IDX1Reader,UnitL2Normalizer>,
+		 GreedyLocalSearch<ForwardRegression,LinearLocalSearch,SmoothedDifferentialEntropy,float64_t>,
 		 SquaredMultipleCorrelation<float64_t>>;

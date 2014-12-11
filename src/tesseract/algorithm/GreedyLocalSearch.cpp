@@ -26,6 +26,7 @@
 #include <tesseract/algorithm/GreedyLocalSearch.hpp>
 #include <tesseract/algorithm/ForwardRegression.hpp>
 #include <tesseract/algorithm/LocalSearch.hpp>
+#include <tesseract/algorithm/LinearLocalSearch.hpp>
 #include <tesseract/computation/ComputeFunction.hpp>
 #include <tesseract/regularizer/DummyRegularizer.hpp>
 #include <tesseract/regularizer/SmoothedDifferentialEntropy.hpp>
@@ -166,7 +167,7 @@ std::pair<T,std::vector<index_t>> GreedyLocalSearch<FRAlgo,LSAlgo,Regularizer,T>
 
 	// if returned set is of same size as of S_1, don't bother
 	// otherwise, since the above returned indices are mapped, we need to map it back
-	bool ls_useful = S_p_inds.size() < S_1_inds.size();
+	bool ls_useful = S_p_inds.size() > 0 && S_p_inds.size() < S_1_inds.size();
 	if (ls_useful)
 	{
 		std::sort(S_p_inds.begin(), S_p_inds.end());
@@ -266,3 +267,5 @@ void GreedyLocalSearch<FRAlgo,LSAlgo,Regularizer,T>::set_params(param_type _para
 
 template class GreedyLocalSearchParam<ForwardRegression,LocalSearch,SmoothedDifferentialEntropy,float64_t>;
 template class GreedyLocalSearch<ForwardRegression,LocalSearch,SmoothedDifferentialEntropy,float64_t>;
+template class GreedyLocalSearchParam<ForwardRegression,LinearLocalSearch,SmoothedDifferentialEntropy,float64_t>;
+template class GreedyLocalSearch<ForwardRegression,LinearLocalSearch,SmoothedDifferentialEntropy,float64_t>;
