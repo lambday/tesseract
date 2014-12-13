@@ -188,7 +188,8 @@ std::pair<T,std::vector<index_t>> LinearLocalSearch<Regularizer, T>::run()
 
 		logger.write(Debug,"%d: a_i = %f, b_i = %f\n", i, a_i, b_i);
 
-		if (a_i >= b_i)
+		// if both are zero the we should remove it
+		if (a_i >= b_i && a_i > 0.0)
 		{
 			// add i-th element to X, keep Y the same
 			inds.push_back(i);
