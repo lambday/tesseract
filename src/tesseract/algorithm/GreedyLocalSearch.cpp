@@ -34,6 +34,7 @@
 #include <vector>
 #include <functional>
 #include <algorithm>
+#include <chrono>
 
 using namespace tesseract;
 
@@ -151,8 +152,22 @@ std::pair<T,std::vector<index_t>> GreedyLocalSearch<FRAlgo,LSAlgo,Regularizer,T>
 	// make use of the function value we just computed using FR
 	ls.set_global_value(g_S_1);
 
+	// track the time taken by the LS algorithm
+
+	// set timers
+	const auto cpu0 = std::chrono::high_resolution_clock::now();
+
 	std::pair<T,std::vector<index_t>> S_p = ls.run();
+
+	// stop timers
+	const auto cpu1 = std::chrono::high_resolution_clock::now();
+	const auto cpu_elapsed = cpu1 - cpu0;
+
+	logger.write(Special, "%.10f ", std::chrono::duration<float64_t>(cpu_elapsed).count());
 	T g_S_p = S_p.first;
+
+	logger.write(Special, "%.10f ", g_S_p);
+
 	std::vector<index_t> S_p_inds = S_p.second;
 
 	logger.write(Debug, "LS(S_1) = %f!\n", g_S_p);
@@ -170,6 +185,9 @@ std::pair<T,std::vector<index_t>> GreedyLocalSearch<FRAlgo,LSAlgo,Regularizer,T>
 	bool ls_useful = S_p_inds.size() > 0 && S_p_inds.size() < S_1_inds.size();
 	if (ls_useful)
 	{
+		// whether LS was useful
+		logger.write(Special, "+ ");
+
 		std::sort(S_p_inds.begin(), S_p_inds.end());
 		inds_map(S_1_inds, S_p_inds);
 
@@ -178,6 +196,11 @@ std::pair<T,std::vector<index_t>> GreedyLocalSearch<FRAlgo,LSAlgo,Regularizer,T>
 		{
 			logger.print_vector(S_p_inds);
 		}
+	}
+	else
+	{
+		// whether LS was useful
+		logger.write(Special, "- ");
 	}
 
 	// compute the rest of indices
@@ -241,17 +264,28 @@ std::pair<T,std::vector<index_t>> GreedyLocalSearch<FRAlgo,LSAlgo,Regularizer,T>
 	std::vector<index_t>& argmax = S_1_inds;
 	T maxval = g_S_1;
 
+	enum Selected { FR1, LS, FR2 };
+	Selected selected = FR1;
+
 	if (maxval < g_S_p)
 	{
+		selected = LS;
 		maxval = g_S_p;
 		argmax = S_p_inds;
 	}
 
 	if (maxval < g_S_2)
 	{
+		selected = FR2;
 		maxval = g_S_2;
 		argmax = S_2_inds;
 	}
+
+	// special debug messages
+	// - 0 for FR1 was selected
+	// - 1 for LS was selected
+	// - 2 for FR2 was selected
+	logger.write(Special, "%d ", selected);
 
 	logger.write(Debug, "%s Exiting!\n", __PRETTY_FUNCTION__);
 	return std::make_pair(maxval, argmax);

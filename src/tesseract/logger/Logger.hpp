@@ -35,6 +35,8 @@ enum LogLevel
 {
 	// no log messasges (default)
 	None,
+	// special debug messages for collecting statistics
+	Special,
 	// generic information to the user
 	Info,
 	// warning

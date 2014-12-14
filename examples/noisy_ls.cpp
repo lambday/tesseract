@@ -64,6 +64,8 @@ MatrixXd get_training_data_cov(index_t num_examples)
 {
 	DataGenerator<IDX3Reader, IDX1Reader, UnitL2Normalizer> gen(MNISTDataSet::feat_train, MNISTDataSet::label_train);
 	gen.set_seed(12345);
+	//gen.set_perturbation_type(Regressors);
+	gen.set_perturbation_type(Regressand);
 	gen.set_num_examples(num_examples);
 	gen.generate();
 	return gen.get_cov();
@@ -105,7 +107,7 @@ void test(std::vector<index_t> inds, const Ref<const MatrixXd>& regressors, cons
 	// 8. sum squared error
 	// 9. Pearson's correlation
 	// 10. R^2 statistic
-	printf("%.10f %.10f %.10f\n", measure_1.compute(regressand, Zp),
+	printf("%.10f %.10f %.10f ", measure_1.compute(regressand, Zp),
 			measure_2.compute(regressand, Zp), measure_3.compute(regressand, Zp));
 }
 
@@ -142,14 +144,14 @@ int main(int argc, char** argv)
 
 	// algorithm parameters
 	float64_t eta = 0.00001;
-	float64_t eps = 0.00001;
+	float64_t eps = 20.0;
 	float64_t delta = 0.00001;
 
 	index_t num_examples = 1000;
 	index_t num_test_examples = 1000;
 
 	index_t min_feats = 10;
-	index_t max_feats = 30;
+	index_t max_feats = 50;
 
 	// store cov once and run the algo for different number of feats
 	MatrixXd cov = get_training_data_cov(num_examples);
@@ -169,6 +171,7 @@ int main(int argc, char** argv)
 		// 4. delta of the regularizer
 		printf("%u %f %f %f ", i, eta, eps, delta);
 		train_test(cov, params, i, gen.get_regressors(), gen.get_regressand());
+		printf("\n");
 	}
 
 	return 0;

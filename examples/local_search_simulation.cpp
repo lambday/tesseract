@@ -75,7 +75,7 @@ void test1(int dim)
 	auto cpu3 = std::chrono::high_resolution_clock::now();
 	auto duration2 = cpu3 - cpu2;
 
-	printf("%u %u %f %f\n", res_1.second.size(), res_2.second.size(), //res_1.first, res_2.first,
+	printf("%u %u %f %f %f %f\n", res_1.second.size(), res_2.second.size(), res_1.first, res_2.first,
 			std::chrono::duration<float64_t>(duration1).count(),
 			std::chrono::duration<float64_t>(duration2).count());
 }
@@ -84,7 +84,7 @@ int main(int argc, char** argv)
 {
 //	logger.set_loglevel(MemDebug);
 
-	for (index_t i = 10; i < 100; ++i)
+	for (index_t i = 10; i < 200; ++i)
 		test1(i);
 	return 0;
 }

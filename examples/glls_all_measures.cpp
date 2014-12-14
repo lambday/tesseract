@@ -22,6 +22,7 @@
  * SOFTWARE.
  */
 
+#include <tesseract/base/init.hpp>
 #include <tesseract/io/IDX1Reader.hpp>
 #include <tesseract/io/IDX3Reader.hpp>
 #include <tesseract/preprocessor/DataGenerator.hpp>
@@ -137,9 +138,11 @@ void train_test(const Ref<const MatrixXd>& cov, param_type params, index_t targe
 
 int main(int argc, char** argv)
 {
+	logger.set_loglevel(Special);
+
 	// algorithm parameters
 	float64_t eta = 0.00001;
-	float64_t delta = 0.1;
+	float64_t delta = 0.00001;
 
 	index_t num_examples = 10000;
 	index_t num_test_examples = 1000;

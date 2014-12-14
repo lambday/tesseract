@@ -30,6 +30,19 @@
 namespace tesseract
 {
 
+/** perturbation type */
+enum PerturbationType
+{
+	/** no perturbation */
+	NoPerturbation,
+	/** add noise to the regressors */
+	Regressors,
+	/** add noise to the regressand */
+	Regressand,
+	/** add noise to both regressors and regressand */
+	Both
+};
+
 /** @brief template class DataGenerator which generates test data.
  * It reads the features and labels for given number of examples
  * inside it's generate method using FeatureReader and LabelReader
@@ -62,6 +75,12 @@ public:
 	/** @param _seed for rng */
 	void set_seed(int32_t _seed);
 
+	/** @param _perturbation_type the perturbation type */
+	void set_perturbation_type(PerturbationType _perturbation_type);
+
+	/** @param _sigma the sigma for perturbation */
+	void set_sigma(float64_t _sigma);
+
 	/** @param _num_examples the number of examples */
 	void set_num_examples(int32_t _num_examples);
 
@@ -78,6 +97,9 @@ public:
 	const Eigen::Ref<const Vector<float64_t>> get_regressand() const;
 
 private:
+	/** perturbate the data */
+	void perturbate();
+
 	/** the regressors (all but last column) and regressand (last column) */
 	Matrix<float64_t> data;
 
@@ -92,6 +114,12 @@ private:
 
 	/** labels filename */
 	std::string labels_filename;
+
+	/** perturbation type */
+	PerturbationType perturbation_type;
+
+	/** sigma for the perturbation */
+	float64_t sigma;
 };
 
 }

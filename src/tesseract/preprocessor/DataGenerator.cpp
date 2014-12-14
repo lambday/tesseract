@@ -22,24 +22,29 @@
  * SOFTWARE.
  */
 
+#include <tesseract/base/init.hpp>
 #include <tesseract/preprocessor/DataGenerator.hpp>
 #include <tesseract/io/FileReader.hpp>
 #include <tesseract/io/IDX1Reader.hpp>
 #include <tesseract/io/IDX3Reader.hpp>
 #include <tesseract/normalizer/UnitL2Normalizer.hpp>
 #include <cstdlib>
+#include <random>
+#include <iomanip>
 
 using namespace tesseract;
 
 template <class FeatureReader, class LabelReader, template <class> class Normalizer>
 DataGenerator<FeatureReader,LabelReader,Normalizer>::DataGenerator()
+: perturbation_type(NoPerturbation), sigma(0.1)
 {
 }
 
 template <class FeatureReader, class LabelReader, template <class> class Normalizer>
 DataGenerator<FeatureReader,LabelReader,Normalizer>::DataGenerator(std::string feats_file,
 		std::string labels_file)
-	: feats_filename(feats_file), labels_filename(labels_file)
+	: feats_filename(feats_file), labels_filename(labels_file),
+	perturbation_type(NoPerturbation), sigma(0.1)
 {
 }
 
@@ -96,6 +101,51 @@ void DataGenerator<FeatureReader,LabelReader,Normalizer>::generate()
 	// normalize the whole data (regressors and regressands) columnwise
 	Normalizer<Matrix<float64_t>> normalizer;
 	normalizer.normalize(data);
+
+	// add noise to the data if specified
+	perturbate();
+}
+
+template <class FeatureReader, class LabelReader, template <class> class Normalizer>
+void DataGenerator<FeatureReader,LabelReader,Normalizer>::perturbate()
+{
+	if (perturbation_type != NoPerturbation)
+	{
+		logger.write(Debug, "Entering %s!\n", __PRETTY_FUNCTION__);
+
+		std::random_device device_random;
+		std::default_random_engine generator(device_random());
+		std::normal_distribution<> distribution(0.0, 1.0);
+
+		index_t start = 0;
+		index_t end = data.cols();
+
+		if (perturbation_type == Regressors)
+		{
+			logger.write(Debug, "Perturbuting regressors!\n");
+			end = data.cols() - 1;
+		}
+		else if (perturbation_type == Regressand)
+		{
+			logger.write(Debug, "Perturbuting regressand!\n");
+			start = data.cols() - 1;
+		}
+
+		// add noise to each column as X(i) = X(i) + sigma * n/||n||_2
+		for (index_t i = start; i < end; ++i)
+		{
+			// generate random gaussian vector
+			Vector<float64_t> n(data.rows());
+			for (index_t i = 0; i < data.rows(); ++i)
+			{
+				n[i] = distribution(generator);
+			}
+
+			// normalize
+			n.normalize();
+			data.col(i) += sigma * n;
+		}
+	}
 }
 
 template <class FeatureReader, class LabelReader, template <class> class Normalizer>
@@ -110,6 +160,18 @@ template <class FeatureReader, class LabelReader, template <class> class Normali
 void DataGenerator<FeatureReader,LabelReader,Normalizer>::set_num_examples(int32_t _num_examples)
 {
 	num_examples = _num_examples;
+}
+
+template <class FeatureReader, class LabelReader, template <class> class Normalizer>
+void DataGenerator<FeatureReader,LabelReader,Normalizer>::set_perturbation_type(PerturbationType _perturbation_type)
+{
+	perturbation_type = _perturbation_type;
+}
+
+template <class FeatureReader, class LabelReader, template <class> class Normalizer>
+void DataGenerator<FeatureReader,LabelReader,Normalizer>::set_sigma(float64_t _sigma)
+{
+	sigma = _sigma;
 }
 
 template <class FeatureReader, class LabelReader, template <class> class Normalizer>
