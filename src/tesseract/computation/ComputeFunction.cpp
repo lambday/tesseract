@@ -25,6 +25,7 @@
 #include <tesseract/computation/ComputeFunction.hpp>
 #include <tesseract/regularizer/DummyRegularizer.hpp>
 #include <tesseract/regularizer/SmoothedDifferentialEntropy.hpp>
+#include <tesseract/regularizer/SpectralVariance.hpp>
 
 using namespace tesseract;
 
@@ -73,3 +74,4 @@ void ComputeFunction<Regularizer, T>::set_reg_params(typename
 
 template class ComputeFunction<DummyRegularizer, float64_t>;
 template class ComputeFunction<SmoothedDifferentialEntropy, float64_t>;
+template class ComputeFunction<SpectralVariance, float64_t>;

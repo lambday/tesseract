@@ -27,6 +27,7 @@
 #include <tesseract/computation/ComputeFunction.hpp>
 #include <tesseract/regularizer/DummyRegularizer.hpp>
 #include <tesseract/regularizer/SmoothedDifferentialEntropy.hpp>
+#include <tesseract/regularizer/SpectralVariance.hpp>
 #include <tesseract/features/Features.hpp>
 #include <vector>
 #include <functional>
@@ -321,5 +322,7 @@ void LinearLocalSearch<Regularizer, T>::set_global_value(T value)
 
 template class LinearLocalSearchParam<DummyRegularizer, float64_t>;
 template class LinearLocalSearchParam<SmoothedDifferentialEntropy, float64_t>;
+template class LinearLocalSearchParam<SpectralVariance, float64_t>;
 template class LinearLocalSearch<DummyRegularizer, float64_t>;
 template class LinearLocalSearch<SmoothedDifferentialEntropy, float64_t>;
+template class LinearLocalSearch<SpectralVariance, float64_t>;

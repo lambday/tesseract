@@ -27,6 +27,7 @@
 #include <tesseract/computation/ComputeFunction.hpp>
 #include <tesseract/regularizer/DummyRegularizer.hpp>
 #include <tesseract/regularizer/SmoothedDifferentialEntropy.hpp>
+#include <tesseract/regularizer/SpectralVariance.hpp>
 #include <tesseract/features/Features.hpp>
 #include <vector>
 #include <map>
@@ -167,5 +168,7 @@ void ForwardRegression<Regularizer,T>::set_params(ForwardRegression<Regularizer,
 
 template class ForwardRegressionParam<DummyRegularizer, float64_t>;
 template class ForwardRegressionParam<SmoothedDifferentialEntropy, float64_t>;
+template class ForwardRegressionParam<SpectralVariance, float64_t>;
 template class ForwardRegression<DummyRegularizer, float64_t>;
 template class ForwardRegression<SmoothedDifferentialEntropy, float64_t>;
+template class ForwardRegression<SpectralVariance, float64_t>;

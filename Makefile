@@ -23,7 +23,7 @@ OBJECTS		= $(REGRESSION)/LeastSquares.o \
 			  $(ALGORITHM)/Dummy.o $(ALGORITHM)/ForwardRegression.o $(ALGORITHM)/LocalSearch.o \
 			  $(ALGORITHM)/GreedyLocalSearch.o $(ALGORITHM)/LinearLocalSearch.o $(FEATURES)/Features.o \
 			  $(REGULARIZER)/DummyRegularizer.o $(REGULARIZER)/SmoothedDifferentialEntropy.o \
-			  $(COMPUTATION)/ComputeFunction.o \
+			  $(REGULARIZER)/SpectralVariance.o $(COMPUTATION)/ComputeFunction.o \
 			  $(BASE)/init.o $(LOGGER)/Logger.o
 UNITSRC		= sanity/unit
 INTSRC		= sanity/integration
@@ -33,7 +33,7 @@ TESTS		= $(TESTDIR)/LeastSquares_unittest $(TESTDIR)/IDX3Reader_unittest \
 			  $(TESTDIR)/DataGenerator_unittest $(TESTDIR)/UnitL2Normalizer_unittest \
 			  $(TESTDIR)/Error_unittest $(TESTDIR)/ComputeFunction_unittest\
 			  $(TESTDIR)/ForwardRegression_unittest $(TESTDIR)/SmoothedDifferentialEntropy_unittest \
-			  $(TESTDIR)/LocalSearch_unittest \
+			  $(TESTDIR)/SpectralVariance_unittest $(TESTDIR)/LocalSearch_unittest \
 			  $(TESTDIR)/Evaluation_integration
 LIBS		= -L. -ltsr
 MEMCHECK	= valgrind --leak-check=full --track-origins=yes
@@ -86,6 +86,8 @@ $(REGULARIZER)/DummyRegularizer.o: $(REGULARIZER)/DummyRegularizer.hpp $(REGULAR
 	g++ $(OPTS) $(LIBFLAG) -c $(REGULARIZER)/DummyRegularizer.cpp $(INCLUDES) -o $(REGULARIZER)/DummyRegularizer.o
 $(REGULARIZER)/SmoothedDifferentialEntropy.o: $(REGULARIZER)/SmoothedDifferentialEntropy.hpp $(REGULARIZER)/SmoothedDifferentialEntropy.cpp
 	g++ $(OPTS) $(LIBFLAG) -c $(REGULARIZER)/SmoothedDifferentialEntropy.cpp $(INCLUDES) -o $(REGULARIZER)/SmoothedDifferentialEntropy.o
+$(REGULARIZER)/SpectralVariance.o: $(REGULARIZER)/SpectralVariance.hpp $(REGULARIZER)/SpectralVariance.cpp
+	g++ $(OPTS) $(LIBFLAG) -c $(REGULARIZER)/SpectralVariance.cpp $(INCLUDES) -o $(REGULARIZER)/SpectralVariance.o
 
 check: libtsr.so $(TESTS)
 	$(TESTDIR)/LeastSquares_unittest
@@ -99,6 +101,7 @@ check: libtsr.so $(TESTS)
 	$(TESTDIR)/ForwardRegression_unittest
 	$(TESTDIR)/LocalSearch_unittest
 	$(TESTDIR)/SmoothedDifferentialEntropy_unittest
+	$(TESTDIR)/SpectralVariance_unittest
 	$(TESTDIR)/Evaluation_integration
 
 memcheck: libtsr.so $(TESTS)
@@ -113,6 +116,7 @@ memcheck: libtsr.so $(TESTS)
 	$(MEMCHECK) $(TESTDIR)/ForwardRegression_unittest
 	$(MEMCHECK) $(TESTDIR)/LocalSearch_unittest
 	$(MEMCHECK) $(TESTDIR)/SmoothedDifferentialEntropy_unittest
+	$(MEMCHECK) $(TESTDIR)/SpectralVariance_unittest
 	$(MEMCHECK) $(TESTDIR)/Evaluation_integration
 
 $(TESTDIR)/LeastSquares_unittest: $(UNITSRC)/LeastSquares_unittest.cpp libtsr.so
@@ -137,6 +141,8 @@ $(TESTDIR)/LocalSearch_unittest: $(UNITSRC)/LocalSearch_unittest.cpp libtsr.so
 	g++ $(OPTS) $(INCLUDES) $(LIBS) $(UNITSRC)/LocalSearch_unittest.cpp -o $(TESTDIR)/LocalSearch_unittest
 $(TESTDIR)/SmoothedDifferentialEntropy_unittest: $(UNITSRC)/SmoothedDifferentialEntropy_unittest.cpp libtsr.so
 	g++ $(OPTS) $(INCLUDES) $(LIBS) $(UNITSRC)/SmoothedDifferentialEntropy_unittest.cpp -o $(TESTDIR)/SmoothedDifferentialEntropy_unittest
+$(TESTDIR)/SpectralVariance_unittest: $(UNITSRC)/SpectralVariance_unittest.cpp libtsr.so
+	g++ $(OPTS) $(INCLUDES) $(LIBS) $(UNITSRC)/SpectralVariance_unittest.cpp -o $(TESTDIR)/SpectralVariance_unittest
 $(TESTDIR)/Evaluation_integration: $(INTSRC)/Evaluation_integration.cpp libtsr.so
 	g++ $(OPTS) $(INCLUDES) $(LIBS) $(INTSRC)/Evaluation_integration.cpp -o $(TESTDIR)/Evaluation_integration
 

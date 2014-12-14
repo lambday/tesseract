@@ -30,6 +30,7 @@
 #include <tesseract/computation/ComputeFunction.hpp>
 #include <tesseract/regularizer/DummyRegularizer.hpp>
 #include <tesseract/regularizer/SmoothedDifferentialEntropy.hpp>
+#include <tesseract/regularizer/SpectralVariance.hpp>
 #include <tesseract/features/Features.hpp>
 #include <vector>
 #include <functional>
@@ -301,5 +302,12 @@ void GreedyLocalSearch<FRAlgo,LSAlgo,Regularizer,T>::set_params(param_type _para
 
 template class GreedyLocalSearchParam<ForwardRegression,LocalSearch,SmoothedDifferentialEntropy,float64_t>;
 template class GreedyLocalSearch<ForwardRegression,LocalSearch,SmoothedDifferentialEntropy,float64_t>;
+
 template class GreedyLocalSearchParam<ForwardRegression,LinearLocalSearch,SmoothedDifferentialEntropy,float64_t>;
 template class GreedyLocalSearch<ForwardRegression,LinearLocalSearch,SmoothedDifferentialEntropy,float64_t>;
+
+template class GreedyLocalSearchParam<ForwardRegression,LocalSearch,SpectralVariance,float64_t>;
+template class GreedyLocalSearch<ForwardRegression,LocalSearch,SpectralVariance,float64_t>;
+
+template class GreedyLocalSearchParam<ForwardRegression,LinearLocalSearch,SpectralVariance,float64_t>;
+template class GreedyLocalSearch<ForwardRegression,LinearLocalSearch,SpectralVariance,float64_t>;

@@ -40,6 +40,7 @@
 #include <tesseract/regression/LeastSquares.hpp>
 #include <tesseract/regularizer/DummyRegularizer.hpp>
 #include <tesseract/regularizer/SmoothedDifferentialEntropy.hpp>
+#include <tesseract/regularizer/SpectralVariance.hpp>
 #include <tesseract/features/Features.hpp>
 #include <map>
 #include <type_traits>
@@ -175,6 +176,13 @@ template class Evaluation<MNISTDataSet,DataGenerator<IDX3Reader,IDX1Reader,UnitL
 		 ForwardRegression<SmoothedDifferentialEntropy,float64_t>,SquaredMultipleCorrelation<float64_t>>;
 
 template class Evaluation<MNISTDataSet,DataGenerator<IDX3Reader,IDX1Reader,UnitL2Normalizer>,
+		 ForwardRegression<SpectralVariance,float64_t>,SumSquaredError<float64_t>>;
+template class Evaluation<MNISTDataSet,DataGenerator<IDX3Reader,IDX1Reader,UnitL2Normalizer>,
+		 ForwardRegression<SpectralVariance,float64_t>,PearsonsCorrelation<float64_t>>;
+template class Evaluation<MNISTDataSet,DataGenerator<IDX3Reader,IDX1Reader,UnitL2Normalizer>,
+		 ForwardRegression<SpectralVariance,float64_t>,SquaredMultipleCorrelation<float64_t>>;
+
+template class Evaluation<MNISTDataSet,DataGenerator<IDX3Reader,IDX1Reader,UnitL2Normalizer>,
 		 GreedyLocalSearch<ForwardRegression,LocalSearch,SmoothedDifferentialEntropy,float64_t>,
 		 SumSquaredError<float64_t>>;
 template class Evaluation<MNISTDataSet,DataGenerator<IDX3Reader,IDX1Reader,UnitL2Normalizer>,
@@ -185,6 +193,16 @@ template class Evaluation<MNISTDataSet,DataGenerator<IDX3Reader,IDX1Reader,UnitL
 		 SquaredMultipleCorrelation<float64_t>>;
 
 template class Evaluation<MNISTDataSet,DataGenerator<IDX3Reader,IDX1Reader,UnitL2Normalizer>,
+		 GreedyLocalSearch<ForwardRegression,LocalSearch,SpectralVariance,float64_t>,
+		 SumSquaredError<float64_t>>;
+template class Evaluation<MNISTDataSet,DataGenerator<IDX3Reader,IDX1Reader,UnitL2Normalizer>,
+		 GreedyLocalSearch<ForwardRegression,LocalSearch,SpectralVariance,float64_t>,
+		 PearsonsCorrelation<float64_t>>;
+template class Evaluation<MNISTDataSet,DataGenerator<IDX3Reader,IDX1Reader,UnitL2Normalizer>,
+		 GreedyLocalSearch<ForwardRegression,LocalSearch,SpectralVariance,float64_t>,
+		 SquaredMultipleCorrelation<float64_t>>;
+
+template class Evaluation<MNISTDataSet,DataGenerator<IDX3Reader,IDX1Reader,UnitL2Normalizer>,
 		 GreedyLocalSearch<ForwardRegression,LinearLocalSearch,SmoothedDifferentialEntropy,float64_t>,
 		 SumSquaredError<float64_t>>;
 template class Evaluation<MNISTDataSet,DataGenerator<IDX3Reader,IDX1Reader,UnitL2Normalizer>,
@@ -192,4 +210,14 @@ template class Evaluation<MNISTDataSet,DataGenerator<IDX3Reader,IDX1Reader,UnitL
 		 PearsonsCorrelation<float64_t>>;
 template class Evaluation<MNISTDataSet,DataGenerator<IDX3Reader,IDX1Reader,UnitL2Normalizer>,
 		 GreedyLocalSearch<ForwardRegression,LinearLocalSearch,SmoothedDifferentialEntropy,float64_t>,
+		 SquaredMultipleCorrelation<float64_t>>;
+
+template class Evaluation<MNISTDataSet,DataGenerator<IDX3Reader,IDX1Reader,UnitL2Normalizer>,
+		 GreedyLocalSearch<ForwardRegression,LinearLocalSearch,SpectralVariance,float64_t>,
+		 SumSquaredError<float64_t>>;
+template class Evaluation<MNISTDataSet,DataGenerator<IDX3Reader,IDX1Reader,UnitL2Normalizer>,
+		 GreedyLocalSearch<ForwardRegression,LinearLocalSearch,SpectralVariance,float64_t>,
+		 PearsonsCorrelation<float64_t>>;
+template class Evaluation<MNISTDataSet,DataGenerator<IDX3Reader,IDX1Reader,UnitL2Normalizer>,
+		 GreedyLocalSearch<ForwardRegression,LinearLocalSearch,SpectralVariance,float64_t>,
 		 SquaredMultipleCorrelation<float64_t>>;

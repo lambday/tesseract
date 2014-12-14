@@ -39,6 +39,7 @@
 #include <tesseract/evaluation/DataSet.hpp>
 #include <tesseract/regularizer/DummyRegularizer.hpp>
 #include <tesseract/regularizer/SmoothedDifferentialEntropy.hpp>
+#include <tesseract/regularizer/SpectralVariance.hpp>
 #include <ctime>
 #include <map>
 #include <iostream>
@@ -108,30 +109,69 @@ int main(int argc, char** argv)
 	test<ForwardRegression<SmoothedDifferentialEntropy,float64_t>,
 		SquaredMultipleCorrelation<float64_t>>(num_examples, target_feats);
 
-	std::cout << "Test 10: GLS(FR, LS, logdet regularizer) Sum-squared error" << std::endl;
+	std::cout << "Test 10: Forward regression, sv regularizer, Sum-squared error" << std::endl;
+	std::cout << "=================================================================" << std::endl;
+	test<ForwardRegression<SpectralVariance,float64_t>,
+		SumSquaredError<float64_t>>(num_examples, target_feats);
+	std::cout << "Test 11: Forward regression, sv regularizer, Pearson's correlation" << std::endl;
+	std::cout << "=====================================================================" << std::endl;
+	test<ForwardRegression<SpectralVariance,float64_t>,
+		PearsonsCorrelation<float64_t>>(num_examples, target_feats);
+	std::cout << "Test 12: Forward regression, sv regularizer, Squared multiple correlation" << std::endl;
+	std::cout << "============================================================================" << std::endl;
+	test<ForwardRegression<SpectralVariance,float64_t>,
+		SquaredMultipleCorrelation<float64_t>>(num_examples, target_feats);
+
+	std::cout << "Test 13: GLS(FR, LS, logdet regularizer) Sum-squared error" << std::endl;
 	std::cout << "=================================================================" << std::endl;
 	test<GreedyLocalSearch<ForwardRegression,LocalSearch,SmoothedDifferentialEntropy,float64_t>,
 		SumSquaredError<float64_t>>(num_examples, target_feats);
-	std::cout << "Test 11: GLS(FR, LS, logdet regularizer) Pearson's correlation" << std::endl;
+	std::cout << "Test 14: GLS(FR, LS, logdet regularizer) Pearson's correlation" << std::endl;
 	std::cout << "=====================================================================" << std::endl;
 	test<GreedyLocalSearch<ForwardRegression,LocalSearch,SmoothedDifferentialEntropy,float64_t>,
 		PearsonsCorrelation<float64_t>>(num_examples, target_feats);
-	std::cout << "Test 12: GLS(FR, LS, logdet regularizer) Squared multiple correlation" << std::endl;
+	std::cout << "Test 15: GLS(FR, LS, logdet regularizer) Squared multiple correlation" << std::endl;
 	std::cout << "============================================================================" << std::endl;
 	test<GreedyLocalSearch<ForwardRegression,LocalSearch,SmoothedDifferentialEntropy,float64_t>,
 		SquaredMultipleCorrelation<float64_t>>(num_examples, target_feats);
 
-	std::cout << "Test 13: GLS(FR, Linear LS, logdet regularizer) Sum-squared error" << std::endl;
+	std::cout << "Test 16: GLS(FR, LS, sv regularizer) Sum-squared error" << std::endl;
+	std::cout << "=================================================================" << std::endl;
+	test<GreedyLocalSearch<ForwardRegression,LocalSearch,SpectralVariance,float64_t>,
+		SumSquaredError<float64_t>>(num_examples, target_feats);
+	std::cout << "Test 17: GLS(FR, LS, sv regularizer) Pearson's correlation" << std::endl;
+	std::cout << "=====================================================================" << std::endl;
+	test<GreedyLocalSearch<ForwardRegression,LocalSearch,SpectralVariance,float64_t>,
+		PearsonsCorrelation<float64_t>>(num_examples, target_feats);
+	std::cout << "Test 18: GLS(FR, LS, sv regularizer) Squared multiple correlation" << std::endl;
+	std::cout << "============================================================================" << std::endl;
+	test<GreedyLocalSearch<ForwardRegression,LocalSearch,SpectralVariance,float64_t>,
+		SquaredMultipleCorrelation<float64_t>>(num_examples, target_feats);
+
+	std::cout << "Test 19: GLS(FR, Linear LS, logdet regularizer) Sum-squared error" << std::endl;
 	std::cout << "=================================================================" << std::endl;
 	test<GreedyLocalSearch<ForwardRegression,LinearLocalSearch,SmoothedDifferentialEntropy,float64_t>,
 		SumSquaredError<float64_t>>(num_examples, target_feats);
-	std::cout << "Test 14: GLS(FR, Linear LS, logdet regularizer) Pearson's correlation" << std::endl;
+	std::cout << "Test 20: GLS(FR, Linear LS, logdet regularizer) Pearson's correlation" << std::endl;
 	std::cout << "=====================================================================" << std::endl;
 	test<GreedyLocalSearch<ForwardRegression,LinearLocalSearch,SmoothedDifferentialEntropy,float64_t>,
 		PearsonsCorrelation<float64_t>>(num_examples, target_feats);
-	std::cout << "Test 15: GLS(FR, Linear LS, logdet regularizer) Squared multiple correlation" << std::endl;
+	std::cout << "Test 21: GLS(FR, Linear LS, logdet regularizer) Squared multiple correlation" << std::endl;
 	std::cout << "============================================================================" << std::endl;
 	test<GreedyLocalSearch<ForwardRegression,LinearLocalSearch,SmoothedDifferentialEntropy,float64_t>,
+		SquaredMultipleCorrelation<float64_t>>(num_examples, target_feats);
+
+	std::cout << "Test 22: GLS(FR, Linear LS, sv regularizer) Sum-squared error" << std::endl;
+	std::cout << "=================================================================" << std::endl;
+	test<GreedyLocalSearch<ForwardRegression,LinearLocalSearch,SpectralVariance,float64_t>,
+		SumSquaredError<float64_t>>(num_examples, target_feats);
+	std::cout << "Test 23: GLS(FR, Linear LS, sv regularizer) Pearson's correlation" << std::endl;
+	std::cout << "=====================================================================" << std::endl;
+	test<GreedyLocalSearch<ForwardRegression,LinearLocalSearch,SpectralVariance,float64_t>,
+		PearsonsCorrelation<float64_t>>(num_examples, target_feats);
+	std::cout << "Test 24: GLS(FR, Linear LS, sv regularizer) Squared multiple correlation" << std::endl;
+	std::cout << "============================================================================" << std::endl;
+	test<GreedyLocalSearch<ForwardRegression,LinearLocalSearch,SpectralVariance,float64_t>,
 		SquaredMultipleCorrelation<float64_t>>(num_examples, target_feats);
 
 	return 0;
