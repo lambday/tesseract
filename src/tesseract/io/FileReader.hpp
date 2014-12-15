@@ -40,6 +40,9 @@ public:
 	/** the feature type */
 	typedef typename FeatureReader::feat_type feat_type;
 
+	/** the feature vector type */
+	typedef typename FeatureReader::vec_type vec_type;
+
 	/** the label type */
 	typedef typename LabelReader::label_type label_type;
 

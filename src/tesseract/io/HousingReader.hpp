@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-#ifndef IDX3_READER_H__
-#define IDX3_READER_H__
+#ifndef HOUSING_READER_H__
+#define HOUSING_READER_H__
 
 #include <tesseract/base/types.h>
 
@@ -31,78 +31,63 @@ namespace tesseract
 {
 
 /**
- * @brief struct IDX3Header for the header of the image file
+ * @brief class HousingReader for reading and storing Bostom housing data
  */
-struct IDX3Header
-{
-	/** magic number (should be 2051 or 0x803) */
-	int32_t magic_number;
-
-	/** number of images in current file */
-	int32_t num_images;
-
-	/** number of rows of the images */
-	int32_t num_rows;
-
-	/** number of cols of the images */
-	int32_t num_cols;
-};
-
-/**
- * @brief class IDX3Reader for reading and storing IDX3 images
- */
-class IDX3Reader
+class HousingReader
 {
 public:
-	/** type of IDX3 images */
-	typedef std::vector<ubyte_t> Image;
+	/** type of Housing features */
+	typedef std::vector<float64_t> HousingFeatures;
 
-	/** type of feature vector */
-	typedef Image vec_type;
+	/** type of feature vectors */
+	typedef HousingFeatures vec_type;
 
-	/** type of IDX3 images array */
-	typedef std::vector<Image> IDX3Images;
+	/** type of Housing labels */
+	typedef std::vector<float64_t> HousingLabels;
 
-	/** the feat type  */
-	typedef IDX3Images feat_type;
+	/** the label type */
+	typedef std::vector<HousingFeatures> feat_type;
+
+	/** the label type */
+	typedef HousingLabels label_type;
 
 	/** default constructor */
-	IDX3Reader();
+	HousingReader();
 
 	/** constructor
 	 * @param _filename the filename
 	 */
-	explicit IDX3Reader(std::string _filename);
+	explicit HousingReader(std::string _filename);
 
 	/** destructor */
-	~IDX3Reader();
+	~HousingReader();
 
 	/** loads the images from the specified file */
 	void load();
 
-	/** @return a reference of the image at specified index */
-	Image& get_image(index_t i);
+	/** @return a reference of the feature vector at specified index */
+	HousingFeatures& get_image(index_t i);
 
-	/** @return the number of images */
+	/** @return the number of feature vectors */
 	int32_t get_num_images();
 
-	/** @return the number of rows for each image */
-	int32_t get_num_rows();
+	/** @return a reference of the image at specified index */
+	float64_t get_label(index_t i);
 
-	/** @return the number of columns for each image */
-	int32_t get_num_cols();
+	/** @return the number of labels */
+	int32_t get_num_labels();
 
 private:
 	/** the filename */
 	std::string filename;
 
-	/** the image header */
-	IDX3Header header;
+	/** the features array */
+	feat_type feats;
 
-	/** the images array */
-	IDX3Images images;
+	/** the labels array */
+	label_type labels;
 };
 
 }
 
-#endif // IDX3_READER_H__
+#endif // HOUSING_READER_H__

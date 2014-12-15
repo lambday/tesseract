@@ -42,6 +42,17 @@ struct MNISTDataSet
 	static const std::string label_test;
 };
 
+/**
+ * @brief convinient struct for the Housing data set
+ */
+struct HousingDataSet
+{
+	static const std::string feat_train;
+	static const std::string label_train;
+	static const std::string feat_test;
+	static const std::string label_test;
+};
+
 }
 
 #endif // DATASET_H__

@@ -27,6 +27,7 @@
 #include <tesseract/io/FileReader.hpp>
 #include <tesseract/io/IDX1Reader.hpp>
 #include <tesseract/io/IDX3Reader.hpp>
+#include <tesseract/io/HousingReader.hpp>
 #include <tesseract/normalizer/UnitL2Normalizer.hpp>
 #include <cstdlib>
 #include <random>
@@ -58,6 +59,7 @@ void DataGenerator<FeatureReader,LabelReader,Normalizer>::generate()
 {
 	typedef FileReader<FeatureReader,LabelReader> Reader;
 	typedef typename Reader::feat_type feat_type;
+	typedef typename Reader::vec_type vec_type;
 	typedef typename Reader::label_type label_type;
 	typedef typename Reader::data_type data_type;
 
@@ -90,7 +92,7 @@ void DataGenerator<FeatureReader,LabelReader,Normalizer>::generate()
 	data = Matrix<float64_t>(num_vec, num_feats + 1);
 	for (index_t i = 0; i < num_examples; ++i)
 	{
-		const std::vector<ubyte_t>& current = features[i];
+		const vec_type& current = features[i];
 		for (index_t j = 0; j < num_feats; ++j)
 		{
 			data(i, j) = static_cast<float64_t>(current[j]);
@@ -201,3 +203,4 @@ const Eigen::Ref<const Vector<float64_t>> DataGenerator<FeatureReader,LabelReade
 }
 
 template class DataGenerator<IDX3Reader,IDX1Reader,UnitL2Normalizer>;
+template class DataGenerator<HousingReader,HousingReader,UnitL2Normalizer>;

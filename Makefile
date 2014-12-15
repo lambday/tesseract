@@ -16,7 +16,7 @@ FEATURES	= $(SRC)/features
 REGULARIZER	= $(SRC)/regularizer
 COMPUTATION	= $(SRC)/computation
 OBJECTS		= $(REGRESSION)/LeastSquares.o \
-			  $(IO)/IDX3Reader.o $(IO)/IDX1Reader.o $(IO)/FileReader.o \
+			  $(IO)/IDX3Reader.o $(IO)/IDX1Reader.o $(IO)/FileReader.o $(IO)/HousingReader.o \
 			  $(PREPROCESSOR)/DataGenerator.o \
 			  $(ERRORS)/SumSquaredError.o $(ERRORS)/PearsonsCorrelation.o $(ERRORS)/SquaredMultipleCorrelation.o \
 			  $(EVALUATION)/DataSet.o $(EVALUATION)/Evaluation.o \
@@ -28,13 +28,13 @@ OBJECTS		= $(REGRESSION)/LeastSquares.o \
 UNITSRC		= sanity/unit
 INTSRC		= sanity/integration
 TESTDIR		= tests
-TESTS		= $(TESTDIR)/LeastSquares_unittest $(TESTDIR)/IDX3Reader_unittest \
+TESTS		= $(TESTDIR)/LeastSquares_unittest $(TESTDIR)/IDX3Reader_unittest $(TESTDIR)/HousingReader_unittest \
 			  $(TESTDIR)/IDX1Reader_unittest $(TESTDIR)/FileReader_unittest \
 			  $(TESTDIR)/DataGenerator_unittest $(TESTDIR)/UnitL2Normalizer_unittest \
 			  $(TESTDIR)/Error_unittest $(TESTDIR)/ComputeFunction_unittest\
 			  $(TESTDIR)/ForwardRegression_unittest $(TESTDIR)/SmoothedDifferentialEntropy_unittest \
 			  $(TESTDIR)/SpectralVariance_unittest $(TESTDIR)/LocalSearch_unittest \
-			  $(TESTDIR)/Evaluation_integration
+			  $(TESTDIR)/Evaluation_MNIST_integration $(TESTDIR)/Evaluation_Housing_integration
 LIBS		= -L. -ltsr
 MEMCHECK	= valgrind --leak-check=full --track-origins=yes
 
@@ -54,6 +54,8 @@ $(IO)/IDX3Reader.o: $(IO)/IDX3Reader.hpp $(IO)/IDX3Reader.cpp
 	g++ $(OPTS) $(LIBFLAG) -c $(IO)/IDX3Reader.cpp $(INCLUDES) -o $(IO)/IDX3Reader.o
 $(IO)/IDX1Reader.o: $(IO)/IDX1Reader.hpp $(IO)/IDX1Reader.cpp
 	g++ $(OPTS) $(LIBFLAG) -c $(IO)/IDX1Reader.cpp $(INCLUDES) -o $(IO)/IDX1Reader.o
+$(IO)/HousingReader.o: $(IO)/HousingReader.hpp $(IO)/HousingReader.cpp
+	g++ $(OPTS) $(LIBFLAG) -c $(IO)/HousingReader.cpp $(INCLUDES) -o $(IO)/HousingReader.o
 $(IO)/FileReader.o: $(IO)/FileReader.hpp $(IO)/FileReader.cpp
 	g++ $(OPTS) $(LIBFLAG) -c $(IO)/FileReader.cpp $(INCLUDES) -o $(IO)/FileReader.o
 $(PREPROCESSOR)/DataGenerator.o: $(PREPROCESSOR)/DataGenerator.hpp $(PREPROCESSOR)/DataGenerator.cpp
@@ -93,6 +95,7 @@ check: libtsr.so $(TESTS)
 	$(TESTDIR)/LeastSquares_unittest
 	$(TESTDIR)/IDX3Reader_unittest
 	$(TESTDIR)/IDX1Reader_unittest
+	$(TESTDIR)/HousingReader_unittest
 	$(TESTDIR)/FileReader_unittest
 	$(TESTDIR)/DataGenerator_unittest
 	$(TESTDIR)/UnitL2Normalizer_unittest
@@ -102,12 +105,14 @@ check: libtsr.so $(TESTS)
 	$(TESTDIR)/LocalSearch_unittest
 	$(TESTDIR)/SmoothedDifferentialEntropy_unittest
 	$(TESTDIR)/SpectralVariance_unittest
-	$(TESTDIR)/Evaluation_integration
+	$(TESTDIR)/Evaluation_MNIST_integration
+	$(TESTDIR)/Evaluation_Housing_integration
 
 memcheck: libtsr.so $(TESTS)
 	$(MEMCHECK) $(TESTDIR)/LeastSquares_unittest
 	$(MEMCHECK) $(TESTDIR)/IDX3Reader_unittest
 	$(MEMCHECK) $(TESTDIR)/IDX1Reader_unittest
+	$(MEMCHECK) $(TESTDIR)/HousingReader_unittest
 	$(MEMCHECK) $(TESTDIR)/FileReader_unittest
 	$(MEMCHECK) $(TESTDIR)/DataGenerator_unittest
 	$(MEMCHECK) $(TESTDIR)/UnitL2Normalizer_unittest
@@ -117,7 +122,8 @@ memcheck: libtsr.so $(TESTS)
 	$(MEMCHECK) $(TESTDIR)/LocalSearch_unittest
 	$(MEMCHECK) $(TESTDIR)/SmoothedDifferentialEntropy_unittest
 	$(MEMCHECK) $(TESTDIR)/SpectralVariance_unittest
-	$(MEMCHECK) $(TESTDIR)/Evaluation_integration
+#	$(MEMCHECK) $(TESTDIR)/Evaluation_MNIST_integration
+#	$(MEMCHECK) $(TESTDIR)/Evaluation_Housing_integration
 
 $(TESTDIR)/LeastSquares_unittest: $(UNITSRC)/LeastSquares_unittest.cpp libtsr.so
 	g++ $(OPTS) $(INCLUDES) $(LIBS) $(UNITSRC)/LeastSquares_unittest.cpp -o $(TESTDIR)/LeastSquares_unittest
@@ -125,6 +131,8 @@ $(TESTDIR)/IDX3Reader_unittest: $(UNITSRC)/IDX3Reader_unittest.cpp libtsr.so
 	g++ $(OPTS) $(INCLUDES) $(LIBS) $(UNITSRC)/IDX3Reader_unittest.cpp -o $(TESTDIR)/IDX3Reader_unittest
 $(TESTDIR)/IDX1Reader_unittest: $(UNITSRC)/IDX1Reader_unittest.cpp libtsr.so
 	g++ $(OPTS) $(INCLUDES) $(LIBS) $(UNITSRC)/IDX1Reader_unittest.cpp -o $(TESTDIR)/IDX1Reader_unittest
+$(TESTDIR)/HousingReader_unittest: $(UNITSRC)/HousingReader_unittest.cpp libtsr.so
+	g++ $(OPTS) $(INCLUDES) $(LIBS) $(UNITSRC)/HousingReader_unittest.cpp -o $(TESTDIR)/HousingReader_unittest
 $(TESTDIR)/FileReader_unittest: $(UNITSRC)/FileReader_unittest.cpp libtsr.so
 	g++ $(OPTS) $(INCLUDES) $(LIBS) $(UNITSRC)/FileReader_unittest.cpp -o $(TESTDIR)/FileReader_unittest
 $(TESTDIR)/DataGenerator_unittest: $(UNITSRC)/DataGenerator_unittest.cpp libtsr.so
@@ -143,8 +151,10 @@ $(TESTDIR)/SmoothedDifferentialEntropy_unittest: $(UNITSRC)/SmoothedDifferential
 	g++ $(OPTS) $(INCLUDES) $(LIBS) $(UNITSRC)/SmoothedDifferentialEntropy_unittest.cpp -o $(TESTDIR)/SmoothedDifferentialEntropy_unittest
 $(TESTDIR)/SpectralVariance_unittest: $(UNITSRC)/SpectralVariance_unittest.cpp libtsr.so
 	g++ $(OPTS) $(INCLUDES) $(LIBS) $(UNITSRC)/SpectralVariance_unittest.cpp -o $(TESTDIR)/SpectralVariance_unittest
-$(TESTDIR)/Evaluation_integration: $(INTSRC)/Evaluation_integration.cpp libtsr.so
-	g++ $(OPTS) $(INCLUDES) $(LIBS) $(INTSRC)/Evaluation_integration.cpp -o $(TESTDIR)/Evaluation_integration
+$(TESTDIR)/Evaluation_MNIST_integration: $(INTSRC)/Evaluation_MNIST_integration.cpp libtsr.so
+	g++ $(OPTS) $(INCLUDES) $(LIBS) $(INTSRC)/Evaluation_MNIST_integration.cpp -o $(TESTDIR)/Evaluation_MNIST_integration
+$(TESTDIR)/Evaluation_Housing_integration: $(INTSRC)/Evaluation_Housing_integration.cpp libtsr.so
+	g++ $(OPTS) $(INCLUDES) $(LIBS) $(INTSRC)/Evaluation_Housing_integration.cpp -o $(TESTDIR)/Evaluation_Housing_integration
 
 doc: libtsr.so doc/Doxyfile
 	doxygen doc/Doxyfile

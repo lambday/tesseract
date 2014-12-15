@@ -28,6 +28,7 @@
 #include <tesseract/preprocessor/DataGenerator.hpp>
 #include <tesseract/io/IDX1Reader.hpp>
 #include <tesseract/io/IDX3Reader.hpp>
+#include <tesseract/io/HousingReader.hpp>
 #include <tesseract/normalizer/UnitL2Normalizer.hpp>
 #include <tesseract/errors/SumSquaredError.hpp>
 #include <tesseract/errors/PearsonsCorrelation.hpp>
@@ -154,6 +155,7 @@ void Evaluation<DataSet,DataGenerator,Algorithm,ErrorMeasure>::set_target_feats(
 	target_feats = _target_feats;
 }
 
+// MNIST dataset
 template class Evaluation<MNISTDataSet,DataGenerator<IDX3Reader,IDX1Reader,UnitL2Normalizer>,
 		 Dummy,SumSquaredError<float64_t>>;
 template class Evaluation<MNISTDataSet,DataGenerator<IDX3Reader,IDX1Reader,UnitL2Normalizer>,
@@ -219,5 +221,74 @@ template class Evaluation<MNISTDataSet,DataGenerator<IDX3Reader,IDX1Reader,UnitL
 		 GreedyLocalSearch<ForwardRegression,LinearLocalSearch,SpectralVariance,float64_t>,
 		 PearsonsCorrelation<float64_t>>;
 template class Evaluation<MNISTDataSet,DataGenerator<IDX3Reader,IDX1Reader,UnitL2Normalizer>,
+		 GreedyLocalSearch<ForwardRegression,LinearLocalSearch,SpectralVariance,float64_t>,
+		 SquaredMultipleCorrelation<float64_t>>;
+
+// Housing dataset
+template class Evaluation<HousingDataSet,DataGenerator<HousingReader,HousingReader,UnitL2Normalizer>,
+		 Dummy,SumSquaredError<float64_t>>;
+template class Evaluation<HousingDataSet,DataGenerator<HousingReader,HousingReader,UnitL2Normalizer>,
+		 Dummy,PearsonsCorrelation<float64_t>>;
+template class Evaluation<HousingDataSet,DataGenerator<HousingReader,HousingReader,UnitL2Normalizer>,
+		 Dummy,SquaredMultipleCorrelation<float64_t>>;
+
+template class Evaluation<HousingDataSet,DataGenerator<HousingReader,HousingReader,UnitL2Normalizer>,
+		 ForwardRegression<DummyRegularizer,float64_t>,SumSquaredError<float64_t>>;
+template class Evaluation<HousingDataSet,DataGenerator<HousingReader,HousingReader,UnitL2Normalizer>,
+		 ForwardRegression<DummyRegularizer,float64_t>,PearsonsCorrelation<float64_t>>;
+template class Evaluation<HousingDataSet,DataGenerator<HousingReader,HousingReader,UnitL2Normalizer>,
+		 ForwardRegression<DummyRegularizer,float64_t>,SquaredMultipleCorrelation<float64_t>>;
+
+template class Evaluation<HousingDataSet,DataGenerator<HousingReader,HousingReader,UnitL2Normalizer>,
+		 ForwardRegression<SmoothedDifferentialEntropy,float64_t>,SumSquaredError<float64_t>>;
+template class Evaluation<HousingDataSet,DataGenerator<HousingReader,HousingReader,UnitL2Normalizer>,
+		 ForwardRegression<SmoothedDifferentialEntropy,float64_t>,PearsonsCorrelation<float64_t>>;
+template class Evaluation<HousingDataSet,DataGenerator<HousingReader,HousingReader,UnitL2Normalizer>,
+		 ForwardRegression<SmoothedDifferentialEntropy,float64_t>,SquaredMultipleCorrelation<float64_t>>;
+
+template class Evaluation<HousingDataSet,DataGenerator<HousingReader,HousingReader,UnitL2Normalizer>,
+		 ForwardRegression<SpectralVariance,float64_t>,SumSquaredError<float64_t>>;
+template class Evaluation<HousingDataSet,DataGenerator<HousingReader,HousingReader,UnitL2Normalizer>,
+		 ForwardRegression<SpectralVariance,float64_t>,PearsonsCorrelation<float64_t>>;
+template class Evaluation<HousingDataSet,DataGenerator<HousingReader,HousingReader,UnitL2Normalizer>,
+		 ForwardRegression<SpectralVariance,float64_t>,SquaredMultipleCorrelation<float64_t>>;
+
+template class Evaluation<HousingDataSet,DataGenerator<HousingReader,HousingReader,UnitL2Normalizer>,
+		 GreedyLocalSearch<ForwardRegression,LocalSearch,SmoothedDifferentialEntropy,float64_t>,
+		 SumSquaredError<float64_t>>;
+template class Evaluation<HousingDataSet,DataGenerator<HousingReader,HousingReader,UnitL2Normalizer>,
+		 GreedyLocalSearch<ForwardRegression,LocalSearch,SmoothedDifferentialEntropy,float64_t>,
+		 PearsonsCorrelation<float64_t>>;
+template class Evaluation<HousingDataSet,DataGenerator<HousingReader,HousingReader,UnitL2Normalizer>,
+		 GreedyLocalSearch<ForwardRegression,LocalSearch,SmoothedDifferentialEntropy,float64_t>,
+		 SquaredMultipleCorrelation<float64_t>>;
+
+template class Evaluation<HousingDataSet,DataGenerator<HousingReader,HousingReader,UnitL2Normalizer>,
+		 GreedyLocalSearch<ForwardRegression,LocalSearch,SpectralVariance,float64_t>,
+		 SumSquaredError<float64_t>>;
+template class Evaluation<HousingDataSet,DataGenerator<HousingReader,HousingReader,UnitL2Normalizer>,
+		 GreedyLocalSearch<ForwardRegression,LocalSearch,SpectralVariance,float64_t>,
+		 PearsonsCorrelation<float64_t>>;
+template class Evaluation<HousingDataSet,DataGenerator<HousingReader,HousingReader,UnitL2Normalizer>,
+		 GreedyLocalSearch<ForwardRegression,LocalSearch,SpectralVariance,float64_t>,
+		 SquaredMultipleCorrelation<float64_t>>;
+
+template class Evaluation<HousingDataSet,DataGenerator<HousingReader,HousingReader,UnitL2Normalizer>,
+		 GreedyLocalSearch<ForwardRegression,LinearLocalSearch,SmoothedDifferentialEntropy,float64_t>,
+		 SumSquaredError<float64_t>>;
+template class Evaluation<HousingDataSet,DataGenerator<HousingReader,HousingReader,UnitL2Normalizer>,
+		 GreedyLocalSearch<ForwardRegression,LinearLocalSearch,SmoothedDifferentialEntropy,float64_t>,
+		 PearsonsCorrelation<float64_t>>;
+template class Evaluation<HousingDataSet,DataGenerator<HousingReader,HousingReader,UnitL2Normalizer>,
+		 GreedyLocalSearch<ForwardRegression,LinearLocalSearch,SmoothedDifferentialEntropy,float64_t>,
+		 SquaredMultipleCorrelation<float64_t>>;
+
+template class Evaluation<HousingDataSet,DataGenerator<HousingReader,HousingReader,UnitL2Normalizer>,
+		 GreedyLocalSearch<ForwardRegression,LinearLocalSearch,SpectralVariance,float64_t>,
+		 SumSquaredError<float64_t>>;
+template class Evaluation<HousingDataSet,DataGenerator<HousingReader,HousingReader,UnitL2Normalizer>,
+		 GreedyLocalSearch<ForwardRegression,LinearLocalSearch,SpectralVariance,float64_t>,
+		 PearsonsCorrelation<float64_t>>;
+template class Evaluation<HousingDataSet,DataGenerator<HousingReader,HousingReader,UnitL2Normalizer>,
 		 GreedyLocalSearch<ForwardRegression,LinearLocalSearch,SpectralVariance,float64_t>,
 		 SquaredMultipleCorrelation<float64_t>>;

@@ -25,6 +25,7 @@
 #include <tesseract/io/FileReader.hpp>
 #include <tesseract/io/IDX3Reader.hpp>
 #include <tesseract/io/IDX1Reader.hpp>
+#include <tesseract/io/HousingReader.hpp>
 #include <algorithm>
 #include <map>
 #include <vector>
@@ -102,3 +103,4 @@ FileReader<FeatureReader,LabelReader>::load(int32_t num_examples)
 }
 
 template class FileReader<IDX3Reader, IDX1Reader>;
+template class FileReader<HousingReader, HousingReader>;

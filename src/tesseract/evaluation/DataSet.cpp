@@ -32,3 +32,7 @@ const std::string MNISTDataSet::label_train = std::string("data/train-labels-idx
 const std::string MNISTDataSet::feat_test = std::string("data/t10k-images-idx3-ubyte");
 const std::string MNISTDataSet::label_test = std::string("data/t10k-labels-idx1-ubyte");
 
+const std::string HousingDataSet::feat_train = std::string("data/housing.data");
+const std::string HousingDataSet::label_train = std::string("data/housing.data");
+const std::string HousingDataSet::feat_test = std::string("data/housing.data");
+const std::string HousingDataSet::label_test = std::string("data/housing.data");

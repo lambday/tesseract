@@ -147,7 +147,7 @@ int main(int argc, char** argv)
 	index_t num_test_examples = 1000;
 
 	index_t min_feats = 10;
-	index_t max_feats = 30;
+	index_t max_feats = 90;
 
 	// store cov once and run the algo for different number of feats
 	MatrixXd cov = get_training_data_cov(num_examples);
