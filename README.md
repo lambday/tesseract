@@ -12,7 +12,8 @@ Instruction
 
 Dataset
 =======
-MNIST dataset is obtained from [here](http://yann.lecun.com/exdb/mnist/)
+- MNIST dataset is obtained from [here](http://yann.lecun.com/exdb/mnist/)
+- Boston Housing dataset is obtained from [here](https://archive.ics.uci.edu/ml/datasets/Housing)
 
 Dependencies
 ============
