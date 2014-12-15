@@ -226,7 +226,7 @@ std::pair<T,std::vector<index_t>> GreedyLocalSearch<FRAlgo,LSAlgo,Regularizer,T>
 	// make sure to add the last column
 	rest.push_back(N);
 
-	logger.write(Debug, "For LS, copying cov with indices\n");
+	logger.write(Debug, "For FR2, copying cov with indices\n");
 	if (logger.get_loglevel() >= Debug)
 	{
 		logger.print_vector(rest);
