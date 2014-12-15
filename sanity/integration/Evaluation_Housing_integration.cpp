@@ -70,7 +70,7 @@ int main(int argc, char** argv)
 	index_t num_examples = 100;
 	index_t target_feats = 5;
 
-	logger.set_loglevel(Debug);
+	logger.set_loglevel(None);
 
 	std::cout << "Test 1 : Dummy algorithm, Sum-squared error" << std::endl;
 	std::cout << "===========================================" << std::endl;

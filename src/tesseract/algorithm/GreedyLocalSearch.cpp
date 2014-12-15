@@ -204,63 +204,6 @@ std::pair<T,std::vector<index_t>> GreedyLocalSearch<FRAlgo,LSAlgo,Regularizer,T>
 		logger.write(Special, "- ");
 	}
 
-	// compute the rest of indices
-	std::vector<index_t> rest;
-	index_t in_s1 = 0;
-	for (index_t i = 0; i < N; ++i)
-	{
-		if (S_1_inds[in_s1] == i)
-			in_s1++;
-		else
-			rest.push_back(i);
-	}
-
-	assert(S_1_inds.size() + rest.size() == N);
-
-	logger.write(Debug, "Rest of the indices than returned by FR\n");
-	if (logger.get_loglevel() >= Debug)
-	{
-		logger.print_vector(rest);
-	}
-
-	// make sure to add the last column
-	rest.push_back(N);
-
-	logger.write(Debug, "For FR2, copying cov with indices\n");
-	if (logger.get_loglevel() >= Debug)
-	{
-		logger.print_vector(rest);
-	}
-
-	// run forward regression for the rest of the data
-	Matrix<T> cov_rest = Features<T>::copy_cov(cov, rest);
-	FRAlgo<Regularizer,T> fr2(cov_rest,target_feats);
-	fr2.set_params(params.fr_params);
-
-	std::pair<T,std::vector<index_t>> S_2 = fr2.run();
-	T g_S_2 = S_2.first;
-	std::vector<index_t> S_2_inds = S_2.second;
-
-	// pop back last column index from rest
-	rest.pop_back();
-
-	logger.write(Debug, "FR(U-S_1) = %f!\n", g_S_2);
-	logger.write(Debug, "Relative indices returned by FR\n");
-	if (logger.get_loglevel() >= Debug)
-	{
-		logger.print_vector(S_2_inds);
-	}
-
-	// map these indices
-	std::sort(S_2_inds.begin(), S_2_inds.end());
-	inds_map(rest, S_2_inds);
-
-	logger.write(Debug, "Actual indices returned by FR\n");
-	if (logger.get_loglevel() >= Debug)
-	{
-		logger.print_vector(S_2_inds);
-	}
-
 	// return inds
 	std::vector<index_t>& argmax = S_1_inds;
 	T maxval = g_S_1;
@@ -275,11 +218,72 @@ std::pair<T,std::vector<index_t>> GreedyLocalSearch<FRAlgo,LSAlgo,Regularizer,T>
 		argmax = S_p_inds;
 	}
 
-	if (maxval < g_S_2)
+	// run 2nd phase of forward regression only when enough rest features are there
+	if (N >= target_feats * 2)
 	{
-		selected = FR2;
-		maxval = g_S_2;
-		argmax = S_2_inds;
+		// compute the rest of indices
+		std::vector<index_t> rest;
+		index_t in_s1 = 0;
+		for (index_t i = 0; i < N; ++i)
+		{
+			if (S_1_inds[in_s1] == i)
+				in_s1++;
+			else
+				rest.push_back(i);
+		}
+
+		assert(S_1_inds.size() + rest.size() == N);
+
+		logger.write(Debug, "Rest of the indices than returned by FR\n");
+		if (logger.get_loglevel() >= Debug)
+		{
+			logger.print_vector(rest);
+		}
+
+		// make sure to add the last column
+		rest.push_back(N);
+
+		logger.write(Debug, "For FR2, copying cov with indices\n");
+		if (logger.get_loglevel() >= Debug)
+		{
+			logger.print_vector(rest);
+		}
+
+		// run forward regression for the rest of the data
+		Matrix<T> cov_rest = Features<T>::copy_cov(cov, rest);
+		FRAlgo<Regularizer,T> fr2(cov_rest,target_feats);
+		fr2.set_params(params.fr_params);
+
+		std::pair<T,std::vector<index_t>> S_2 = fr2.run();
+		T g_S_2 = S_2.first;
+		std::vector<index_t> S_2_inds = S_2.second;
+
+		// pop back last column index from rest
+		rest.pop_back();
+
+		logger.write(Debug, "FR(U-S_1) = %f!\n", g_S_2);
+		logger.write(Debug, "Relative indices returned by FR\n");
+		if (logger.get_loglevel() >= Debug)
+		{
+			logger.print_vector(S_2_inds);
+		}
+
+		// map these indices
+		std::sort(S_2_inds.begin(), S_2_inds.end());
+		inds_map(rest, S_2_inds);
+
+		logger.write(Debug, "Actual indices returned by FR\n");
+		if (logger.get_loglevel() >= Debug)
+		{
+			logger.print_vector(S_2_inds);
+		}
+
+		if (maxval < g_S_2)
+		{
+			selected = FR2;
+			maxval = g_S_2;
+			argmax = S_2_inds;
+		}
 	}
 
 	// special debug messages
